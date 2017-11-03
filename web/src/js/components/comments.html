@@ -1,0 +1,247 @@
+<link rel="ractive" href="./previewEditor.html" name="previewEditor">
+<link rel="ractive" href="./userIcon.html" name="userIcon">
+<link rel="ractive" href="./alert.html" name="alert">
+<div>
+	<div id="commentsScroll"></div>
+	{{#if commentContext}}
+		<span class="center-block text-center alert alert-info" role="alert">
+			You are viewing a <strong>single</strong> comment's thread.  
+			<button type="button" class="btn btn-link alert-link" on-click="resetRoot">
+				View the rest of the comments here.
+			</button>
+		</span>
+	{{else}}
+		{{#if post.status != "closed"}}
+			{{#if !currentUser}}
+				<button type="button" class="btn btn-ghost-primary" on-click="login">
+					Login to comment
+				</button>
+			{{else}}
+				<div class="comment-form center-block">
+					<previewEditor class="comment-editor" previewClass="comment-editor-preview" input="{{rootReply}}" 
+						atTowns="{{post.townKeys}}" atUsers="{{atUsers}}">
+					</previewEditor>
+					<div class="comment-btns text-right">
+						<button type="button" class="btn btn-sm btn-primary {{#if saving}}disabled{{/if}}" on-click="rootReply">
+							<span class="fa {{#if saving}}fa-spin fa-spinner {{else}}fa-comment{{/if}}"></span>	 Comment
+						</button>
+					</div>
+				</div>
+			{{/if}}
+		{{/if}}
+	{{/if}}
+</div>
+<alert error="{{error}}"></alert>
+{{#if commentContext || comments.length > 0}}
+	<div class="text-right">
+		{{#loading}}
+			<span class="fa fa-spin fa-spinner"></span>
+		{{/loading}}
+		{{#if sort ==="old"}}
+			<button type="button" class="btn btn-link" on-click="setSort">
+				Oldest First <span class="fa fa-caret-down"></span>
+			</button>
+		{{else}}
+			<button type="button" class="btn btn-link" on-click="setSort">
+				Newest First <span class="fa fa-caret-up"></span>
+			</button>
+		{{/if}}
+	</div>
+{{/if}}
+{{#if commentContext}}
+	<div class="comments">
+		{{#with commentContext}}
+			{{>commentTree}}
+		{{/with}}
+	</div>
+{{elseif comments.length > 0}}
+	<div class="comments">
+		{{#comments:i}}
+			{{>commentTree}}
+		{{/comments}}
+	</div>
+	{{#if more}}
+		<button type="button" class="btn btn-sm btn-ghost-primary" on-click="loadNext:{{comments.length}}">
+			Load more...
+		</button>
+	{{/if}}
+{{/if}}
+
+{{#partial commentTree}}
+	{{#if newComment == .key}}
+		<div id="{{.key}}">
+		</div>
+	{{else}}
+		<div id="{{.key}}" class="comment {{#alternate(@keypath)}}alternate{{/}}" intro="newComment">
+			<div class="comment-header">
+				<button type="button" class="btn btn-link pull-right" on-click="toggleCollapsed" 
+					title="{{#if .collapsed}}expand{{else}}collapse{{/if}} comment">
+					{{#if .collapsed}}<span class="fa fa-plus"></span>{{else}}<span class="fa fa-minus"></span>{{/if}}
+				</button>
+				<span class="profile-btn tooltipped tooltipped-w" aria-label="View profile">
+					<userIcon user="{{userLoad[.username]}}" link="true"></userIcon>
+				</span> 
+				{{#if .username == post.creator}}
+					<span class="hidden-xs submitter label label-primary tooltipped tooltipped-n" aria-label="Post Submitter">
+						<strong>{{userLoad[.username].name || userLoad[.username].username}}</strong>
+					</span>
+				{{else}}
+					<strong class="hidden-xs">{{userLoad[.username].name}}</strong>
+				{{/if}}
+				<span class="tooltipped tooltipped-n" aria-label="{{formatDate(.updated)}}">{{since(.updated)}} ago</span> 
+				<a href="/post/{{post.key}}/comment/{{.key}}?sort={{sort}}#comments" class="comment-link tooltipped tooltipped-n" 
+					aria-label="Permalink to comment">
+					<span class="fa fa-link"></span>
+				</a>
+				{{#if commentContext.key == .key}}
+					<a href="/post/{{post.key}}{{#if .parent !== post.key}}/comment/{{.parent}}{{/if}}?sort={{sort}}#comments" 
+						class="comment-link tooltipped tooltipped-n" aria-label="Up to parent">
+					<span class="fa fa-level-up"></span>
+					</a>
+				{{/if}}
+			</div>
+
+			{{#if !.collapsed}}
+				{{{processComment(.comment)}}}
+
+				{{#if replyTo === .key}}
+					{{>replyEditor}}
+				{{else}}
+					{{#if post.status != "closed"}}
+						<div class="comment-footer">
+							<button type="button" class="btn btn-link" on-click="showReply">Reply</button>
+						</div>
+					{{/if}}
+				{{/if}}
+				{{#if .hasChildren}}
+					<div class="comment {{#alternate(@keypath, 1)}}alternate{{/}}">
+						<button type="button" class="btn btn-sm btn-ghost-primary" on-click="loadMore">
+							Load more...
+						</button>
+					</div>
+				{{else}}
+					{{#.children:i}}
+					{{>commentTree}}
+					{{/children}}
+					{{#if .more}}
+						<button type="button" class="btn btn-sm btn-ghost-primary" on-click="loadNext:{{.children.length}}">
+							Load more...
+						</button>
+					{{/if}}
+				{{/if}}
+			{{/if}}
+		</div>
+	{{/if}}
+{{/partial}}
+
+{{#partial replyEditor}}
+<div class="comment-form">
+	<alert error="{{replyError}}"></alert>
+	<previewEditor id="replyEditor" class="comment-editor" previewClass="comment-editor-preview" input="{{reply}}" 
+		atTowns="{{post.townKeys}}" atUsers="{{atUsers}}" key="{{.key}}">
+	</previewEditor>
+	<div class="comment-btns text-right">
+		<button type="button" class="btn btn-sm btn-default {{#if saving}}disabled{{/if}}" on-click="cancelReply">
+			<span class="fa {{#if saving}}fa-spin fa-spinner {{else}}fa-remove{{/if}}"></span>   Cancel
+		</button>
+
+		<button type="button" class="btn btn-sm btn-primary {{#if saving}}disabled{{/if}}" on-click="reply">
+			<span class="fa {{#if saving}}fa-spin fa-spinner {{else}}fa-reply{{/if}}"></span>   Reply
+		</button>
+	</div>
+</div>
+
+{{/partial}}
+
+<style>
+	@import "components.less";
+
+	@comment-form-width: 600px;
+	@comment-form-height: 200px;
+
+	.comment-form {
+		position: relative;
+		max-width: @comment-form-width;
+		margin-bottom: 10px;
+	}
+
+	.comment-editor {
+		min-height: @comment-form-height;
+	}
+
+	.comment-editor-preview {
+		min-height: 170px;
+	}
+
+	.comment-btns {
+		margin-top: 10px;
+	}
+
+
+	#commentsScroll {
+			position: absolute;
+			margin-top: -1 * (@navbar-height + @line-height-computed);
+	}
+
+	@commentMargin: 10px;
+
+	.comments {
+		//offset initial margin nesting on root comments
+		margin-left: -1 * @commentMargin; 
+		margin-right: -1 * @commentMargin; 
+	}
+
+	.comment-header {
+		padding-bottom: 5px;
+	}
+
+	.comment {
+		padding: 10px;
+		margin: @commentMargin;
+		background-color: @panel-bg;
+		border: 1px solid @panel-default-border;
+		border-radius: @border-radius-base;
+
+		> .comment {
+			padding: 2px;
+			margin-left: 2px;
+			margin-right: 2px;
+			
+			@media (min-width: @screen-sm-min) { 
+				padding: 10px;
+				margin-left: 10px;
+				margin-right: 10px;
+			}
+
+			@media (min-width: @screen-md-min) { 
+				padding: 10px;
+				margin-left: 10px;
+				margin-right: 10px;
+			}
+
+			@media (min-width: @screen-lg-min) { 
+				padding: 10px;
+				margin-left: 30px;
+				margin-right: 10px;
+			}
+		}
+		&.alternate {
+			background-color: @background-color;
+		}
+	}
+
+	.comment-link {
+		margin-left: 10px;
+	}
+
+	.submitter {
+		font-size: inherit; //use standard font size instead of regular label font size
+	}
+
+</style>
+
+<script>
+import Comments from "./js/comments";
+
+component.exports = Comments;
+</script>

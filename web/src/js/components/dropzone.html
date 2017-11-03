@@ -1,0 +1,132 @@
+<div class="dropzone {{class}}" decorator="dropzone">
+	{{#if mode==="dragover"}}
+		<div class="drop-overlay" intro="scale" outro="scale">
+			<div class="drop-text-container">
+				<p class="text-center drop-text">{{ dropText || 'Drop here'}}</p>
+			</div>
+		</div>
+	{{/if}}
+	{{yield}}
+</div>
+
+<style>
+	@import "components.less";
+
+	.dropzone {
+		position: relative;
+		//z-index: @zindex-modal+1;
+		height: 100%;
+		width: 100%;
+	}
+
+	.drop-overlay {
+		position: absolute;
+		z-index: @zindex-modal-background - 2;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		left: 0;
+		opacity: .9;
+		display: block;
+
+		background-color: #fff;
+		border: 5px dashed #555;
+		border-radius: @border-radius-large;
+	}
+	
+	.drop-text-container {
+		width: 100%;
+		height: 100%;
+	}
+
+	.drop-text {
+		font-size: 4em;
+		font-weight: 700;
+		.vertical-align();
+	}
+</style>
+
+<script>
+import {scale} from "../lib/ractive-transition-scale";
+
+var timer;
+component.exports = {
+	data: {
+		mode: "none",
+		useParent: false,
+	},
+	decorators: {
+		dropzone: function (srcNode) {
+			var r = this;
+			r.transitions.scale = scale;
+			var node;
+
+			if(r.get("useParent")) {
+				node = srcNode.parentNode;	
+			} else {
+				node = srcNode;
+			}
+
+			var dragenter = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+			};
+			node.addEventListener("dragenter", dragenter, false);
+
+			var dragover = function(e) {
+					//TODO: Figure out how to only show dropzone on files and not anything else
+					r.set("mode", "dragover");	
+					e.stopPropagation();
+					e.preventDefault();
+					window.clearTimeout(timer);
+			};
+			node.addEventListener("dragover", dragover, false);
+
+			var drop = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+
+				r.set("mode", "drop");	
+				r.set("dataTransfer", e.dataTransfer);
+				var files = e.dataTransfer.files;
+				var goodFiles = [];
+				for(var i=0; i < files.length; i++) {
+					if(files[i].size > 0) {
+						goodFiles.push(files[i]);
+					} 
+				}
+
+				if(goodFiles.length > 0) {
+					r.set("files", goodFiles);
+					r.fire("drop", goodFiles);
+				}
+
+			};
+			node.addEventListener("drop", drop, false);			
+
+			var dragleave = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+        if (timer) {
+            window.clearTimeout(timer);
+        } 
+        timer = window.setTimeout(function() {
+					r.set("mode", "none");
+					}, 200);
+			};
+			node.addEventListener("dragleave", dragleave, false);
+
+			return {
+				teardown: function () {
+					node.removeEventListener("dragenter", dragenter, false);
+					node.removeEventListener("dragover", dragover, false);
+					node.removeEventListener("drop", drop, false);			
+					node.removeEventListener("dragleave", dragleave, false);
+				}
+			};
+		},
+	},
+
+};
+</script>
+

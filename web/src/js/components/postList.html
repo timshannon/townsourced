@@ -1,0 +1,254 @@
+<link rel="ractive" href="./spinner.html" name="spinner">
+<link rel="ractive" href="./alert.html" name="alert">
+<link rel="ractive" href="./image.html" name="image">
+<link rel="ractive" href="./categorySelect.html" name="categorySelect">
+<link rel="ractive" href="./tsIcon.html" name="tsIcon">
+
+<div class="container">
+	<alert error="{{postsErr}}"></alert>
+</div>
+<categorySelect townKeys="{{searchOptions.towns}}" towns="{{towns}}" town="{{town}}"
+	selected="{{searchOptions.category}}">
+	{{#if !loading && (!posts || posts.length === 0)}}
+			<h4>No posts found</h4>
+	{{/if}}
+</categorySelect>
+
+<div class="{{class}} post-list">
+{{#if !redraw}}
+	{{#posts:i}}
+		<a href="/post/{{key}}{{#if town}}?town={{town.key}}{{/if}}" 
+			class="no-select post {{#if isModerated(this)}}moderated{{elseif isModeratedAny(this)}}moderated-other{{/if}}" 
+			decorator="columnItem" intro="load"	style="top: {{pos.top + (colOffset[pos.col] || 0)}}px; left: {{pos.left}}px;">
+			{{#if .featuredImage}}
+				<image class="post-img category-{{.category}}" key="{{.featuredImage}}" thumb="true">
+				</image>
+			{{else}}
+				<div class="no-image">
+					<img class="post-img category-{{.category}}" src="/images/placeholder.png">
+					<tsIcon></tsIcon>
+				</div>
+			{{/if}}
+			<p class="post-title">{{.title}}</p>
+			<div class="post-overlay">
+				<div class="post-img">
+					{{#if isModerated(this)}}
+						<span class="mod-icon fa fa-gavel text-danger"></span>
+					{{elseif isModeratedAny(this)}}
+						<span class="mod-icon fa fa-gavel text-warning"></span>
+					{{/if}}
+
+
+					<div class="post-time">
+						Posted {{since(this.published)}} ago
+					</div>
+					{{#if this.prices}}
+						<div class="post-price">
+							{{price(this)}}
+						</div>
+					{{/if}}
+				</div>
+
+				{{#if user}}
+					<div class="dog-ear dog-ear-{{.category}}">
+						<div></div>
+					</div>
+				{{/if}}
+			</div>
+			{{#if user}}
+				<a class="dog-ear-link" title="{{#saved(this)}}Un{{/}}Save Post" href="#" on-click="toggleSave">
+					<div class="dog-ear dog-ear-{{.category}} 	
+						{{#saved(this)}}dog-ear-saved{{/this}}">
+						<div></div>
+					</div>
+				</a>
+			{{/if}}
+		</a>
+	{{/posts}}
+{{/if}}
+</div>
+
+{{#if loading}}
+	<div class="center-block loading-spinner">
+		<spinner size="lg"></spinner> 
+	</div>
+	<p class="loading-msg text-center">Loading ...</p>
+{{/if}}
+
+
+<style>
+	@import "components.less";
+	@post-width: 250px;
+
+	@border-size: 1px;
+	@border: @border-size solid darken(@panel-default-border, 10%);
+	@post-inner-border-radius: 2px;
+	
+	.post-list {
+		position: relative;
+		margin: 0px auto 75px;
+	}
+
+	.post {
+		position: absolute;
+		display: inline-block;
+		color: @text-color;
+		text-decoration: none;
+		margin: 0px;	
+		border: @border;
+		border-radius: @border-radius-base;
+		background-color: @panel-bg;
+		width: @post-width;
+	}
+
+	.post-title {
+		text-align: center;
+		padding: 5px;
+		margin: 0px;
+		font-size: 16px; 
+	}
+
+	.moderated {
+		border-color: @brand-danger;
+		> .post-title {
+			background-color: @brand-danger;
+			color: #fff;
+		}
+	}
+
+	.moderated-other {
+		border-color: @brand-warning;
+		> .post-title {
+			background-color: @brand-warning;
+			color: #fff;
+		}
+	}
+
+	@image-size: @post-width - (@border-size * 2);// account for border
+	.post-img {
+		position: relative;
+		border-radius: @post-inner-border-radius @post-inner-border-radius 0px 0px;
+		width: @image-size; 
+		height: @image-size;
+	}
+
+	.no-image {
+		position: relative;
+		border-radius: @post-inner-border-radius @post-inner-border-radius 0px 0px;
+	}
+
+	.no-image-placeholder {
+		.vertical-align(absolute);
+		left: 0;
+		right: 0;
+		margin: 0 auto;
+	}
+
+	.post-overlay {
+		position: absolute;
+		left: 0px;
+		right: 0px;
+		top: 0px;
+		bottom: 0px;
+		border-radius: @post-inner-border-radius;
+		opacity: 0;
+
+		&:hover {
+			opacity: 1;
+			background-color: rgba(0, 0, 0, .1);	
+		}
+		> .dog-ear {
+			opacity: 1;
+		}
+	}
+
+	.mod-icon {
+		.vertical-align(absolute);
+		width: 100%;
+		text-align: center;
+		font-size: 8em;
+		z-index: 1;
+		opacity: .75;
+	}
+
+	@time-size: 11px;
+	@category-border-size: 4px;
+
+
+	.post-price {
+		position: absolute;
+		max-width: 100px;
+		bottom: 0;
+		margin-bottom: @category-border-size;
+		right:0;
+		color: #fff;
+		font-size: @time-size;
+		padding: 5px;
+		background-color: fadeout(@brand-success, 15%);	
+		border-top-left-radius: @border-radius-base;
+		white-space: nowrap;
+		overflow-x: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.post-time {
+		position: absolute;
+		max-width: @post-width - 5px; // leave a little room for border curve
+		max-height: 50px;
+		bottom: 0;
+		margin-bottom: @category-border-size;
+		left:0;
+		color: #fff;
+		font-size: @time-size;
+		padding: 5px;
+		background-color: rgba(0, 0, 0, .5);	
+		border-top-right-radius: @border-radius-base;
+	}
+
+	.post-style(@color) {
+		border-radius-bottom: 0px;
+		border-bottom: @category-border-size solid @color;
+	}
+
+	.category-notice {
+		.post-style(@category-notice);
+	}
+
+	.category-buysell {
+		.post-style(@category-buysell);
+	}
+
+
+	.category-event {
+		.post-style(@category-event);
+	}
+
+	.category-jobs {
+		.post-style(@category-jobs);
+	}
+
+	.category-volunteer {
+		.post-style(@category-volunteer);
+	}
+
+	.category-housing {
+		.post-style(@category-housing);
+	}
+
+	.loading-spinner {
+		position: relative;	
+		width: 64px;
+		height: 64px;
+	}
+
+	.loading-msg {
+		font-size: 1.5em;
+	}	
+
+	</style>
+
+<script>
+import PostList from "./js/postList";
+
+component.exports = PostList;
+</script>

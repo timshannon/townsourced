@@ -1,0 +1,250 @@
+<li role="presentation" class="dropdown {{buttonClass}}" decorator="dropdown">
+	<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+		Towns <span class="caret"></span>
+	</a>
+
+	<ul class="dropdown-menu menu-root {{menuClass}}">
+		<li>
+			<ul class="select-menu dropdown-segment">
+				<li>
+					<form class="form-filter" on-submit="townSearch">
+						<div class="form-group has-feedback menu-town-filter">
+							<input id="filterNode" type="text" class="form-control" value="{{filter}}" 
+								placeholder="Type a town name" autocomplete="off">
+							{{#if filter && visible.length === 0}}
+								<a href="/town/?search={{encodeURIComponent(filter)}}" class="form-control-feedback" 
+									title="Search for this town" intro="fade" outro="fade">
+									<span class="fa fa-search"></span>
+								</a>
+							{{/if}}
+						</div>
+					</form>
+				</li>
+				<li role="separator" class="divider"></li>
+			</ul>
+			<ul class="select-menu dropdown-segment menu-town-list">
+				{{#if showMore || filter !== "" || townsView.length < 11}}
+					{{>fullList}}
+				{{else}}
+					{{>limitedList}}
+					<li>
+						<a class="more-link" href="#" on-click="showMore">
+							{{townsView.length - 9}} More...
+						</a>
+					</li>	
+				{{/if}}
+			</ul>
+			<ul class="select-menu dropdown-segment">
+				{{yield}}
+			</ul>
+		</li>
+	</ul>
+</li>
+
+{{#partial fullList}}
+	{{#townsView:i}}
+		{{#if filtered(this)}}
+			{{>townLink}}
+		{{/if}}
+	{{/townsView}}
+{{/partial}}
+
+{{#partial limitedList}}
+	{{#townsView:i}}
+		{{#if i < 9}}
+			{{>townLink}}
+		{{/if}}
+	{{/townsView}}
+{{/partial}}
+
+{{#partial townLink}}
+	{{#if selected.indexOf(.key) !== -1}}
+		<li class="active">
+			<a href="#" on-click="deselect">
+				{{#if links}}
+					<span class="haslink town-name overflow-title">{{.name || .key}} 
+						<a href="/town/{{.key}}" class="town-link" title="visit town" on-click="visit">
+							<span class="fa fa-external-link"></span>
+						</a>
+					</span>
+				{{else}}
+					<span class="town-name overflow-title">{{.name || .key}}</span>
+				{{/if}}
+			</a>
+		</li>	
+	{{else}}
+		<li>
+			<a href="#" on-click="select">
+				{{#if links}}
+					<span class="haslink town-name overflow-title">{{.name || .key}}
+						<a href="/town/{{.key}}" class="town-link" title="visit town" on-click="visit">
+							<span class="fa fa-external-link"></span>
+						</a>
+					</span>
+				{{else}}
+					<span class="town-name overflow-title">{{.name || .key}}</span>
+				{{/if}}
+			</a>
+		</li>	
+	{{/if}}
+{{/partial}}
+
+<style>
+	@import "components.less";
+	
+	@filter-width: 270px;
+	@filter-margin: 10px;
+
+	.menu-root {
+		padding-top: 10px;
+		max-width: @filter-width + (@filter-margin * 2);
+	}
+
+	.menu-town-list {
+		max-height: 350px;
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+
+	.form-filter .has-feedback .form-control-feedback {
+		right: 0;
+	}
+
+	.menu-town-filter {
+		margin-left: @filter-margin;
+		margin-right: @filter-margin;
+		width: @filter-width;
+	}
+
+	.more-link {
+		.button-ghost-variant(@brand-primary, #fff); 
+		background-color: @btn-default-bg;
+	}
+
+	.town-name {
+		position: relative;
+		display: inline-block;
+		vertical-align: top;
+		width: 100%;
+		padding-right: 20px;
+		&.haslink {
+			padding-right: 40px;
+		}
+	}
+
+	.town-link {
+		position: absolute;
+		right: 15px;
+		color: inherit;
+	}
+
+</style>
+
+<script>
+import "../lib/bootstrap/dropdown";
+import fade from "../lib/ractive-transitions-fade";
+
+component.exports = {
+	transitions: {
+		fade: fade,
+	},
+	data: function() {
+			return {
+				filter: "",
+				townsView: [],
+				selected: [],
+				towns: {},
+				showMore: false,
+				links: false,
+				filtered: function(town) {
+					return filtered(town, this.get("filter"));
+				},
+				visible: [],
+			};
+	},
+	decorators: {
+		"dropdown": function(node) {
+			var r = this;
+			$(node).on("shown.bs.dropdown", function() {
+				r.fire("reset");
+			});
+			return {
+				teardown: function() {}
+			};
+		},
+	},
+	onrender: function() {
+		var r = this;
+	
+		r.on({
+			"select": function(event) {
+				event.original.preventDefault();
+				event.original.stopPropagation();
+				r.push("selected", event.context.key);
+			},
+			"deselect": function(event) {
+				event.original.preventDefault();
+				event.original.stopPropagation();
+
+				var i = r.get("selected").indexOf(event.context.key);
+				if(i !== -1) {
+					r.splice("selected", i, 1);
+				}
+			},
+			"showMore": function(event) {
+				event.original.preventDefault();
+				event.original.stopPropagation();
+				r.set("showMore", true);
+			},
+			"reset": function() {
+				r.set("showMore", false);
+				r.set("filter", "");
+				$(r.nodes.filterNode).focus();
+			},
+			"visit": function(event) {
+				event.original.stopPropagation();
+			},
+			"townSearch": function(event) {
+					event.original.preventDefault();
+
+					if (r.get("filter") && r.get("visible.length") === 0) {
+						window.location = "/town/?search=" + encodeURIComponent(r.get("filter"));	
+					}
+			}
+		});
+
+		var delay;
+
+		r.observe({
+			"towns": function(newValue) {
+				if(!newValue) {
+					return;
+				}
+				var townsView = [];
+				$.each(newValue, function(k, v) {
+					v.name = (v.name || v.key);
+					townsView.push(v);
+				});
+				r.set("townsView", townsView); 
+			},
+			"filter": function(newVal) {
+				var visible = r.get("townsView").slice(0).filter(function(town) {
+					return filtered(town, r.get("filter"));
+				});
+
+				r.set("visible", visible);
+			},
+		});
+	} //onrender
+};
+
+function filtered(town, filter) {
+		if(!town || !town.key) {
+			return false;
+		}
+
+		town.name = town.name || town.key;
+		return (town.name && town.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1) 
+	}
+
+</script>

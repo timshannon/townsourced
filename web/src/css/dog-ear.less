@@ -1,0 +1,55 @@
+.dog-ear-link {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: @dog-ear-size / 2;
+	height: @dog-ear-size / 2;
+
+	&:hover {
+		> .dog-ear {
+			opacity: 1;
+			.dog-ear(@dog-ear-size / 2);
+		}
+
+		> .dog-ear-saved {
+			.dog-ear(@dog-ear-size);
+		}
+	}
+}
+
+.dog-ear {
+	opacity: 0;
+	.dog-ear(@dog-ear-size / 4);
+	> div {
+		transition: all .5s ease;
+	}
+}
+
+.dog-ear-saved {
+	opacity: 1;
+	.dog-ear(@dog-ear-size);
+}
+
+.dog-ear-notice {
+	background-color: @category-notice;
+}
+
+.dog-ear-buysell {
+	background-color: @category-buysell;
+}
+
+.dog-ear-event {
+	background-color: @category-event;
+}
+
+.dog-ear-jobs {
+	background-color: @category-jobs;
+}
+
+.dog-ear-volunteer {
+	background-color: @category-volunteer;
+}
+
+.dog-ear-housing {
+	background-color: @category-housing;
+}

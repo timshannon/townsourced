@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+	<title>Logging you in ...</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+	<style>
+		.spinner-container {
+			width: 64px;
+			height: 64px;
+		}
+	</style>
+</head>
+<body>
+	<nav class="navbar navbar-default navbar-static-top" role="navigation"> 
+		<div class="container">
+			<div class="navbar-header navbar-ts-brand">
+				<a class="navbar-brand" href="/" title="home">
+					<img src="/images/ts_small.png"><span class="ts-title">townsourced</span>
+				</a>  
+			</div>
+		</div>
+	</nav> 
+
+	<div id="main">
+	</div>
+
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+
+	
+<script id="tMain" type="text/ractive">
+<div class="container">
+{{#if !usernameNeeded}}
+<div class="jumbotron">
+	{{#if !error}}
+		<h2 class="text-center">Please wait while we log you in ...</h2>
+		<div class="center-block spinner-container">
+			<spinner size="lg"></spinner> 
+		</div>
+	{{else}}
+		<h2><span class="fa fa-exclamation-triangle text-danger"></span>  
+			{{#if error.message}}
+				{{error.message}}
+			{{else}}
+				Sorry, something went wrong when trying to log you in{{#if provider}} with {{provider}}{{/if}}.
+			{{/if}}
+			</h2>
+		<a href="{{returnURL}}" class="btn btn-primary"><span class="fa fa-arrow-circle-left"></span>  Return</a>
+	{{/if}}
+</div>
+{{else}}
+	<div class="row">
+		<div class="col-sm-2">
+			<span class="hidden-xs watermark text-{{provider}} fa fa-{{provider}}"></span>
+		</div>
+		<div class="col-sm-8">
+		<div class="panel panel-default center-block">
+			<div class="panel-heading {{provider}}-background thirdparty">
+				<h2 class="panel-title">Sign Up with {{provider}}<span class="pull-right fa fa-{{provider}}"></span></h2>
+			</div>
+			<form class="form-horizontal">
+				<div class="panel-body">
+					<div class="form-group {{#if usernameErr}}has-error has-feedback{{/if}}">
+						<label class="col-sm-2 control-label" for="username">Username</label>	
+						<div class="col-sm-10 {{#usernameErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{usernameErr}}">
+							<input class="form-control" id="username" name="username" on-blur="usernameBlur"
+								placeholder="Enter a username" value="{{username}}">
+							{{#if usernameErr}}
+								<span class="form-control-feedback fa fa-times">
+								</span>
+							{{/if}}
+						</div>
+					</div>
+					<div class="form-group {{#if emailErr}}has-error has-feedback{{/if}}">
+						<label class="col-sm-2 control-label" for="email">Email</label>	
+						<div class="col-sm-10 {{#emailErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{emailErr}}">
+							<input class="form-control" id="email" name="email" on-blur="emailBlur"
+								placeholder="Enter an email address" value="{{email}}">
+							{{#if emailErr}}
+								<span class="form-control-feedback fa fa-times">
+								</span>
+							{{/if}}
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<a href="{{returnURL}}" tabindex="-1" class="btn btn-default"><span class="fa fa-times"></span>  Cancel</a>
+					<button type="submit" class="btn btn-primary" on-click="continue">Continue</button>
+				</div>
+			</form>
+		</div>
+		</div>
+	</div>
+	{{#if emailErr}}
+	<div class="row">
+		<div class="col-sm-offset-3 col-sm-6">
+			<div class="alert alert-warning"><span class="fa fa-info-circle"></span>  You can	associate your {{provider}} account to your 
+				Townsourced account from your <strong>User Profile Page</strong>.</div>
+		</div>
+	</div>
+	{{/if}}
+{{/if}}
+</div>
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/3rdparty.js"></script>
+</body>
+</html>

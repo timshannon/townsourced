@@ -1,0 +1,10 @@
+[Unit]
+Description=townsourced
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/townsourced -dir /usr/local/share/townsourced/ -demo
+Restart=on-abnormal
+
+[Install]
+WantedBy=multi-user.target

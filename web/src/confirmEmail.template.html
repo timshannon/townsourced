@@ -1,0 +1,51 @@
+[[define "CONFIRMEMAIL"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+	<title>Confirm Email - townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+
+	<style type="text/less">
+		@import "css/page.less";
+
+	</style>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-static-top" role="navigation"> 
+	<div class="container">
+		<div class="navbar-header navbar-ts-brand">
+			<a class="navbar-brand" href="/" title="home">
+				<img src="/images/ts_small.png"><span class="ts-title">townsourced</span>
+			</a>  
+		</div>
+	</div>
+</nav> 
+
+<div class="container">
+	<div class="row">
+		<div class="col-sm-2">
+		</div>
+		<div class="text-center col-sm-8">
+			[[if .]]
+				<div class="alert alert-success">
+					</span>Email address confirmed! <a href="/" class="alert-link">Continue on to townsourced</a>.
+				</div>
+			[[else]]
+				<div class="alert alert-danger">
+					<span class="fa fa-warning"></span> Sorry, this URL is either invalid, or has expired.  You may need to request
+					a new email confirmation.
+				</div>
+			[[end]]
+		</div> <!-- col -->
+	</div> <!-- row -->
+</div> <!-- container -->
+
+</body>
+</html>
+[[end]]

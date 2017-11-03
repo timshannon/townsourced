@@ -1,0 +1,514 @@
+[[define "POST"]]
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="[[.SchemaType]]">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+	<meta name="description" content="[[.Description]]">
+
+	<!--opengraph tags-->
+	<meta property="og:type"               content="website" />
+	<meta property="og:title"              content="[[.Post.Title]]" />
+	<meta property="og:site_name"          content="townsourced" />
+	[[range $property, $content := .OpenGraph]]
+		<meta property="[[$property]]" content="[[$content]]" />
+	[[end]]
+	[[range $property, $content := .Schema]]
+		<meta itemprop="[[$property]]" content="[[$content]]" />
+	[[end]]
+
+	<link rel="canonical" href="[[.URL]]"/>
+
+	<title>[[.Post.Title]] - Post - townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+
+	<style type="text/less">
+		@import "css/page.less";
+
+		.reason-form {
+			margin-left: 20px;
+		}
+
+		.hr-style(@color) {
+			border-top: 4px solid @color;
+		}
+
+		.hr-notice {
+			.hr-style(@category-notice);
+		}
+
+		.hr-buysell {
+			.hr-style(@category-buysell);
+		}
+
+		.hr-event {
+			.hr-style(@category-event);
+		}
+
+		.hr-jobs {
+			.hr-style(@category-jobs);
+		}
+
+		.hr-volunteer {
+			.hr-style(@category-volunteer);
+		}
+
+		.hr-housing {
+			.hr-style(@category-housing);
+		}
+
+		.post-body {
+			position: relative;
+		}
+
+		.post-footer {
+			font-size: 1.2em;
+			margin-bottom: 10px;
+		}
+
+		.dog-ear-hint {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 0px;
+			height: 100px;
+			opacity: 0;
+		
+			opacity: 0;
+
+			&:hover {
+				opacity: 1;
+				background-color: transparent;
+			}
+			> .dog-ear {
+				opacity: 1;
+			}
+		}
+
+		.post-category {
+			position: absolute;
+			top: 5px;
+			z-index: 1;
+			right: @dog-ear-size + 5px;
+			padding: 5px;
+			font-size: 1.4em;
+		}
+
+		#title {
+			margin-top: 0px;
+			margin-right: 150px;
+		}
+	
+		.report-btn {
+			margin-left: 15px;
+		}
+
+		#closeLink {
+			.menu-color(@brand-warning);
+		}
+
+		.share-btns {
+			.center-block();
+
+			@media (min-width: @screen-lg-min)  {
+				width: 80%;
+			}
+
+			@media (max-width: @screen-xs-max) { 
+				width: 80%;
+			 }
+		}
+
+		.user-dropdown {
+			display: inline-block;
+			padding-right: 10px;
+			> a {
+				color: @gray-light;
+				&:hover,
+				&:focus {
+					color: @gray;
+					text-decoration: none;
+				}
+			}
+		}
+	</style>
+</head>
+<body>
+	<noscript>
+		<div class="js-warning"></div>
+	</noscript>
+
+	<noscript>
+		<h1>
+			[[.Post.Title]]
+		</h1>
+		<p>
+			[[.Description]]
+		</p>
+	</noscript>
+
+<script id="tMain" type="text/ractive">
+{{>modals}}
+<page currentUser="{{currentUser}}" class="container" loaded="{{loaded}}">
+	<alert error="{{error}}"></alert>
+	{{#post}}
+		<div class="panel panel-default">
+			<div class="post-body panel-body">
+				<div class="post-category no-select text-{{.category}}" title="Category">
+					{{categories[.category]}}					
+				</div>
+				{{#if currentUser}}
+					<div class="dog-ear-hint">
+						<div class="dog-ear dog-ear-{{.category}}">
+							<div></div>
+						</div>
+					</div>
+					<a class="dog-ear-link" title="{{#saved(this)}}Un{{/}}Save Post" href="#" on-click="toggleSave">
+						<div class="dog-ear dog-ear-{{.category}} 	
+							{{#saved(this)}}dog-ear-saved{{/this}}">
+							<div></div>
+						</div>
+					</a>
+				{{/if}}
+				{{#if .status == "closed"}}
+					<h1 id="title" class="text-muted"><span class="tooltipped tooltipped-s" aria-label="Post is no longer active">
+						<span class="fa fa-ban"></span></span>  {{.title}}</h1>
+				{{elseif isModerated}}
+					<h1 id="title" class="text-danger"><span class="tooltipped tooltipped-s" 
+						aria-label="This post is currently moderated">
+						<span class="fa fa-gavel"></span></span>  {{.title}}</h1>
+				{{else}}
+					<h1 id="title">{{.title}}</h1>
+				{{/if}}
+				<hr class="hr-{{.category}}">
+				<div id="post">
+					<post post="{{post}}"></post>
+				</div>
+				<hr class="hr-{{.category}}">
+
+				{{#if isCreator}}
+					<div class="report-btn pull-right btn-group">
+						<button type="button" class="btn btn-primary tooltipped tooltipped-n dropdown-toggle" 
+							aria-label="Post Settings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="fa fa-gear"></span>  <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu select-menu">
+							{{#if post.allowComments}}
+								<li>
+									<a href="#" on-click="setNotifyOnComment">
+										<span class="fa fa-{{#if .notifyOnComment}}check-square-o{{else}}square-o{{/if}}"></span>  Notify on new comments
+									</a>
+								</li>
+							{{/if}}
+							{{#if .status == "published"}}
+								{{#if editCountDown}}
+									<li>
+										<a href="#" on-click="unpublish">
+											<span class="fa fa-pencil-square-o"></span>  Edit Post  <small>({{editCountDown}}s remain)</small>
+										</a>
+									</li>
+								{{else}}
+									<li class="disabled tooltipped tooltipped-w" aria-label="Can only edit within {{editDuration / 1000}} seconds of publishing">
+										<a href="#" class="disabled" on-click="disabled">
+											<span class="fa fa-ban"></span>  Edit Post
+										</a>
+									</li>
+								{{/if}}
+								<li>
+									<a id="closeLink" href="#" on-click="close">
+										<span class="fa fa-remove"></span>  Close Post
+									</a>
+								</li>
+							{{else}}
+								<li>
+									<a href="#" on-click="reopen">
+										Re-Open Post
+									</a>
+								</li>
+							{{/if}}
+						</ul>
+					</div>
+				{{elseif canModerate}}
+					{{#if isModerated}}
+						<button type="button" class="report-btn pull-right btn btn-default" on-click="removeModeration">
+							<span class="fa fa-remove"></span> Remove Moderation
+						</button>
+					{{else}}
+						<button type="button" class="report-btn pull-right btn btn-warning tooltipped tooltipped-n" 
+							aria-label="Moderate Post" on-click="moderateModal">
+							<span class="fa fa-gavel"></span>
+						</button>
+					{{/if}}
+				{{else}}
+					<button type="button" class="report-btn pull-right btn btn-warning tooltipped tooltipped-n" 
+						aria-label="Report Post to Moderators" on-click="reportModal">
+						<span class="fa fa-exclamation-circle"></span>
+					</button>
+				{{/if}}
+
+				<div class="post-footer">
+					<div class="user-dropdown dropdown">
+						<a href="#" class="profile-btn dropdown-toggle" 
+							aria-label="Submitter Information" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<userIcon user="{{userLoad[.creator]}}" link="false"></userIcon>  <span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu select-menu">
+							<li>
+								<a href="/user/{{.creator}}">
+									<span class="fa fa-user"></span>  View Profile
+								</a>
+							</li>
+							{{#if !isCreator}}
+								<li>
+									<a href="#" on-click="contactPosterModal">
+										<span class="fa fa-envelope"></span>  Contact
+									</a>
+								</li>
+							{{/if}}
+						</ul>
+					</div>
+					<strong>{{listName(userLoad[.creator])}}</strong> posted <span class="tooltipped tooltipped-n" 
+						aria-label="{{formatDate(.published)}}">{{since(.published)}} ago</span> to {{>townList}}
+				</div>
+
+				<!--sharing-->
+				<div class="row">
+					<div class="col-sm-5">
+						<hr>
+					</div>
+					<div class="col-sm-2">
+						<h4 class="text-center hidden-xs">Share <span class="hidden-sm">this post</span></h4>
+					</div>
+					<div class="col-sm-5">
+						<hr class="hidden-xs">
+					</div>
+				</div>
+
+				<div class="share-btns">
+					<div class="row">
+						<div class="col-sm-3">
+							<button class="btn btn-block btn-townsourced" title="Share post with another townsourced user"
+								on-click="showSharePost">
+								<span class="hidden-sm fa fa-send brand-icon"></span> Townsourced</button>
+						</div>
+
+						<div class="col-sm-3">
+							<a class="btn btn-block btn-facebook" href="{{facebookLink('[[index .OpenGraph "fb:app_id" ]]')}}" 
+								on-click="shareWindow:{{facebookLink('[[index .OpenGraph "fb:app_id" ]]')}}">
+								<span class="fa fa-facebook brand-icon"></span> Facebook</a>
+						</div>
+						<div class="col-sm-3">
+							<a class="btn btn-block btn-google" href="{{googleLink()}}"	on-click="shareWindow:{{googleLink()}}">
+								<span class="fa fa-google brand-icon"></span> Google
+							</a>
+						</div>
+						<div class="col-sm-3">
+							<a class="btn btn-block btn-twitter" href="{{twitterLink()}}"	
+								on-click="shareWindow:{{twitterLink()}},253,600">
+								<span class="fa fa-twitter brand-icon"></span> Twitter
+							</a>
+						</div>
+					</div>
+				</div>
+				<!--sharing-->
+
+			</div>
+		</div>
+		{{#if .allowComments}}
+			<h3 class="text-center">Comments</h3>
+			<hr>
+			{{#if commentsLoading}}
+				<p class="text-center">
+					<span class="fa fa-spin fa-spinner fa-3x"></span>
+				</p>
+			{{else}}
+				<comments post="{{.}}" comments="{{comments}}" commentContext="{{commentContext}}" userLoad="{{userLoad}}" 
+					more="{{more}}">
+				</comments>
+			{{/if}}
+		{{else}}
+			<h4 class="text-center">Comments are currently disabled on this post.</h4>
+		{{/if}}
+	{{/post}}
+</page>
+
+{{#partial townList}}
+	{{#if .townKeys.length === 1}}
+		{{#with .townKeys[0]}}
+			 <a href="/town/{{.}}">{{townLoad[.].name}}</a>
+		 {{/with}}
+	{{else}}
+		{{#.townKeys:i}}
+			{{#if allTowns || i < 5}}
+				{{#if i == townKeys.length - 1}}&nbspand {{elseif i !== 0}}, {{/if}} <a href="/town/{{.}}">{{townLoad[.].name}}</a>
+			{{/if}}
+		{{/townKeys}}
+	{{/if}}
+	{{#if !allTowns && .townKeys.length > 5}}
+		<a href="#" on-click="allTowns">
+			<strong> and {{.townKeys.length - 5}} more town{{#if (.townKeys.length - 5) > 1}}s{{/if}}...</strong>
+		</a>
+	{{/if}}
+{{/partial}}
+
+{{#partial modals}}
+<modal id="reportModal" title="Report Post to Moderators" customFooter="true" on-hide="reportHide" teardown="true">
+	<alert error="{{reportErr}}"></alert>
+	<form>
+		<label>Choose a reason why you are reporting this post:</label>
+		<div class="reason-form form-group">
+			{{#reportReasons}}
+			<div class="radio">
+				<label>
+					<input type="radio" name="{{reason}}" value="{{.}}">
+					{{.}}
+				</label>
+			</div>
+			{{/reportReasons}}
+			<div class="radio">
+				<label>
+					<input type="radio" name="{{reason}}" value="other">
+					Other Reason:
+				</label>
+			</div>
+			<textarea class="form-control" rows="4" disabled="{{ reason !== 'other' }}"
+				placeholder="Enter your reason for reporting this post" value="{{otherReason}}"></textarea>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button class="btn btn-warning" on-click="report"><span class="fa fa-exclamation-circle"></span>  Report</button>			
+		</div>
+	</form>
+</modal>
+
+<modal id="sharePost" title="Share Post" customFooter="true" large="true" teardown="true">
+	<alert error="{{shareError}}"></alert>
+	<form class="form-horizontal" on-submit="sharePost">
+		<div class="form-group">
+			<label class="col-sm-2 control-label" for="shareWho">Who</label>	
+			<div class="col-sm-6">
+				<userSelect class="form-control" id="shareWho" selected="{{shareWho}}" placeholder="Username">
+				</userSelect>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label" for="shareSubject">Subject</label>	
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="shareSubject" value="{{shareSubject}}" placeholder="Subject">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="sr-only" for="shareMessage">Message</label>	
+			<div class="col-sm-12">
+				<previewEditor id="shareMessage" input="{{shareMessage}}"></previewEditor>
+			</div>
+		</div>
+
+		<div class="modal-footer">	
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button type="submit" class="btn btn-primary {{#shareLoading}}disabled{{/}}" on-click="sharePost">
+				<span class="fa fa-{{#if shareLoading}}spinner fa-spin{{else}}send{{/if}}"></span> Send
+			</button>			
+		</div>
+	</form>
+</modal>
+
+<modal id="moderateModal" title="Moderate Post" customFooter="true" teardown="true">
+	<alert error="{{moderateErr}}"></alert>
+	<form>
+		<label>Choose a reason why you are moderating this post:</label>
+		<div class="reason-form form-group">
+			{{#reportReasons}}
+			<div class="radio">
+				<label>
+					<input type="radio" name="{{modReason}}" value="{{.}}">
+					{{.}}
+				</label>
+			</div>
+			{{/reportReasons}}
+			<div class="radio">
+				<label>
+					<input type="radio" name="{{modReason}}" value="other">
+					Other Reason:
+				</label>
+			</div>
+			<textarea class="form-control" rows="4" disabled="{{ modReason !== 'other' }}"
+				placeholder="Enter your reason for moderating this post" value="{{otherModReason}}"></textarea>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button class="btn btn-warning" on-click="moderate"><span class="fa fa-gavel"></span>  Moderate</button>			
+		</div>
+	</form>
+</modal>
+
+
+<modal id="contactModal" customHeader="true" customFooter="true" large="true" teardown="true">
+	{{#partial header}}
+		<div class="modal-header"> 
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+				<span class="sr-only">Close</span></button> 
+				<h4 class="modal-title">
+				<span class="profile-btn tooltipped tooltipped-w" aria-label="{{listName(userLoad[post.creator])}}">
+					<userIcon user="{{userLoad[post.creator]}}" link="true"></userIcon>
+				</span>  Send message to {{listName(userLoad[post.creator])}}
+				</h4> 
+		</div> 
+	{{/partial}}
+
+	<alert error="{{contactErr}}"></alert>
+	<form class="form-horizontal">
+		<div class="form-group">
+			<label class="col-sm-2 control-label" for="contactSubject">Subject</label>	
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="contactSubject" value="{{contactSubject}}" placeholder="Subject">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="sr-only" for="contactMessage">Message</label>	
+			<div class="col-sm-12">
+				<previewEditor id="contactMessage" input="{{contactMessage}}" atTowns="{{townLoad}}" atUsers="{{userLoad}}"></previewEditor>
+			</div>
+		</div>
+
+		<div class="modal-footer">	
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button type="submit" class="btn btn-primary {{#contactLoading}}disabled{{/}}" on-click="contactPoster">
+				<span class="fa fa-{{#if contactLoading}}spinner fa-spin{{else}}envelope-o{{/if}}"></span> Send
+			</button>			
+		</div>
+	</form>
+</modal>
+{{/partial}}
+
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/message.js"></script>
+<script src="/js/post.js"></script>
+
+<!--payload-->
+<script type="application/json" id="post">
+	[[json .Post]]
+</script>
+<script type="application/json" id="user">
+	[[json .User]]
+</script>
+<script type="application/json" id="comments">
+	[[json .Comments]]
+</script>
+<script type="application/json" id="commentContext">
+	[[json .CommentContext]]
+</script>
+<script type="application/json" id="more">
+	[[json .More]]
+</script>
+
+</body>
+</html>
+[[end]]

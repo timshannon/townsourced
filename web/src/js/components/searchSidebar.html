@@ -1,0 +1,203 @@
+<link rel="ractive" href="./tagList.html" name="tagList">
+
+<div id="sidebar" class="hidden-xs">
+	<div class="panel panel-default">
+		<div class="panel-heading">	
+			<h3 class="panel-title">Search Options
+			<a id="hideSearch" href="#" class="tooltipped tooltipped-e" on-click="toggleHide"
+				aria-label="{{#if hidden}}Show{{else}}Hide{{/if}} Search Options">
+				{{#if hidden}}
+					<span class="fa fa-chevron-right"></span>
+				{{else}}
+					<span class="fa fa-chevron-left"></span>
+				{{/if}}
+			</a></h3>
+		</div>
+		<div class="panel-body">	
+			<form class="search-options form-horizontal" on-submit="submit">
+			 <div class="form-group">
+					<label class="col-sm-3" for="sort">Sort</label>
+					<div class="col-sm-9">
+						<select id="sort" class="form-control input-sm" value="{{options.sort}}" on-change="changed">
+							{{#sortOptions:option}}
+								<option value="{{option}}">{{.}}</option>
+							{{/sortOptions}}
+						</select>
+					</div>
+				</div>				
+				{{#if isMod}}
+					<div class="form-group">
+						<div class="col-sm-12">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" checked="{{options.showModerated}}" on-change="changed">
+									 Show Moderated Posts
+								</label>
+							</div>
+						</div>
+					</div>				
+				{{/if}}
+				<hr>
+				<label class="text-right">Price:</label>
+				<input type="submit" class="hidden">
+				<div class="form-group">
+					<label class="col-sm-4" for="minPrice">Minimum</label>
+					<div class="col-sm-8">
+						<div class="input-group">
+							<div class="input-group-addon">$</div>
+							<input id="minPrice" type="number" min="0" class="form-control input-sm" placeholder="Minimum" 
+								value="{{minPriceInput}}" on-blur="changedMinPrice">
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-4" for="maxPrice">Maximum</label>
+					<div class="col-sm-8">
+						<div class="input-group">
+							<div class="input-group-addon">$</div>
+							<input id="maxPrice" type="number" min="0" class="form-control input-sm" placeholder="Maximum"
+								value="{{maxPriceInput}}" on-blur="changedMaxPrice">
+						</div>
+					</div>
+				</div>
+
+				<hr>
+				<label>Filter By Tag:</label>
+				<tagList class="tag-list" posts="{{posts}}" selectedTags="{{options.tags}}" on-tagChange="changed"></tagList>
+
+				<div class="text-center">
+					<hr>
+					<span class="fa fa-map-marker"></span>
+					<a href="{{searchLocationLink}}">
+							Search By Location
+					</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<style>
+	@import "components.less";
+
+	@sidebar-padding: 20px;
+
+	#sidebar {
+		position: absolute;
+		padding-top: @navbar-height + @sidebar-padding;
+		z-index: @zindex-navbar;
+		width: 250px;
+		left: 0px;
+		&.fixed {
+			position: fixed;
+			top: 0;
+		}
+
+		transition: margin .5s ease;
+		margin-left: 0px;
+		&.side-hidden {
+			margin-left: -220px;
+		}
+
+		> .panel-default {
+			border-bottom-left-radius: 0px;
+			border-top-left-radius: 0px;
+		}
+	}
+
+	.search-options > .form-group {
+		margin-bottom: 5px; // tighten up the options a bit
+	}
+
+	.tag-list {
+		max-height: 254px;
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+
+	.panel-heading {
+		position: relative;
+	}
+
+	#hideSearch {
+		.pull-right();
+	}
+
+</style>
+<script>
+import {sortOptions, buildSearchParams} from "../ts/search";
+import {scrollToFixed} from "../ts/util"
+
+component.exports = {
+	isolated: true,
+	data: function() {
+		return {
+			options: {
+				sort: "none",
+				tags: [],
+				showModerated: false,
+			},
+			sortOptions: sortOptions,
+			hidden: false,
+			searchLocationLink: "/search/location",
+		};
+	},
+	onrender: function() {
+		var r = this;
+		 
+		r.on({
+			"submit": function(event) {
+				event.original.preventDefault();
+				r.fire("changedMinPrice");
+				r.fire("changedMaxPrice");
+			},
+			"changedMinPrice": function() {
+				if(r.get("minPriceInput") != r.get("options.minPrice")) {
+					r.set("options.minPrice", r.get("minPriceInput"));
+					r.fire("changed");
+				}
+			},
+			"changedMaxPrice": function() {
+				if(r.get("maxPriceInput") != r.get("options.maxPrice")) {
+					r.set("options.maxPrice", r.get("maxPriceInput"));
+					r.fire("changed");
+				}
+			},
+			"toggleHide": function(event) {
+				event.original.preventDefault();
+				r.toggle("hidden");
+				$(r.nodes.hideSearch).blur();
+			},
+			"hide": function() {
+				r.set("hidden", true);
+			},
+			"show": function() {
+				r.set("hidden", false);
+			},
+		});
+
+		r.observe({
+			"options.minPrice": function(newVal) {
+				r.set("minPriceInput", newVal);
+			},
+			"options.maxPrice": function(newVal) {
+				r.set("maxPriceInput", newVal);
+			},
+			"hidden": function(hidden) {
+				if(hidden) {
+					$(r.nodes.sidebar).addClass("side-hidden")
+					r.fire("hidden");
+				} else {
+					$(r.nodes.sidebar).removeClass("side-hidden")
+					r.fire("shown");
+				}
+			},
+		});
+
+    scrollToFixed(r.nodes.sidebar);
+
+	} //onrender
+};
+
+
+</script>

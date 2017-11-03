@@ -1,0 +1,230 @@
+{{#if menu}}
+	<div class="btn-group">
+		<button type="button" class="{{class}} btn btn-primary town-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" 
+			aria-expanded="false" title="categories">
+			<span class="fa fa-bars"></span>
+		</button>
+		<ul class="dropdown-menu dropdown-menu-right select-menu">
+			{{#categories:c}}
+				{{#if !filtered[c]}}
+					<li class="{{#if selected == c}}active{{/if}}">
+						<a href="#" class="menu-category-{{c}} {{#if selected == c}}active{{/if}}" 
+							on-click="selectCategory" placeholder="{{.}}">{{.}}</a>
+					</li>
+				{{/if}}
+			{{/}}
+		</ul>
+	</div>
+{{else}}
+	<div class="category-list">
+		<div id="categorySelect" class="{{class}} category-select" style="{{#if town}}border-color: {{town.color}};{{/if}}">
+			{{#if town}}
+				<h3 class="town-title">{{town.name}}</h3>
+			{{/if}}
+			<ul id="categories" class="nav-category">
+				{{#categories:c}}
+					{{#if !filtered[c]}}
+						<li role="presentation" >
+							<a href="#" class="category style-{{c}} {{#if selected == c}}active{{/if}}" 
+								on-click="selectCategory" placeholder="{{.}}">{{.}}</a>
+						</li>
+					{{/if}}
+				{{/}}
+			</ul>
+		</div>
+		{{yield}}
+	</div>
+{{/if}}
+
+<style>
+	@import "components.less";
+
+	.town-title {
+		color: @gray-light;
+		margin: 10px 10px 0px 10px;
+		font-weight: bold;
+	}
+
+	.category-list {
+		position: absolute;
+		text-align: center;
+		left: 0;
+		right: 0;
+	}
+
+	.category-select {
+		position: relative;
+		display: inline-block;
+		z-index: 10;
+		margin: 0 auto;
+		border: @town-border;
+		border-radius: @border-radius-base;
+		background-color: @background-color;
+		margin-top: @header-overlap;
+	}
+
+	.nav-category {
+		display: inline-block;
+		padding: 10px;
+		margin-bottom: 5px;
+		> li {
+			position: relative;
+			display: inline-block;
+			margin-left: 1px;
+			margin-right: 1px;
+
+			> a {
+				position: relative;
+				display: inline-block;
+				text-align: center;
+				padding: 5px 15px;
+				border-bottom: 3px solid transparent;
+				transition: all .5s ease;
+
+				&:hover,
+				&:focus {
+					text-decoration: none;
+				}
+				&.active {
+					font-weight: bold;
+				}
+				&:after {
+					display:block;
+					content:attr(placeholder);
+					font-weight:bold;
+					height:1px;
+					color:transparent;
+					overflow:hidden;
+					visibility:hidden;
+					margin-bottom:-1px;
+				}
+			}
+		}
+	}
+
+	.select-style(@color) {
+		&:hover {
+			border-bottom-color: screen(@color, @gray);
+		}
+		&.active {
+			border-bottom-color: @color;
+		}
+	}
+	
+	.style-all {
+		.select-style(@gray-light);
+	}
+
+	.style-notice {
+		.select-style(@category-notice);
+	}
+
+	.style-buysell {
+		.select-style(@category-buysell);
+	}
+
+	.style-event {
+		.select-style(@category-event);
+	}
+
+	.style-jobs {
+		.select-style(@category-jobs);
+	}
+
+	.style-volunteer {
+		.select-style(@category-volunteer);
+	}
+
+	.style-housing {
+		.select-style(@category-housing);
+	}
+
+</style>
+
+<script>
+import {
+    categories
+}
+from "../ts/post";
+
+import "../lib/bootstrap/dropdown";
+import {defaultTownColor} from "../ts/town";
+
+component.exports = {
+	isolated: true,
+	data: function() {
+		return {
+			town: null,
+			towns: {},
+			townKeys: [],
+			selected: "all",
+			categories: $.extend({
+        "all": "All"
+			}, categories),
+			filtered: {},
+			borderColor: defaultTownColor,
+		};
+	},
+	onrender: function() {
+		var r = this;
+		 
+		r.on({
+			"selectCategory": function(event) {
+				event.original.preventDefault();
+				r.set("selected", event.index.c);
+				r.fire("select");
+			},
+		});
+
+		r.observe({
+			"townKeys": function(townKeys) {
+				if(!townKeys) {
+					r.set("filtered", {});
+					return;
+				}
+
+				var towns = r.get("towns");
+
+				if(!towns || towns.length === 0) {
+					return;
+				}
+
+				//if category is modded in all towns, then
+				// hide it from list
+				var filtered = {};
+
+				for(var i = 0; i < townKeys.length; i++) {
+					var town = towns[townKeys[i]];
+					if(town.autoModerator && town.autoModerator.categories) {
+						for(var c = 0; c < town.autoModerator.categories.length; c++) {
+							var cat = town.autoModerator.categories[c];
+							if(!filtered[cat]) {
+								filtered[cat]= 1;	
+							} else {
+								filtered[cat]++;
+							}
+						}
+					}
+				}
+
+				$.each(filtered, function(category, count) {
+					if(count == townKeys.length) {
+						filtered[category] = true;
+					} else {
+						filtered[category] = false;
+					}
+				});
+				
+
+				r.set("filtered", filtered)
+				.then(function() {
+					r.fire("widthChange"); 
+				});
+			},
+		});
+
+	} //onrender
+};
+
+
+</script>    

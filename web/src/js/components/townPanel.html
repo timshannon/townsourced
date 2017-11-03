@@ -1,0 +1,241 @@
+<link rel="ractive" href="./header.html" name="header">
+<link rel="ractive" href="./alert.html" name="alert">
+
+{{#if inModal}}
+	{{>modal}}
+{{else}}
+	{{>panel}}
+{{/if}}
+
+{{#partial panel}}
+	<div class="{{class}} panel panel-default">
+		<div class="town-panel-header">
+			<header town="{{town}}"></header>
+		</div>
+		<div class="town-title" style="{{#if town}}border-color: {{town.color}};{{/if}}">
+			<h3>{{town.name}}</h3>
+		</div>
+		<div class="panel-body">
+			{{>townInfo}}
+			{{yield}}
+			<div class="text-right">
+				<hr>
+				{{>buttons}}
+			</div>
+		</div>
+	</div>
+{{/partial}}
+
+{{#partial modal}}
+	<div class="town-modal-header"> 
+		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+			<span class="sr-only">Close</span></button> 
+		<header town="{{town}}"></header>
+	</div> 
+	<div class="town-modal-title"> <div class="town-title" style="{{#if town}}border-color: {{town.color}};{{/if}}">
+			<h3>{{town.name}}</h3>
+		</div>
+	</div>
+	<div class="town-modal-content">
+		{{>townInfo}}
+		{{yield}}
+		<alert error="{{error}}"></alert>
+	</div>
+	<div class="modal-footer">
+		{{>buttons}}
+		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button> 
+	</div>
+{{/partial}}
+
+{{#partial buttons}}
+	{{#if !isMember()}} 
+	 	{{#if canJoin()}}
+			<button type="button" class="btn btn-primary" on-click="join:{{town}}">
+				Join Town
+			</button>
+		{{/if}}
+	{{else}}
+		{{#if inModal || showLeave}}
+			<button type="button" class="btn btn-warning" on-click="leave:{{town}}">
+				Leave Town
+			</button>
+		{{/if}}
+	{{/if}}
+	{{#showVisit}}
+		<a href="/town/{{town.key}}" class="pull-left btn town-btn">Visit Town</a>
+	{{/showVisit}}
+	{{#if isInvitedMod()}} 
+		<button type="button" class="pull-left btn btn-primary" on-click="acceptMod">
+			Accept Moderator Invite
+		</button>
+	{{/if}}
+{{/partial}}
+
+{{#partial townInfo}}
+	<p class="town-description">
+		{{town.description}}
+	</p>
+	<p>
+		<em>Population: {{town.population}}</em>
+	</p>
+	{{#if town.information}}
+		{{#if showInfo}}
+			<hr>
+			{{{infoParsed}}}
+		{{else}}
+			<p class="text-right">
+				<button type="button" class="btn btn-link" on-click="moreInfo:{{town}}">More Information...</button>
+			</p>
+		{{/if}}
+	{{/if}}
+{{/partial}}
+
+<style>
+	@import "components.less";
+	@panelWidth: 553px;
+
+	.header-img, .header-empty {
+		height: @panelWidth / @header-height-ratio;
+	}
+
+	.header {
+		width: 100%;
+		border-bottom: @town-border;
+	}
+
+	.header-inner-radius(@border-radius, @border-width: 1px) {
+		.header {
+			border-top-left-radius: @border-radius - @border-width;
+			border-top-right-radius: @border-radius - @border-width;
+			.left {
+				border-top-left-radius: @border-radius - @border-width;
+			}
+			.right {
+				border-top-right-radius: @border-radius - @border-width;
+			}
+		}
+	}
+
+	.town-panel-header {
+		.header-inner-radius(@panel-border-radius);	
+	}
+
+	.town-modal-header {
+		padding: 0px;
+		margin: -1 * @modal-inner-padding;
+		> .close {
+			position: absolute;
+			right: 0px;
+			padding: @modal-inner-padding;
+		}
+		.header-inner-radius(@border-radius-large);	
+	}
+
+	.header-icon {
+			margin-top: 0;
+			margin-left: 20px;
+			.vertical-align();
+	}
+
+	.town-title {
+		.pull-right();
+		z-index: 10;
+		margin-top: @header-overlap;
+		margin-right: 15px;
+		margin-left: 5px;
+		margin-bottom: 5px;
+		border: @town-border;
+		border-radius: @border-radius-base;
+		background-color: @panel-bg;
+		max-width: 80%;
+		
+		> h3 {
+			color: @gray-light;
+			margin: 10px 10px 10px 10px;
+			font-weight: bold;
+			max-height: 128px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+
+	.town-modal-title {
+		position: relative;
+		margin-top: @modal-inner-padding; //add lost margin back in
+	}
+
+	.town-modal-content {
+		position: relative;
+		padding-top: @modal-inner-padding;
+		margin-bottom: @modal-inner-padding;
+	}
+
+</style>
+<script>
+import {
+	isMember,
+	isInvitedMod,
+	acceptMod,
+	canJoin,
+} from "../ts/town";
+
+import {err} from "../ts/error";
+component.exports = {
+	isolated: true,
+	data: function() {
+		return {
+			town: null,
+			user: null,
+			showVisit: false,
+			showLeave: false,
+			isMember: function() {
+				var t = this.get("town");
+				var u = this.get("currentUser");
+				if(!t || !u) {
+					return false;
+				}
+				return isMember(t, u);
+			},
+			isInvitedMod: function() {
+				var t = this.get("town");
+				var u = this.get("currentUser");
+
+				if(!t || !u) {
+					return false;
+				}
+				return isInvitedMod(t, u);
+			},
+			canJoin: function() {
+				var t = this.get("town");
+				var u = this.get("currentUser");
+
+				if(!t || !u) {
+					return false;
+				}
+				return canJoin(t, u);
+			},
+			showInfo: false,
+			inModal: false,
+		};
+	},
+	onrender: function() {
+		var r = this;
+
+		if(r.get("showInfo") && r.get("town.information")) {
+			r.set("infoParsed", ts.processMessage(r.get("town.information")));
+		}
+
+		r.on({
+			"acceptMod": function() {
+				acceptMod(r.get("town.key"))
+				.done(function(result) {
+					window.location = "/town/" + r.get("town.key") + "/settings";
+				})
+				.fail(function(result) {
+					r.set("error", err(result).message);
+				});
+			},
+		});
+	}, //onrender
+};
+</script>

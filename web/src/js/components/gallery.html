@@ -1,0 +1,254 @@
+<link rel="ractive" href="./imageZoom.html" name="imageZoom">
+
+{{#if images}}
+<div class="{{class}} panel panel-default gallery-panel">
+	<div class="panel-body gallery">
+		<ul class="list-inline" decorator="gallery">
+		{{#images:i}}
+			{{#if i >= hidden.length}}
+				<li class="gallery-img" intro="slide" outro="slide">
+					<imageZoom key="{{.}}" class="{{imageClass}}" images="{{images}}" fullSized="{{fullSized}}">
+					</imageZoom>
+					{{#if edit}}
+						<button type="button" class="image-btn img-feature tooltipped tooltipped-w" aria-label="Set Featured Image" 
+							on-click="feature">
+							{{#if featured == .}}
+								<span class="fa fa-star"></span>
+							{{else}}
+								<span class="fa fa-star-o"></span>
+							{{/if}}
+							<span class="sr-only">Choose Featured Image</span>
+						</button> 
+						<button type="button" class="image-btn img-remove tooltipped tooltipped-w" aria-label="Remove Image" 
+							on-click="remove">
+							<span class="fa fa-times"></span>
+							<span class="sr-only">Remove</span>
+						</button> 
+					{{/if}}
+				</li>
+			{{/if}}
+		{{/images}}
+		{{#hidden:i}}
+			<li class="gallery-img" intro="slide" outro="slide">
+				<div class="{{imageClass}}"></div>
+			</li>
+		{{/hidden}}
+		</ul>
+		{{#if overflow}}
+			{{#if hidden.length > 0}}
+				<button type="button" class="btn gallery-btn gallery-left" intro="slide" outro="slide" on-click="left">
+					<span class="fa fa-chevron-left"></span>
+				</button>
+			{{/if}}
+			{{#if hidden.length < (images.length-1)}}
+				<button type="button" class="btn gallery-btn gallery-right" intro="slide" outro="slide" on-click="right">
+					<span class="fa fa-chevron-right"></span>
+				</button>
+			{{/if}}
+		{{/if}}
+	</div>
+</div>
+{{/if}}
+
+<style>
+	@import "components.less";
+
+	.gallery-panel {
+		display: inline-block;
+		margin-bottom: 0px;
+		max-width: 100%;
+	}
+	
+	.gallery {
+		position: relative;
+		display: block;
+		overflow: hidden;
+		white-space: nowrap;
+		padding: 5px 0px 0px 5px;
+	}
+
+	.gallery > ul.list-inline {
+		margin-bottom: 0px;
+	}
+
+	.gallery-btn {
+		position: absolute;
+		top: 0px;
+		bottom: 0px;
+		background-color: rgba(0, 0, 0, 0.5);
+		border-radius: 0;
+		color: #fff;
+		padding: 4px;
+		border: 0px;
+		font-size: (@font-size-base * 2);
+	}
+
+	.gallery-left {
+		left: 0px;
+	}
+
+	.gallery-right {
+		right: 0px;
+	}
+
+	.gallery-img {
+		position: relative;
+	}
+
+	.image-btn {
+		position: absolute;
+		color: @gray-lighter;
+		font-size: (@font-size-base * 2);
+		text-shadow: 0px 2px 0px @gray;
+
+		&:hover,
+		&:focus {
+			color: darken(@gray-lighter, 15%);
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+		button& {
+			padding: 0;
+			cursor: pointer;
+			background: transparent;
+			border: 0;
+			-webkit-appearance: none;
+		}	
+	}
+
+	.img-remove {
+		right: 15px;
+		bottom: 10px;
+	}
+
+	.img-feature {
+		right: 15px;
+		top: 10px;
+	}
+
+</style>
+
+
+<script>
+import {slide} from "../lib/ractive-transition-slide-horizontal";
+
+component.exports = {
+	decorators: {
+		gallery: function(node) {
+			var r = this;
+			r.set("galleryNode", node);
+			return {
+				teardown: function() {
+					r.set("galleryNode", undefined);
+				},
+			};
+		},
+	},
+	isolated: true,
+	data: function() {
+		return {
+			hidden: [],
+			featured: "",
+			edit: false, // show the button to remove an image from the gallery list
+		};
+	},
+	transitions: {
+		slide: function(t) {
+			//Only transition on button press
+			if(this.get("slide")) {
+				slide(t);
+			} else {
+				t.complete();
+			}
+		},
+	},
+	onrender: function() {
+		var r = this;
+
+		r.on({
+			"right": function(event) {
+				if(r.get("hidden.length") < (r.get("images.length")-1)) {
+					r.set("slide", true);
+					r.push("hidden", "")
+					.then(function() {
+						r.set("slide", false);
+					});
+				}
+			},
+			"left": function(event) {
+				if (r.get("hidden.length") > 0) {
+					r.set("slide", true);
+					r.pop("hidden")
+					.then(function() {
+							r.set("slide", false);
+						});
+				}
+			},
+			"feature": function(event) {
+				r.set("featured", event.context);
+				$(".img-feature").blur(); //remove focus after click
+			},
+			"remove": function(event) {
+				var images = r.get("images");
+				r.set("slide", true);
+				r.set("removing", true);
+				r.splice("images", event.index.i, 1)
+					.then(function() {
+						r.pop("hidden").then(function() {
+							if(r.get("featured") === event.context) {
+								r.set("featured", null);
+							}
+							r.set("removing", false);
+							r.set("slide", false);
+							setOverlap();
+						});
+					});
+					$(".img-remove").blur(); //remove focus after click
+			},
+			"setOverlap": function() {
+				setOverlap();
+			},
+		});
+
+
+		r.observe("images", function(newValue, oldValue) {
+			if(newValue && newValue.length > 0 && !r.get("removing")) {
+				r.set("hidden", []);
+				if(!r.get("featured"))  {
+					r.set("featured", newValue[0]);
+				}
+			}
+
+			setOverlap();
+		}, {defer: true});
+
+		function setOverlap() {
+			var n = r.get("galleryNode");
+			if(!n) {
+				return;
+			}
+
+			if(n.scrollWidth !== 0) {
+				r.set("overflow", (n.offsetWidth < n.scrollWidth));
+			}
+		}
+
+	}, //onrender
+	oncomplete: function() {
+		var r = this;
+		var delay;
+
+		$(window).resize(function(e) {
+				if (delay) {
+						window.clearTimeout(delay);
+				}
+				delay = window.setTimeout(function() {
+						r.fire("setOverlap");
+				}, 50);
+		});
+		r.fire("setOverlap");
+	},
+};
+
+</script>

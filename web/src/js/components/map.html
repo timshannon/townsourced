@@ -1,0 +1,82 @@
+<link rel="ractive" href="./alert.html" name="alert">
+
+<div class="map-container">
+	<div class="map-search">
+		<form on-submit="search">
+			<div class="form-group has-feedback input-group">
+				<span class="input-group-btn">
+					<button type="button" class="btn btn-brand-1 tooltipped tooltipped-s" aria-label="Use my current Location" 
+						on-click="myLocation">
+						<span class="fa fa-map-marker"></span>
+					</button>
+				</span>
+				<input id="searchBox" type="text" class="form-control" placeholder="{{placeholder || 'Search for a location'}}" 
+					value="{{searchString}}">
+						</div>
+				<a href="#" class="form-control-feedback" on-click="search" 
+					title="{{placeholder || 'Search for a location'}}">
+					<span class="fa fa-search"></span>
+				</a>
+
+		</form>
+		<alert error="{{error}}"></alert>
+	</div>
+
+	{{#if showRange}}
+	<div class="btn-group map-range">
+		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" 
+			aria-expanded="false">
+			<span class="fa fa-dot-circle-o"></span><span class="hidden-xs">  Search Range</span> <span class="caret"></span>
+		</button>
+		<ul class="select-menu dropdown-menu dropdown-menu-right">
+			{{#ranges:i}}
+				<li class="{{#if i === ranges.indexOf(range)}}active{{/if}}">
+					<a href="#" on-click="setRange:{{.}}">
+					{{.}} miles</a>
+				</li>
+			{{/ranges}}
+		</ul> 
+	</div>
+	{{/if}}
+
+	<div class="panel panel-default map {{class}}" decorator="map">
+	</div>
+</div>
+<style>
+	@import "components.less";
+
+	.map-container {
+		position: relative;
+	}
+
+	.map-search {
+		width: 50%;
+		min-width: 165px;
+		position: absolute;
+		margin: 10px;
+		top: 0;
+		left: 0px;
+		z-index: @zindex-navbar;
+	}
+
+	.map {
+		width: 100%;
+		min-height: 470px;
+	}
+
+	.map-range {
+		z-index: @zindex-navbar;
+		position: absolute;
+		margin: 10px;
+		right: 0px;
+		top: 0px;
+	}
+
+</style>
+<script>
+import "../lib/bootstrap/dropdown";
+import Map from "./js/map";
+
+component.exports = Map;
+
+</script>

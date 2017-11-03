@@ -1,0 +1,40 @@
+<link rel="ractive" href="./alert.html" name="alert">
+
+<div class="map-container">
+	<div class="map-top text-center">
+		{{#if loading}}
+			<span class="label label-warning">
+				<span class="fa fa-spin fa-spinner"></span> Loading
+			</span>
+		{{/if}}
+		<alert error="{{error}}"></alert>
+	</div>
+
+	{{#if showMap}}
+		<div class="panel panel-default map {{class}}" decorator="map">
+		</div>
+	{{/if}}
+</div>
+<style>
+	@import "components.less";
+
+	.map-container {
+		position: relative;
+	}
+
+	.map {
+		width: 100%;
+		min-height: 470px;
+	}
+
+	.map-top {
+		position: absolute;
+		z-index: 10;
+	}
+</style>
+<script>
+import Map from "./js/townMap";
+
+component.exports = Map;
+
+</script>

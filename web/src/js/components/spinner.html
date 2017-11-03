@@ -1,0 +1,38 @@
+<div class="spinner square-spin">
+	<div class="{{^noBackground}}spinner-bg{{/noBackground}} spinner-{{size || 'md'}}">
+		{{yield}}
+	</div>
+</div>
+
+<style>
+.spinner-bg {
+	background-image: url("/images/ts.png");
+	background-size: contain;
+}
+
+.spinner {
+	display: inline-block;
+}
+
+.spinner-lg {
+	height: 50px;
+	width: 50px;
+}
+
+.spinner-md {
+	height: 34px;
+	width: 34px;
+}
+
+.spinner-sm {
+	height: 25px;
+	width: 25px;
+}
+
+.spinner-xs {
+	height: 10px;
+	width: 10px;
+}
+
+</style>
+

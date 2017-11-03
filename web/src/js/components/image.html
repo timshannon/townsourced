@@ -1,0 +1,50 @@
+<div class="{{class}} {{#if loaded}}img-loaded{{else}}img-loading{{/if}}" 
+	style="background: url(/api/v1/image/{{key}}?{{#if loaded}}{{#if thumb}}thumb{{/if}}{{else}}placeholder{{/if}}) no-repeat center center;background-size: cover;">
+</div>
+<style>
+	@import "components.less";
+
+	.img-loading {
+		overflow: hidden;
+		.blur(10px);
+	}
+
+	.img-loaded {
+		transition: all .25s ease;
+		.blur(0px);
+	}
+</style>
+<script>
+component.exports = {
+	isolated: true,
+	data: {
+		loaded: false,
+		thumb: false,
+	},
+	onrender: function() {
+		var r = this;
+	
+		r.observe({
+			"key": function(newValue, oldValue) {
+				if(newValue && newValue !== oldValue) {
+					var img = new Image();
+					img.onload = function() {
+							r.set("loaded", true);
+					}
+
+					if(r.get("thumb")) {
+						img.src = "/api/v1/image/" + newValue +"?thumb";
+					} else {
+						img.src = "/api/v1/image/" + newValue;
+					}
+
+					if (img.complete)  {
+						img.onload();	
+					}
+				}
+			},
+		});
+
+	} //onrender
+};
+</script>

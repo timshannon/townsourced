@@ -1,0 +1,46 @@
+<!-- body -->
+<div class="content">
+<table>
+	<tr>
+		<td>
+		<table width="100%"><tr><td align="center">
+			<p class="salutation">Hi from Townsourced!</p>
+		</td></tr></table>
+		<p>
+			You have been invited by <strong>{{.Who}}</strong> to join a private town on Townsourced.
+		</p>
+		<div class="panel">
+			<h1>{{.Town.Name}}</h1>
+			<p>
+				{{.Town.Description}}
+				<br>
+				<a href='{{url "town"}}/{{.Town.Key}}'>Visit Town</a>
+			</p>
+		</div>
+		<br>
+		<div class="content">
+			<!-- button -->
+			<table width="100%"><tr><td align="center">
+			<table class="btn-primary" cellpadding="0" cellspacing="0" border="0">
+			<tr>
+			<td>
+			<a href="{{.URL}}">Click here to join the town</a>
+			</td>
+			</tr>
+			</table>
+			<p class="small">Note, that this link is only valid for 2 weeks.</p>
+			<p>If you are not currently a member of Townsourced, you can 
+				<a href="{{url}}">signup here</a>.</p>
+			</td></tr>
+			</table>
+			<!-- /button -->
+		</div>
+		<br>
+		Thank You,
+		<p class="signature">townsourced</p>
+
+		</td>
+	</tr>
+</table>
+</div>
+<!-- /body -->

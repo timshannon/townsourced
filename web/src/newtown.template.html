@@ -1,0 +1,153 @@
+[[define "NEWTOWN"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Register a new town - townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+	<style type="text/less">
+		@import "css/page.less";
+
+		.town-container {
+			position: relative;
+			top: @header-overlap;
+			border: @town-border;
+		}
+
+
+		.panel-head-adjust {
+			margin-top: 0px;
+			margin-bottom: 0px;
+		}
+
+	</style>
+</head>
+<body>
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+<script id="tMain" type="text/ractive">
+<page navgap="false" loaded="true">
+<header></header>
+<div class="container">
+<div class="row">
+	<div class="col-md-2">
+	</div>
+	<div class="col-md-8">
+		<div class="town-container panel panel-default town-border">
+			<div class="panel-heading">
+				<h3 class="panel-head-adjust"> Register a new town</h3> 
+			</div>
+			<div class="panel-body">
+				{{#if !authenticated}}
+					<span class="center-block alert alert-warning">
+						<span class="fa fa-exclamation-triangle text-danger"></span>  
+						You must be logged in to register a new town! <a href="#" class="alert-link" on-click="login">
+							Log in here</a>.
+					</span>
+				{{else}}
+				<form>
+					<p>A <strong><em>town</em></strong> can be anything from the town you live in to your school, or your dorm,  
+						or any other small community you are a part of and want to post to.</p>
+
+					<div class="form-group {{#if nameErr}}has-error has-feedback{{/if}}">
+						<label for="name">Town Name</label>
+						<div class="{{#nameErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{nameErr}}">
+							<input type="text" class="form-control" id="name" placeholder="Enter a town name" value="{{name}}" 
+								maxlength="{{maxTownName}}" on-keyup="setTownName" on-blur="validateURL">
+							{{#if nameErr}}
+								<span class="form-control-feedback fa fa-times">
+								</span>
+							{{/if}}
+						</div>
+					</div>
+
+					<div class="form-group {{#if urlErr}}has-error has-feedback{{/if}}">
+						<label for="key">Town URL</label>
+						<div class="{{#urlErr}} tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{urlErr}}">
+							<div class="input-group">
+								<span class="input-group-addon">{{origin}}/town/</span>
+								<input type="text" maxlength="{{maxTownKey}}" class="form-control" id="key" placeholder="town url path" 
+									value="{{key}}" on-keyup="setKey" on-blur="validateURL">
+							</div>
+							{{#if urlErr}}
+								<span class="form-control-feedback fa fa-times">
+								</span>
+							{{/if}}
+
+						</div>
+						<p class="help-block">
+							A town url must be unique. You may need to add additional information	such as a zip code to get a unique url. 
+						</p>
+					</div>
+					<div class="form-group {{#if descriptionErr}}has-error has-feedback{{/if}}">
+						<label for="description">Description</label>
+						<div class="{{#descriptionErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{descriptionErr}}">
+							<textarea rows="3" class="form-control" id="description" placeholder="Briefly describe your town" 
+								value="{{description}}" maxlength="{{maxTownDescription}}" on-blur="validateDesc">
+							</textarea>
+							{{#if descriptionErr}}
+								<span class="form-control-feedback fa fa-times">
+								</span>
+							{{/if}}
+						</div>
+					</div>
+					
+					<div class="form-group {{#if locationErr}}text-danger{{/if}}">
+						<span class="{{#locationErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{locationErr}}">
+							<label>Location</label>
+							{{#locationErr}}
+							<span class="fa fa-times text-danger"></span>
+							{{/}}
+						</span>
+						<p class="help-block">
+							Setting your towns location will allow us to inform other users that a new town is available, as well as 
+							make it easier for them to find	sales, events, or jobs nearby.  It can also be used as a <strong>safe meeting place 
+							when swapping goods for money</strong> in your town.  Choose your location <em>carefully</em> and drag the map 
+							marker to choose a more specific location.
+						</p>
+
+						<map latitude="{{latitude}}" longitude="{{longitude}}" placeholder="Search for your town"></map>
+					</div>
+					<div class="form-group">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" checked="{{isPrivate}}"> Make town Private?
+							</label>
+						</div>					
+						<p class="help-block">
+							A Private town is where posts are only visible to members of the town, and only those invited can become 
+							members, or submit new posts.
+						</p>
+					</div>
+
+					<alert error="{{error}}"></alert>
+
+					<hr>
+
+					<a href="/" tabindex="-1" class="btn btn-default"><span class="fa fa-times"></span>  Cancel</a>
+					<button type="submit" class="btn btn-primary" on-click="createTown">Continue</button>
+				</form>
+				{{/if}} <!--authenticated-->
+			</div> <!-- panel-body -->	
+		</div> <!-- panel -->
+	</div> <!-- col -->
+</div> <!-- row -->
+</div> <!-- container -->
+</page>
+	
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=[[.GoogleMapsAPIKey]]&libraries=places"></script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/newtown.js"></script>
+<script type="application/json" id="userPayload">
+	[[json .User]]
+</script>
+</body>
+</html>
+[[end]]

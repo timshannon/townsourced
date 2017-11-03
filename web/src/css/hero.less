@@ -1,0 +1,82 @@
+.hero {
+	.vertical-align();
+	color: #fff;
+	margin: 0 auto;
+	left: 0;
+	right: 0;	
+	text-align: center;
+	margin-top: @navbar-height + @header-overlap; 
+	text-shadow: 2px 2px 4px rgba(0,0,0,.5);
+
+	>.title {
+		font-weight: bold;
+		display: inline-block;
+		margin-top: 0px;
+		margin-bottom: 0px;
+
+
+		font-size: 2.5em;
+
+		@media (min-width: @screen-md-min) { 
+			font-size: 4em;
+		}
+
+		@media (min-width: @screen-lg-min) { 
+			font-size: 5em;
+		}
+
+		> .tag-line {
+			margin-top: -8px;
+			font-size: 11px;
+			display: none;
+
+			@media (min-width: @screen-md-min) { 
+				margin-top: -10px;
+				font-size: 18px;
+				display: block;
+			}
+
+			@media (min-width: @screen-lg-min) { 
+				margin-top: -13px;
+				font-size: 22px;
+				display: block;
+			}
+
+			font-weight: normal;	
+		}
+	}
+
+}
+
+.hero-brand {
+	.pull-left();
+	margin-right: 5px;
+	display: none;
+	margin-top: -8px;
+	height: 48px;
+
+	@media (min-width: @screen-xs-min) { 
+		display: inline-block;
+		margin-top: -8px;
+		height: 48px;
+	}
+
+	@media (min-width: @screen-sm-min) { 
+		display: inline-block;
+		margin-top: -8px;
+		height: 48px;
+	}
+
+	@media (min-width: @screen-md-min) { 
+		display: inline-block;
+		margin-top: -12px;
+		height: 77px;
+	}
+	@media (min-width: @screen-lg-min) { 
+		display: inline-block;
+		margin-top: -12px;
+		height: 97px;
+	}
+
+}
+

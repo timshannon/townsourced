@@ -1,0 +1,760 @@
+[[define "TOWN"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+	<title>[[.Name]] - settings - townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+	<style type="text/less">
+		@import "css/page.less";
+		.header-btn {
+			position: absolute;
+			top: 71px;
+			right: 20px;
+			z-index: 10;
+		}
+		#headerImageUpload {
+			min-height: 250px;
+		}
+
+		#colorLabel {
+			display: inline-block;
+		}
+
+		.panel-head-adjust {
+			margin-top: 0px;
+			margin-bottom: 0px;
+		}
+
+		.table-icon-col {
+			width: 40px;
+		}
+
+		.auto-mod > li > button {
+			margin-right: 10px;
+		}
+
+		.auto-mod > li {
+			padding-bottom: 10px;
+		}
+
+		.btn-group-category > button > .fa {
+			position: absolute;
+			padding: 3px;
+			left: 10px;
+		}
+
+		.regexp-table {
+			table-layout: fixed;
+		}
+
+		.table-btn {
+		 width: 50px;
+		}
+
+		.town-settings {
+			position: relative;
+			top: @header-overlap;
+			border: @town-border;
+		}
+
+		.settings-watermark {
+			margin-top: 25px;
+		}
+
+		.invite-accept {
+			margin-right: 10px;
+		}
+
+	</style>
+</head>
+<body>
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+
+<script id="tMain" type="text/ractive">
+{{>modals}}
+
+<page navgap="false" loaded="true">
+<header town="{{town}}" right="true">
+	{{#partial right}}
+		<button type="button" class="header-btn btn town-btn" on-click="imageModal"> 
+			<span class="fa fa-image"></span>  Set Header Image
+		</button>
+	{{/partial}}
+</header>
+<div class="container">
+	<div class="row">
+		<div class="col-md-2">
+			<span class="hidden-xs hidden-sm town-text settings-watermark watermark fa fa-gears"></span>
+		</div>
+		<div class="col-md-8">
+			<div class="town-settings panel panel-default town-border">
+				{{#town}}
+				<div class="panel-heading">
+					<h2 class="panel-head-adjust">{{town.name}} 
+						<small>
+							<a href="#" on-click="nameModal" class="tooltipped tooltipped-e" 
+								aria-label="Change the town's name">
+								<span class="fa fa-pencil"></span> 
+							</a>
+						</small>
+					</h2>
+				</div>
+				<div class="panel-body">
+					<alert error="{{error}}"></alert>
+					<span class="pull-right hidden-xs"><em>Population: {{town.population}}</em></span>
+					<ul class="nav nav-tabs" role="tablist">
+						<li role="presentation" class="active">
+							<a id="generalTab" href="#general" aria-controls="general" role="tab" data-toggle="tab">
+								<span class="fa fa-gears"></span>  General
+							</a>
+						</li>
+
+						<li role="presentation">
+							<a href="#moderation" aria-controls="moderation" role="tab" data-toggle="tab">
+								<span class="fa fa-gavel"></span>  Moderation
+							</a>
+						</li>
+
+						<li role="presentation">
+							<a href="#privacy" aria-controls="privacy" role="tab" data-toggle="tab">
+								<span class="fa fa-lock"></span>  Privacy
+							</a>
+						</li>
+
+					</ul>
+
+					<div class="tab-content">
+						<div role="tabpanel" class="tab-pane active" id="general">
+							{{>general}}
+						</div>
+						<div role="tabpanel" class="tab-pane" id="moderation">
+							{{>moderation}}
+						</div>
+						<div role="tabpanel" class="tab-pane" id="privacy" >
+							{{>privacy}}
+						</div>
+					</div>
+
+					<hr>
+
+					<button type="button" on-click="back" tabindex="-1" class="btn town-btn"><span class="fa fa-arrow-circle-left"></span>  Return</button>
+				</div> <!-- panel body -->
+				{{/town}}
+			</div> <!-- panel -->
+		
+		</div> <!--col-->
+	</div> <!--row-->
+</div> <!-- settings container -->
+
+</page>
+
+
+{{#partial general}}
+<h3>Description
+	<small>
+		<a href="#" on-click="descriptionModal" class="tooltipped tooltipped-e" aria-label="Change the town's description">
+			<span class="fa fa-pencil"></span></a>
+	</small>
+</h3>
+<p>{{town.description}}</p>
+
+<div class="form-group {{#if colorErr}}text-danger{{/if}}">
+	<span class="{{#colorErr}}tooltipped tooltipped-danger tooltipped-e{{/}}" aria-label="{{colorErr}}">
+		<h3 id="colorLabel">
+			Color Theme
+			{{#colorErr}}
+			<span class="fa fa-times text-danger"></span>
+			{{/}}
+		</h3>
+	</span>
+
+	<color class="btn town-btn" color="{{town.color}}"></color>
+</div>
+
+<h3>Information Panel
+	<small>
+		<a href="#" on-click="infoModal" class="tooltipped tooltipped-e" aria-label="Change the town's information panel">
+			<span class="fa fa-pencil"></span></a>
+	</small>
+</h3>
+{{#if town.information}}
+	<p>{{{infoParsed}}}</p>
+{{else}}
+	<p>A town's information panel is a place to list information on the community itself, as well as detailed rules of expected behavior for 
+		posting to the town.</p>
+{{/if}}
+
+
+{{/partial}}
+
+{{#partial moderation}}
+<h3>Auto-Moderation</h3>
+<ul class="auto-mod list-unstyled">
+	<li>
+		<button type="button" class="btn btn-default" on-click="autoModCategoryModal">
+			<span class="fa fa-bars"></span>
+		</button> <span>Auto moderate posts based on <strong>category</strong></span>
+	</li>
+	<li>
+		<button type="button" class="btn btn-default" on-click="autoModUserModal">
+			<span class="fa fa-bars"></span>
+		</button> <span>Auto moderate posts based on <strong>who is posting</strong></span>
+	</li>
+	<li>
+		<button type="button" class="btn btn-default" on-click="autoModContentModal">
+			<span class="fa fa-bars"></span>
+		</button> <span>Auto moderate posts based on its <strong>contents</strong></span>
+	</li>
+</ul>
+<h3>Moderators
+	<button type="button" class="pull-right btn btn-sm town-btn" on-click="inviteModModal">
+		<span class="fa fa-plus"></span>  Invite a new moderator
+	</button>
+</h3>
+<table class="table">
+	<thead>
+		<th></th>
+		<th></th>
+		<th></th>
+	</thead>	
+	<tbody>
+		{{#.moderators}}
+			{{>moderator { mod: users[.username]} }}
+		{{/moderators}}
+	</tbody>
+</table>
+
+{{/partial}}
+
+{{#partial privacy}}
+<h3>Privacy</h3>
+<p>
+	A Private town is where posts are only visible to members of the town, and only those invited can become members, or submit new posts.
+</p>
+<p class="small">
+	* Note that when a Public Town becomes Private, existing members will still have access to view posts.
+</p>
+
+<div class="checkbox">
+	<label>
+		<input type="checkbox" checked="{{town.private}}" on-click="setPrivacy"> Private?
+	</label>
+</div>					
+
+{{#if town.private}}
+	<h3>Invite Requests</h3>
+	<table class="table">
+	{{#if inviteRequests}}
+		<thead>
+			<th></th>
+			<th></th>
+			<th></th>
+		</thead>	
+		<tbody>
+			{{#.inviteRequests:i}}
+				{{>inviteRequest {who: users[.who], when: .when} }}
+			{{/inviteRequests}}
+		</tbody>
+	{{else}}
+		<p><small><em>There are no outstanding invite requests.</em></small></p>
+	{{/if}}
+	</table>
+
+	<div class="dropdown pull-right">
+		<a id="memberSort" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			Sort by
+			<span class="caret"></span>
+		</a>
+
+		<ul class="dropdown-menu dropdown-menu-right select-menu" aria-labelledby="memberSort">
+			<li class="{{#if memberSortType=='date'}}active{{/if}}"><a href="#" on-click="memberSort:'date'">Date</a></li>
+			<li class="{{#if memberSortType=='name'}}active{{/if}}"><a href="#" on-click="memberSort:'name'">Name</a></li>
+			<li class="{{#if memberSortType=='status'}}active{{/if}}"><a href="#" on-click="memberSort:'status'">Status</a></li>
+		</ul>
+	</div>
+
+	<h3>Members  <small>Moderators are automatically invited</small></h3>
+	<table class="table">
+		<thead>
+			<th></th>
+			<th></th>
+			<th></th>
+		</thead>	
+		<tbody>
+			{{#.invites:i}}
+				{{>invite {invite: users[.]} }}
+			{{/invites}}
+		</tbody>
+	</table>
+	<div class="text-center">
+		<button type="button" class="btn btn-sm town-btn" on-click="inviteMemberModal">
+			<span class="fa fa-plus"></span>  Invite a new member
+		</button>
+	</div>
+
+{{/if}}
+
+{{/partial}}
+
+{{#partial moderator}}
+<tr class="{{#mod.inactive}}active text-muted{{/}}">
+	<td class="table-icon-col">
+		{{>user {user: mod} }}
+	</td>
+	<td>
+		{{ mod.name || mod.username }}
+		{{#if mod.inactive}}
+			<small>(inactive)</small>
+		{{/if}}
+	</td>
+	<td>
+		{{#if mod.self}}
+			<button type="button" class="btn btn-sm btn-danger pull-right" on-click="resignAdmin">
+				<span class="fa fa-remove"></span>  Resign
+			</button>
+		{{/if}}
+	</td>
+</tr>
+{{/partial}}
+
+{{#partial invite}}
+<tr class="{{^invite.member}}active text-muted{{/}}">
+	<td class="table-icon-col">
+		{{>user {user: invite} }}
+	</td>
+	<td>
+		{{ invite.name || invite.username }}
+			{{#if !invite.member}}
+				<small>(not yet a member)</small>
+			{{/if}}
+	</td>
+	<td>
+		{{#if !invite.self}}
+			<button type="button" class="btn btn-sm btn-danger pull-right" on-click="removeMemberInvite">
+				<span class="fa fa-remove"></span>  Remove
+			</button>
+		{{/if}}
+	</td>
+</tr>
+{{/partial}}
+
+{{#partial inviteRequest}}
+<tr>
+	<td class="table-icon-col">
+		{{>user {user: who} }}
+	</td>
+	<td>
+		{{ who.name || who.username }} <small class="hidden-xs">({{since(when)}} ago)</small>
+	</td>
+	<td>
+		<button type="button" class="btn btn-sm btn-danger pull-right" on-click="rejectInviteRequest">
+			<span class="fa fa-remove"></span>  <span class="hidden-xs">Reject</span>
+		</button>
+
+		<button type="button" class="invite-accept btn btn-sm btn-success pull-right" on-click="acceptInviteRequest">
+			<span class="fa fa-check-square"></span>  <span class="hidden-xs">Accept</span>
+		</button>
+	</td>
+</tr>
+{{/partial}}
+
+
+
+{{#partial user}}
+	<a href="/user/{{user.username}}" class="btn btn-default profile-btn tooltipped tooltipped-w" aria-label="View {{user.username}}">
+		<userIcon user="{{user}}"></userIcon>
+	</a>
+{{/partial}}
+
+{{#partial modals}}
+
+<modal id="imageModal" customHeader="true" customFooter="true" static="true" large="true">
+	{{#partial header}}
+		<div class="modal-header"> 
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+				<span class="sr-only">Close</span></button> 
+				<h4>
+					Set your town's header image
+					<small class="tooltipped tooltipped-s" aria-label="Header Dimensions">
+						({{headerWidth}} x {{headerHeight}})
+					</small>
+				</h4> 
+		</div> 
+	{{/partial}}
+
+		<imageUpload id="headerImageUpload" key="{{newHeaderImage.key}}" x0="{{newHeaderImage.x0}}" 
+			y0="{{newHeaderImage.y0}}" x1="{{newHeaderImage.x1}}" y1="{{newHeaderImage.y1}}"
+			aspectRatio="3.9" minHeight="64" minWidth="250"></imageUpload>
+	<div class="modal-footer">	
+		{{#if town.headerImage}}
+			<button type="button" class="pull-left btn btn-danger" on-click="removeImage"> <span class="fa fa-times"></span>  
+				Remove Image</button>
+		{{/if}}
+
+		<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+		<button class="btn btn-primary" on-click="imageSet">Save</button>			
+	</div>
+</modal>
+
+<modal id="nameModal" title="Change the Town's Name" customFooter="true">
+	<form class="form-horizontal">
+		<div class="form-group {{#if nameErr}}has-error has-feedback{{/if}}">
+			<label class="col-sm-2 control-label" for="nameChange">Name</label>	
+			<div class="col-sm-10 {{#nameErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{nameErr}}">
+				<input type="text" class="form-control" id="nameChange" value="{{nameChange}}" 
+					maxlength="{{maxTownName}}" placeholder="Set the town's name">
+				{{#if nameErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+
+		<div class="modal-footer">	
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button class="btn btn-primary" on-click="nameSave">Save</button>			
+		</div>
+	</form>
+</modal>
+
+<modal id="descriptionModal" title="Change the Town's Description" customFooter="true">
+	<form class="form-horizontal">
+		<div class="form-group {{#if descriptionErr}}has-error has-feedback{{/if}}">
+			<label class="col-sm-2 control-label" for="descriptionChange">Description</label>	
+			<div class="col-sm-10 {{#descriptionErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{descriptionErr}}">
+				<textarea rows="3" class="form-control" id="descriptionChange" value="{{descriptionChange}}" 
+					maxlength="{{maxTownDescription}}" placeholder="Set the town's description">
+				</textarea>
+				{{#if descriptionErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+
+		<div class="modal-footer">	
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button class="btn btn-primary" on-click="descriptionSave">Save</button>			
+		</div>
+	</form>
+</modal>
+
+<modal id="resignModal" title="Resign from Moderator" customFooter="true">
+	<form class="form">
+		<p class="help-block">
+			Are you sure you want to give up your moderator access to this town?<br>
+			<small>This cannot be reversed unless you are reinvited to be a moderator here.</small>
+		</p>
+		<div class="form-group {{#if resignErr}}has-error has-feedback{{/if}}">
+			<label class="sr-only control-label" for="resignCheck">Enter your username to confirm</label>	
+			<div class="{{#resignErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{resignErr}}">
+				<input type="text" class="form-control" id="resignCheck" value="{{resignCheck}}" placeholder="Enter your username to confirm">
+				{{#if resignErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+
+		<div class="modal-footer">	
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button class="btn btn-danger" on-click="resignConfirm">Confirm</button>			
+		</div>
+	</form>
+</modal>
+
+<modal id="inviteModModal" title="Invite a new Moderator" customFooter="true">
+	<form class="form-horizontal">
+		<p class="help-block">
+			An invitation will be sent to the user below.  If accepted they will be granted moderator rights to this town.
+		</p>
+		<div class="form-group">
+			<label for="inviteUsername" class="col-sm-2 control-label">Username</label>
+			<div class="col-sm-10">
+				<userSelect class="form-control" id="inviteUsername" selected="{{inviteUser}}" error="{{inviteErr}}">
+				</userSelect>
+			</div>
+		</div>
+
+		<div class="modal-footer">	
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button type="submit" class="btn btn-primary {{#inviteErr}}disabled{{/}}" on-click="sendInvite">
+				<span class="fa fa-envelope-o"></span>  Send invitation
+			</button>			
+		</div>
+	</form>
+</modal>
+
+<modal id="inviteMemberModal" title="Invite a new Private Member to this Town" customFooter="true">
+<form>
+	{{#if inviteByUsername}}
+		<userSelect class="form-control" class="form-control" id="inviteMemberName" selected="{{inviteMember}}"
+			placeholder="Enter a Username" error="{{inviteMemberErr}}" inputGroup="true">
+			<div class="input-group-btn">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" 
+					aria-expanded="false">By Username <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li><a href="#" on-click="toggleInviteType">By Email</a></li>
+				</ul>
+			</div><!-- /btn-group -->
+		</userSelect>
+	{{else}}
+		<div class="form-group {{#if inviteMemberErr}}has-error has-feedback{{/if}}">
+			<div class="input-group {{#if inviteMemberErr}}tooltipped tooltipped-danger tooltipped-n{{/if}}" 
+				aria-label="{{inviteMemberErr}}">
+				<div class="input-group-btn">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" 
+						aria-expanded="false">By Email <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li><a href="#" on-click="toggleInviteType">By Username</a></li>
+					</ul>
+				</div><!-- /btn-group -->
+				<input type="email" id="inviteMemberEmail" class="form-control" placeholder="Enter an Email Address" 
+						on-blur="validateInviteEmail" value="{{inviteMemberEmail}}">
+			</div><!-- /input-group -->			
+			{{#if inviteMemberErr}}
+				<span class="form-control-feedback fa fa-times"></span>
+			{{/if}}
+		</div>
+	{{/if}}
+	<div class="modal-footer">	
+		<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+		<button type="submit" class="btn btn-primary {{#inviteMemberErr}}disable{{/}}" on-click="sendMemberInvite">
+			<span class="fa fa-envelope-o"></span>  Send invitation
+		</button>			
+	</div>
+</form>
+</modal>
+
+<modal id="infoModal" title="Change the Town's Information Panel" customFooter="true" large="true" teardown="true" on-hide="infoHide">
+	<alert error="{{infoErr}}"></alert>
+	<previewEditor id="infoEdit" input="{{infoChange}}" atTowns="{{atTowns}}" atUsers="{{atUsers}}"></previewEditor>
+	<div class="modal-footer">	
+		<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+		<button class="btn btn-primary" on-click="infoSave">Save</button>			
+	</div>
+</modal>
+
+<modal id="autoModCategoryModal" title="Auto moderate based on post category" teardown="true" on-hide="autoModCategoryModalHide">
+	<alert error="{{autoModCategoryErr}}"></alert>
+	<p class="help-block">
+		Choose the categories you do <strong>NOT</strong> want posted to this town.
+	</p>
+	<div class="row">
+		<div class="btn-group-vertical col-xs-offset-2 col-xs-8 col-sm-offset-4 col-sm-4 btn-group-category">
+			{{#categories:name}}
+				{{#if town.autoModerator.categories  && town.autoModerator.categories.indexOf(name) !== -1}}
+					<button type="button" class="btn btn-danger" on-click="removeCategory:{{name}}">
+						<span class="fa fa-ban"></span>  {{.}}
+					</button>
+				{{else}}
+					<button type="button" class="btn btn-default" on-click="addCategory:{{name}}">
+						<span class="fa fa-circle-o"></span>  {{.}}
+					</button>
+				{{/if}}
+			{{/categories}}
+		</div>
+	</div>
+	
+</modal>
+
+<modal id="autoModUserModal" title="Auto moderate based on who is posting" teardown="true" on-hide="autoModUserModalHide">
+	<alert error="{{autoModUserErr}}"></alert>
+	<form class="form-horizontal">
+		<div class="form-group">
+			<div class="col-sm-12">
+				<label class="control-label" for="userAge">Enter the Minimum user account age in <em>days</em> required to post to this town</label>	
+			</div>
+		</div>
+		<div class="form-group {{#if userDaysErr}}has-error has-feedback{{/if}}">
+			<div class="col-sm-4 col-xs-6{{#userDaysErr}} tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{userDaysErr}}">
+				<input type="number" min="0" class="form-control" id="userAge" value="{{minUserDaysValue}}" placeholder="Enter a number">
+				{{#if userDaysErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+			<div class="col-sm-2 col-xs-6">
+				<button class="btn btn-primary {{#if minUserDaysValue == town.autoModerator.minUserDays}}disabled{{/if}}" on-click="setMinUserDays">
+					Set
+				</button>
+			</div>
+		</div>
+	</form>
+	<form class="form-horizontal">
+		<div class="form-group">
+			<div class="col-sm-12">
+				<label class="control-label" for="userBan">Choose which users you do <em>NOT</em> want to allow to post to this town</label>	
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="userBan" class="col-sm-2 control-label">Username</label>
+			<div class="col-sm-10">
+				<userSelect class="form-control" id="userBan" on-selected="banUser" selected="{{userBan}}" 
+					placeholder="Enter a username" error="{{banUserErr}}">
+				</userSelect>
+			</div>
+		</div>
+	</form>
+	<table class="table table-condensed">
+		<thead>
+			<th>Banned Users</th>
+			<th></th>
+		</thead>	
+		<tbody>
+			{{#town.autoModerator.users}}
+				<tr>
+					<td>{{.}}</td>
+					<td>
+						<button class="pull-right btn btn-danger tooltipped tooltipped-n" aria-label="Remove Ban" on-click="removeBan">
+							<span class="fa fa-remove"></span>
+						</button>
+					</td>
+				</tr>
+			{{/}}
+		</tbody>
+	</table>
+
+
+</modal>
+
+<modal id="autoModContentModal" title="Auto moderate based the contents of the post" teardown="true" on-hide="autoModContentModalHide">
+	<form class="form-horizontal">
+		<div class="form-group">
+			<div class="col-sm-12">
+				<label class="control-label" for="maxLinks">Enter the Maxium number of links allowed in a post</label>	
+				<p class="help-block">
+					A common characteristic of SPAM posts is a large number of links.
+				</p>
+			</div>
+		</div>
+		<div class="form-group {{#if maxLinksErr}}has-error has-feedback{{/if}}">
+			<div class="col-sm-4 col-xs-6{{#maxLinksErr}} tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{maxLinksErr}}">
+				<input type="number" min="0" class="form-control" id="maxLinks" value="{{maxNumLinksValue}}" placeholder="Enter a number">
+				{{#if maxLinksErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+			<div class="col-sm-2 col-xs-6">
+				<button class="btn btn-primary {{#if maxNumLinksValue == town.autoModerator.maxNumLinks}}disabled{{/if}}" on-click="setMaxNumLinks">
+					Set
+				</button>
+			</div>
+		</div>
+	</form>
+
+	<alert error="{{autoModContentErr}}"></alert>
+	<form class="form-horizontal">
+		{{#if autoModAdvanced}}
+			<div class="form-group">
+				<div class="col-sm-12">
+					<label class="control-label" for="regexpBan">Write a regular expression that, if matched, will auto-moderate a post</label>	
+					<p class="help-block">
+						RE2 regular expression syntax is supported (e.g. No Back tracing, and some other expensive operations).
+					</p>
+				</div>
+			</div>
+			<div class="form-group {{#if regexpErr}}has-error has-feedback{{/if}}">
+				<div class="col-xs-12 col-sm-12{{#regexpErr}} tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{regexpErr}}">
+					<textarea rows="3" class="form-control" id="regexpBan" value="{{regexpBan}}" placeholder="Enter a regular expression">
+				</div>
+				{{#if regexpErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+			<div class="form-group {{#if reasonErr}}has-error has-feedback{{/if}}">
+				<div class="col-xs-9 col-sm-10{{#reasonErr}} tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{reasonErr}}">
+					<input type="text" class="form-control" value="{{regexpReason}}" placeholder="Enter a Reason for moderating the matching post">
+					{{#if reasonErr}}
+						<span class="form-control-feedback fa fa-times">
+						</span>
+					{{/if}}
+				</div>
+
+				<div class="col-xs-3 col-sm-2">
+					<button class="btn btn-default pull-right" on-click="addRegexpBan">
+						<span class="fa fa-plus"></span> Add
+					</button>
+				</div>
+			</div>
+
+		{{else}}
+			<div class="form-group">
+				<div class="col-sm-12">
+					<label class="pull-left control-label" for="wordBan">Choose a word or phrase that is not allowed in posts</label>	
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-xs-9 col-sm-10">
+					<input type="text" class="form-control" id="wordBan" value="{{regexpBan}}" placeholder="Enter a word or phrase">
+				</div>
+				<div class="col-xs-3 col-sm-2">
+					<button class="btn btn-default pull-right" on-click="addWordBan">
+						<span class="fa fa-plus"></span> Add
+					</button>
+				</div>
+			</div>
+		{{/if}}
+		<div class="form-group">
+			<div class="col-sm-4 checkbox">
+				<label>
+					<input type="checkbox" checked="{{autoModAdvanced}}" on-click="autoModAdvanced"> Advanced?
+				</label>
+			</div>
+		</div>
+	</form>
+
+	<table class="table table-condensed regexp-table">
+		<thead>
+			<th>Banned Expressions</th>
+			{{#if autoModAdvanced}}<th>Reason</th>{{/if}}
+			<th class="table-btn"></th>
+		</thead>	
+		<tbody>
+			{{#town.autoModerator.regexpReject:i}}
+				<tr>
+					{{#if autoModAdvanced}}
+						<td class="overflow-title">{{.regexp}}</td>
+						<td>{{.reason}}</td>
+					{{else}}
+						<td class="overflow-title">{{.reason}}</td>
+					{{/if}}
+					<td>
+						<button class="pull-right btn btn-danger tooltipped tooltipped-n" aria-label="Remove Ban" on-click="removeExpression">
+							<span class="fa fa-remove"></span>
+						</button>
+					</td>
+				</tr>
+			{{/}}
+		</tbody>
+	</table>
+</modal>
+
+
+
+
+
+{{/partial}}
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/townSettings.js"></script>
+<script src="/js/message.js"></script>
+<script type="application/json" id="payload">
+	[[json .]]
+</script>
+</body>
+</html>
+[[end]]

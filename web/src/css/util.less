@@ -1,0 +1,38 @@
+.overflow-title {
+	overflow-x: hidden;
+	overflow-y: auto;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.watermark {
+	font-size: 10em;
+	opacity: .3;
+}
+
+.js-warning:before {
+	content: "Sorry, javascript is currently required to run this site properly. Some content may not be accessible with javascript disabled"; 
+}
+.js-warning {
+	font-size: @font-size-h3;
+	text-align: center;
+	width: 100%;
+	opacity: 1;
+}
+
+.no-select {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
+
+
+// for having a link in the input box
+a.form-control-feedback {
+	pointer-events: auto;
+}
+
+
+.bookmarklet {
+	cursor: grab;
+}

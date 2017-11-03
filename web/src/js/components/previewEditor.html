@@ -1,0 +1,67 @@
+<link rel="ractive" href="./editor.html" name="editor">
+<div class="preview-editor">
+<ul class="nav nav-tabs" role="tablist">
+	<li role="presentation" class="tooltipped tooltipped-s active" aria-label="Write">
+		<a id="editorTab" href="#write{{key}}" aria-controls="write{{key}}" role="tab" data-toggle="tab">
+			<span class="fa fa-pencil"></span>
+		</a>
+	</li>
+
+	<li role="presentation"class="tooltipped tooltipped-s" aria-label="Preview">
+		<a href="#preview{{key}}" on-click="preview" aria-controls="preview{{key}}" role="tab" data-toggle="tab">
+			<span class="fa fa-eye"></span>
+		</a>
+	</li>
+
+</ul>
+
+<div class="tab-content">
+	<div role="tabpanel" class="tab-pane active" id="write{{key}}">
+		<editor class="form-control {{class}}" id="{{id}}" input="{{input}}" atTowns="{{atTowns}}" atUsers="{{atUsers}}"></editor>
+	</div>
+	<div role="tabpanel" class="tab-content-panel tab-pane" id="preview{{key}}" on-click="preview">
+		<div class="{{previewClass}} parsed container">
+			{{{parsed}}}
+		</div>
+	</div>
+</div>
+</div>
+
+<style>
+	.preview-editor {
+		position: relative;
+	}
+
+	.parsed {
+		overflow-y: auto;	
+		min-height: 270px;
+		max-width: 100%;
+		padding-top: 5px;
+	}
+
+</style>
+
+<script>
+import "../lib/bootstrap/tab";
+
+component.exports = {
+	isolated: true,
+	data: {
+		key: "",
+	},
+	onrender: function() {
+		var r = this;
+
+		r.on({
+			"preview": function() {
+				r.set("parsed", ts.processMessage(r.get("input")));
+			},
+			"reset": function() {
+				r.set("input", null);
+				r.set("parsed", null);
+			},
+		});
+
+	} //onrender
+};
+</script>

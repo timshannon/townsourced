@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+	<title>Credits and Attribution - townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+	<style type="text/less">
+		@import "css/page.less";
+
+		.lead {
+			font-size: 16px;
+		}
+
+	</style>
+
+</head>
+<body>
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+
+<script id="tMain" type="text/ractive">
+<page class="container" loaded="true">
+	<h1>Credits and Attribution</h1>
+	<hr>
+	<p class="lead">Townsourced is built mainly on open-source software and creative commons elements. These contributions 
+	are the culmination of many hours of work freely and generously given to the world.
+	Without them, Townsourced would not be possible.</p>
+	<p class="lead">Thank you</p>
+
+	<ul>
+		{{#credits:i}}
+			<li>
+				<a href="{{.url}}">{{.name}}</a>
+				- <strong>{{.author}}</strong> - ({{.licenseType}}) 
+				<a href="{{.licenseURL}}">{{.licenseURL}}</a>
+			</li>
+		{{/credits}}
+	</ul>
+
+	<blockquote class="blockquote-reverse">
+		<p>If I have seen further, it is by standing on the shoulders of giants</p>
+		<footer>Isaac Newton</footer>
+	</blockquote>
+
+</page>
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/page.js"></script>
+<script type="application/json" id="payload">
+{ "credits": 
+	[
+		{"name": "Go", "url": "http://golang.org", "author": "The Go Authors", 
+			"licenseType": "BSD", "licenseURL": "http://golang.org/LICENSE"},
+		{"name": "Ractive.js", "url": "http://www.ractivejs.org", "author": "Rich Harris and contributors", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/ractivejs/ractive/blob/dev/LICENSE.md"},
+		{"name": "bootstrap", "url": "http://getbootstrap.com", "author": "Twitter", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/twbs/bootstrap/blob/master/LICENSE"},
+		{"name": "RethinkDB", "url": "http://rethinkdb.com/", "author": "RethinkDB", 
+			"licenseType": "GPL v3", "licenseURL": "https://github.com/rethinkdb/rethinkdb/blob/next/COPYRIGHT"},
+		{"name": "Memcached", "url": "https://memcached.org/", "author": "Anatoly Vorobey, Brad Fitzpatrick, and contributors", 
+			"licenseType": "BSD", "licenseURL": "https://github.com/memcached/memcached/blob/master/LICENSE"},
+		{"name": "ElasticSearch", "url": "https://www.elastic.co/products/elasticsearch", "author": "Elastic", 
+			"licenseType": "Apache 2", "licenseURL": "https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt"},
+		{"name": "jquery", "url": "https://jquery.org", "author": "jQuery Foundation", 
+			"licenseType": "MIT", "licenseURL": "https://jquery.org/license/"},
+		{"name": "CommonMark.js", "url": "https://github.com/jgm/commonmark.js", "author": "John MacFarlane", 
+			"licenseType": "BSD-2-Clause", "licenseURL": "https://github.com/jgm/commonmark.js/blob/master/LICENSE"},
+		{"name": "Font Awesome", "url": "http://fontawesome.io/", "author": "Dave Gandy", 
+			"licenseType": "SIL OFL 1.1 / MIT", "licenseURL": "http://fortawesome.github.io/Font-Awesome/license/"},
+		{"name": "Gobble", "url": "https://github.com/gobblejs/gobble", "author": "Rich Harris and contributors", 
+			"licenseType": "MIT", "licenseURL": "https://opensource.org/licenses/MIT"},
+		{"name": "Less.js", "url": "https://github.com/less/less.js", "author": "Alexis Sellier & The Core Less Team", 
+			"licenseType": "Apache 2", "licenseURL": "https://github.com/less/less.js/blob/master/LICENSE"},
+		{"name": "EmojiOne", "url": "http://emojione.com/", "author": "Rick Moby", 
+			"licenseType": "CC BY 4.0", "licenseURL": "http://emojione.com/licensing/"},
+		{"name": "jquery.atwho", "url": "http://ichord.github.com/At.js", "author": "chord.luo", 
+			"licenseType": "MIT", "licenseURL": "https://opensource.org/licenses/MIT"},
+		{"name": "jquery.Jcrop", "url": "http://github.com/tapmodo/Jcrop", "author": "Kelly Hallman", 
+			"licenseType": "MIT", "licenseURL": "https://opensource.org/licenses/MIT"},
+		{"name": "TinyColor", "url": "https://github.com/bgrins/TinyColor", "author": "Brian Grinstead", 
+			"licenseType": "MIT", "licenseURL": "https://opensource.org/licenses/MIT"},
+		{"name": "Gocheck", "url": "https://github.com/go-check/check", "author": "Gustavo Niemeyer", 
+			"licenseType": "BSD", "licenseURL": "https://github.com/go-check/check/blob/v1/LICENSE"},
+		{"name": "Terminal progress bar for Go (pb)", "url": "https://github.com/cheggaaa/pb", "author": "Sergey Cherepanov", 
+			"licenseType": "BSD", "licenseURL": "https://github.com/cheggaaa/pb/blob/master/LICENSE"},
+		{"name": "httprouter", "url": "https://github.com/julienschmidt/httprouter", "author": "Julien Schmidt", 
+			"licenseType": "BSD", "licenseURL": "https://github.com/julienschmidt/httprouter/blob/master/LICENSE"},
+		{"name": "go-zopfli", "url": "https://github.com/foobaz/go-zopfli", "author": "Google Inc", 
+			"licenseType": "Apache 2", "licenseURL": "http://www.apache.org/licenses/LICENSE-2.0"},
+		{"name": "smtpapi-go", "url": "https://github.com/sendgrid/smtpapi-go", "author": "SendGrid, Inc.", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/sendgrid/smtpapi-go/blob/master/LICENSE.txt"},
+		{"name": "sendgrid-go", "url": "https://github.com/sendgrid/sendgrid-go", "author": "SendGrid, Inc.", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/sendgrid/sendgrid-go/blob/master/LICENSE.txt"},
+		{"name": "OAUTH for Go", "url": "https://github.com/mrjones/oauth", "author": "Matthew R. Jones", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/mrjones/oauth/blob/master/MIT-LICENSE.txt"},
+		{"name": "Imaging", "url": "https://github.com/disintegration/imaging", "author": "Grigory Dryapak", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/disintegration/imaging/blob/master/LICENSE"},
+		{"name": "Go Exif", "url": "https://github.com/rwcarlsen/goexif/", "author": "Robert Carlsen & Contributors", 
+			"licenseType": "BSD", "licenseURL": "https://github.com/rwcarlsen/goexif/blob/go1/LICENSE"},
+		{"name": "GoRethink", "url": "https://github.com/dancannon/gorethink", "author": "Dan Cannon & contributors", 
+			"licenseType": "Apache 2", "licenseURL": "https://github.com/dancannon/gorethink/blob/master/LICENSE"},
+		{"name": "Go Pool", "url": "https://github.com/fatih/pool/tree/master", "author": "Fatih Arslan", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/fatih/pool/blob/master/LICENSE"},
+		{"name": "Go Host Pool", "url": "https://github.com/hailocab/go-hostpool", "author": "Bitly", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/hailocab/go-hostpool/blob/master/LICENSE"},
+		{"name": "Go Backoff", "url": "https://github.com/cenk/backoff", "author": "Cenk Altı", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/cenk/backoff/blob/master/LICENSE"},
+		{"name": "Logrus", "url": "https://github.com/Sirupsen/logrus", "author": "Simon Eskildsen", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/Sirupsen/logrus/blob/master/LICENSE"},
+		{"name": "Go Memcached", "url": "https://github.com/bradfitz/gomemcache", "author": "Brad Fitzpatrick", 
+			"licenseType": "Apache 2", "licenseURL": "https://github.com/bradfitz/gomemcache/blob/master/LICENSE"},
+		{"name": "Elastic", "url": "https://github.com/olivere/elastic", "author": "Oliver Eilhard", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/olivere/elastic/blob/release-branch.v3/LICENSE"},
+		{"name": "Consistent", "url": "https://github.com/stathat/consistent", "author": "Numerotron Inc.", 
+			"licenseType": "MIT", "licenseURL": "https://github.com/stathat/consistent/blob/master/LICENSE"},
+		{"name": "Config", "url": "https://bitbucket.org/tshannon/config", "author": "Tim Shannon", 
+			"licenseType": "MIT", "licenseURL": "https://opensource.org/licenses/MIT"},
+		{"name": "IronSmith", "url": "https://git.townsourced.com/townsourced/ironsmith", "author": "Tim Shannon", 
+			"licenseType": "MIT", "licenseURL": "https://git.townsourced.com/townsourced/ironsmith/src/master/LICENSE"},
+		{"name": "Droid Sans", "url": "https://www.google.com/fonts/specimen/Droid+Sans", "author": "Steve Matteson", 
+			"licenseType": "Apache 2", "licenseURL": "http://www.apache.org/licenses/LICENSE-2.0.html"},
+		{"name": "GIMP", "url": "https://www.gimp.org/", "author": "Spencer Kimball, Peter Mattis and the GIMP Development Team", 
+			"licenseType": "GPLv3", "licenseURL": "https://www.gnu.org/licenses/gpl-3.0.en.html"},
+		{"name": "Inkscape", "url": "https://inkscape.org/", "author": "The Inkscape Development Team", 
+			"licenseType": "GPLv2", "licenseURL": "https://inkscape.org/en/about/license/"},
+		{"name": "GoQuery", "url": "https://github.com/PuerkitoBio/goquery", "author": " Martin Angers & Contributors", 
+			"licenseType": "BSD", "licenseURL": "http://opensource.org/licenses/BSD-3-Clause"}
+	]
+}
+</script>
+</body>
+</html>

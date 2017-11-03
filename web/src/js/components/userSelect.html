@@ -1,0 +1,249 @@
+<link rel="ractive" href="./userIcon.html" name="userIcon">
+{{#if inputGroup}}
+	<div class="form-group {{#if error}}has-error has-feedback{{/if}}">
+		<div class="input-group">
+			{{yield}}
+			{{>input}}
+		</div><!-- /input-group -->			
+	</div>
+{{else}}
+		{{>input}}
+{{/if}}
+
+{{#partial input}}
+	{{#if selected}}
+		<span class="selected-user">
+			{{#if error}}
+				<userIcon link="true" user="{{selected}}"></userIcon>  <span class="text-danger"><strong>{{error}}</strong></span>
+			{{else}}
+				<userIcon link="true" user="{{selected}}"></userIcon>  {{selected.username}}  (<small>{{selected.name || selected.username}}</small>)
+			{{/if}}
+			<a href="#" class="select-remove {{#if error}}text-danger{{/if}}" on-click="remove">
+				<span class="fa fa-remove"></span>
+			</a>
+		</span>
+	{{else}}
+		<div class="dropdown autocomplete {{#if error}}has-error tooltipped tooltipped-danger tooltipped-n{{/if}}" 
+				aria-label="{{error}}">
+
+			<input type="text" autocomplete="off" id="{{id}}" class="{{class}}" value="{{value}}" 
+				placeholder="{{placeholder || 'username or name'}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+				on-keydown="keydown" disabled="{{disabled}}">
+			{{#if loading}}
+				<span class="form-control-feedback fa fa-spin fa-spinner" title="Loading">
+				</span>
+			{{elseif error}}
+				<span class="form-control-feedback fa fa-times">
+				</span>
+			{{/if}}
+			{{#if matching.length > 0}}
+				<ul class="dropdown-menu">
+					{{#matching:i}}
+						<li class="">
+							<a href="#" class="{{#if i === index}}cur{{/if}}" on-click="select">
+								<span class="profile-btn">
+									<userIcon user="{{.}}"></userIcon>  {{.username}}  (<small>{{.name || .username}}</small>)
+								</span>
+							</a>
+						</li>	
+					{{/matching}}
+				</ul>
+			{{/if}}
+		</div>
+	{{/if}} <!-- selected -->
+{{/partial}}
+
+<style>
+	@import "components.less";
+
+	.autocomplete > ul  {
+		width: 100%;
+		border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+		margin-top: 0px;
+	}
+
+	.autocomplete.open > ul {
+		display: block;
+	}
+
+	.autocomplete > ul > li > a {
+		padding-left: 5px;
+		&.cur {
+			background: @component-active-bg;
+			color: @component-active-color;
+		}
+	}
+
+	.input-group {
+		> .selected-user {
+			padding-left: 15px;
+		}
+		> .autocomplete {
+			display: table-cell;
+			> input {
+				border-radius: @input-border-radius;
+				border-bottom-left-radius: 0;
+				border-top-left-radius: 0;
+			}
+		}
+	}
+
+	.select-remove {
+		padding-left: 10px;
+	}
+</style>
+
+<script>
+import {
+	unique,
+} from "../ts/util";
+
+import {err} from "../ts/error";
+
+import {match as matchUser} from "../ts/user";
+
+import "../lib/bootstrap/dropdown";
+
+component.exports = {
+	isolated: true,
+	data: function() {
+		return {
+			selected: null,	
+			loading: false,
+			error: null,
+			users: [],
+			matching: [],
+			maxMatches: 10,
+			show: false,
+			id: "userSelect",
+			index: 0,
+			disabled: false,
+			inputGroup: false,
+			dropdownNode: null,
+		};
+	},
+	onrender: function() {
+		var r = this;
+
+		r.on({
+			"remove": function(event) {
+				event.original.preventDefault();
+				r.set("error", null);
+				r.set("index", 0);
+				r.set("selected", null).then(function() {
+					$(r.nodes[r.get("id")]).focus();
+				});
+			},
+			"select": function(event) {
+				event.original.preventDefault();
+				r.set("selected", event.context);
+				r.fire("reset");
+				r.fire("selected", event.context);
+			},
+			"reset": function() {
+				r.set("value", "");
+				r.set("matching", []);
+				r.set("index", 0);
+			},
+			"selectIndex": function(index) {
+				r.set("selected", r.get("matching")[r.get("index")]);	
+				r.fire("reset");
+				r.fire("selected", r.get("selected"));
+			},
+			"keydown": function(event) {
+				if(!r.get("matching.length")) {
+					return;
+				}
+
+				var e = event.original;
+				if (!e.ctrlKey && !e.altKey && !e.metaKey) {
+					switch (e.keyCode) {
+						case 9: //tab
+						case 13: //enter
+							e.preventDefault();
+							if(r.get("matching.length") > 0) {
+								r.fire("selectIndex");
+							}
+							break;
+						case 40: //down
+							e.preventDefault();
+							r.set("index", Math.min((r.get("matching.length")-1), r.get("index")+1));
+							break;
+						case 38: //up
+							e.preventDefault();
+							r.set("index", Math.max(0, r.get("index")-1));
+							break;
+					};
+				}
+			},
+		});
+
+		r.observe({
+			"value": function(newval) {
+				r.set("error", null);
+				if(!newval) {
+					r.fire("reset");
+					return;
+				}
+
+				updateMatching(newval.toLowerCase());	
+			},
+		});
+
+
+		function updateMatching(match, skipAjax) {
+			var matching = r.get("users").filter(function(user) {
+				var u = user.username;
+				var n = user.name || "";
+
+				return (u.toLowerCase().indexOf(match) === 0 || n.toLowerCase().indexOf(match) === 0);
+			});
+
+			if(matching.length < r.get("maxMatches") && match.length > 1 && !skipAjax) {
+				getMatches(match);
+				return;
+			}
+
+			r.set("matching", matching);
+			if(matching.length === 0 && skipAjax) {
+				r.set("error", "No User found!");
+			}
+			if(r.get("matching.length") > 0) {
+				var node = $(r.nodes[r.get("id")]);
+				if(!node.parent().hasClass("open")) {
+					node.dropdown("toggle");
+				}
+			}
+		}
+
+			
+
+		var delay;
+
+		function getMatches(match) {
+			r.set("loading", true);
+			if (delay) {
+					window.clearTimeout(delay);
+			}
+			delay = window.setTimeout(function() {
+				matchUser(match, r.get("maxMatches"))
+					.done(function(result) {
+						r.set("users", unique([].concat(r.get("users"), result.data), "username").sort(function(a,b) {
+							return a.username > b.username; 	
+						}));
+						updateMatching(match, true);
+					})
+					.fail(function(result) {
+						r.set("error", err(result).message);
+					})
+					.always(function() {
+						r.set("loading", false);
+					});
+			}, 500);
+
+		}
+
+	} //onrender
+};
+</script>

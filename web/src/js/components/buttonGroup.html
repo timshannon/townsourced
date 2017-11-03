@@ -1,0 +1,42 @@
+<div class="btn-group {{class}}">
+	{{#if Array.isArray(items)}}
+		{{#items:i}}
+			<button type="button" on-click="select:{{.}}"
+				class="{{btnClass}} btn {{#if . === selected}}{{selectedClass}}{{else}}{{defaultClass}}{{/if}}">
+				{{.}}
+			</button>
+		{{/items}}
+	{{else}}
+		{{#items:name}}
+			<button type="button" on-click="select:{{name}}"
+				class="{{btnClass}} btn {{#if name === selected}}{{selectedClass}}{{else}}{{defaultClass}}{{/if}}">
+				{{.}}
+			</button>
+		{{/items}}
+
+	{{/if}}
+</div>
+
+<style>
+</style>
+
+<script>
+	component.exports = {
+	data: function() {
+		return {
+			selectedClass: "btn-primary",
+			defaultClass: "btn-default",
+		};
+	},
+	onrender: function() {
+		var r = this;
+	
+		r.on({
+			"select": function(event, item) {
+				r.set("selected", item);
+			},
+		});
+
+	} //onrender
+};
+</script>

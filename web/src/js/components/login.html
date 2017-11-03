@@ -1,0 +1,168 @@
+<form class="form-horizontal">
+{{#if !resetSent}}
+	<!--username-->
+		<div class="form-group {{#if loginErr}}has-error has-feedback{{/if}}">
+			<label class="sr-only" for="username">Username</label>	
+			<div class="col-sm-12 {{#loginErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{loginErr}}">
+				<input class="form-control" id="username" name="username" on-blur="usernameBlur"
+					placeholder="Enter your username {{#if !signup || forgotPass}}or email{{/if}}" value="{{username}}">
+				{{#if loginErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+	<!--username-->
+{{/if}}
+{{#if !forgotPass}}
+	<!--password-->
+		<div class="form-group {{#if passwordErr}}has-error has-feedback{{/if}}">
+			<label class="sr-only" for="password">Password</label>
+			<div class="col-sm-12 {{#passwordErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{passwordErr}}">
+				<input type="password" class="form-control" id="password" name="password" placeholder="Password" 
+					value="{{password}}" on-blur="passwordBlur">
+				{{#if passwordErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+		{{#if !signup}}
+		<div class="form-group">
+			<div class="checkbox col-sm-6">
+				<label aria-label="Remember Password for 15 days" class="tooltipped tooltipped-s">
+					<input type="checkbox" id="rememberMe" name="rememberMe" checked="{{rememberMe}}"> Remember me
+				</label>
+			</div>
+			<div class="col-sm-6">
+				<a id="forgotPassword" href="#" class="pull-right" tabindex="-1" on-click="toggleForgotPassword">Forgot Password?</a>
+			</div>
+		</div>
+		{{else}}
+		<div class="form-group {{#if password2Err}}has-error has-feedback{{/if}}">
+			<label class="sr-only" for="password2">Repeat Password</label>
+			<div class="col-sm-12 {{#password2Err}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{password2Err}}">
+				<input type="password" class="form-control" id="password2" name="password2" on-blur="password2Blur"
+					placeholder="Type your password again" value="{{password2}}">
+				{{#if password2Err}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+		{{/if}}
+	<!--password-->
+
+	<!--email-->
+	{{#if signup}}
+		<div class="form-group {{#if emailErr}}has-error has-feedback{{/if}}">
+			<label class="sr-only" for="email">Enter your Email</label>	
+			<div class="col-sm-12 {{#emailErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{emailErr}}">
+				<input class="form-control" id="email" name="email" on-blur="emailBlur" 
+					placeholder="Enter your email" value="{{email}}">
+				{{#if emailErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+	{{/if}}
+	<!--email-->
+
+	<div class="login-btn">
+		{{#if !signup}}
+			<button on-click="doLogin" class="btn btn-primary{{#waiting}} disabled{{/waiting}}">
+				<span class="fa {{#if waiting}}fa-spin fa-spinner{{else}}fa-sign-in{{/if}}"></span> Log In
+			</button>
+		{{else}}
+			<a href="#" tabindex="-1" on-click="toggleSignup">Log In</a>
+		{{/if}}
+		<strong> or </strong>
+		{{#if !signup}}
+			<a href="#" tabindex="-1" on-click="toggleSignup">Sign Up</a>
+		{{else}}
+			<button on-click="signup" class="btn btn-primary{{#waiting}} disabled{{/waiting}}">
+				<span class="fa {{#if waiting}}fa-spin fa-spinner{{else}}fa-user-plus{{/if}}"></span> Sign Up
+			</button>
+		{{/if}}
+	</div>
+{{elseif resetSent}}
+	<div class="alert alert-info" intro="scale">
+		Email sent!
+	</div>
+	<div class="forgot-btn">
+		<a href="#" tabindex="-1" on-click="toggleForgotPassword">Continue</a>
+	</div>
+{{elseif forgotPass}}
+	<div class="forgot-btn">
+		<a href="#" tabindex="-1" on-click="toggleForgotPassword">Cancel</a>
+		<button on-click="resetPassword" class="btn btn-primary{{#waiting}} disabled{{/waiting}}">
+			<span class="fa {{#if waiting}}fa-spin fa-spinner{{else}}fa-key{{/if}}"></span> Request Password Reset
+		</button>
+	</div>
+{{/if}} <!-- forgotPass -->
+</form>
+
+<div class="login-footer">
+	<div class="row signin-or">
+		<div class="col-sm-5">
+			<hr class="hidden-xs">
+		</div>
+		<div class="signin-or col-sm-2">
+			Or use
+		</div>
+		<div class="col-sm-5">
+			<hr class="hidden-xs">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-4">
+			<button on-click="loginFacebook" class="btn btn-block btn-facebook {{#waiting}} disabled{{/waiting}}">
+				<span class="fa fa-facebook brand-icon"></span> Facebook</button>
+		</div>
+		<div class="col-sm-4">
+			<button on-click="loginGoogle" class="btn btn-block btn-google {{#waiting}} disabled{{/waiting}}">
+				<span class="fa fa-google brand-icon"></span> Google</button>
+		</div>
+		<div class="col-sm-4">
+			<button on-click="loginTwitter" class="btn btn-block btn-twitter {{#waiting}} disabled{{/waiting}}">
+				<span class="fa fa-twitter brand-icon"></span> Twitter</button>
+		</div>
+	</div>
+</div>
+
+<style>
+@import "components.less";
+
+.login-btn {
+	text-align: right;
+
+	 > strong {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+}
+
+.forgot-btn {
+	text-align: right;
+	> button {
+		margin-left: 20px;
+	}
+}
+
+
+.login-footer {
+	text-align: center;
+}
+
+.signin-or {
+	margin-top: 10px;
+	padding-bottom: 10px;
+}
+
+</style>
+<script>
+
+import Login from "./js/login";
+component.exports = Login;
+</script>

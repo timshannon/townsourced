@@ -1,0 +1,188 @@
+<link rel="ractive" href="./modal.html" name="modal">
+<link rel="ractive" href="./userIcon.html" name="userIcon">
+<link rel="ractive" href="./login.html" name="login">
+
+<div>
+<nav class="navbar navbar-default navbar-fixed-top {{#if altBrand}}alt-border{{/if}}" role="navigation"
+	style="{{#if town && altBrand}}border-color: {{town.color}};{{/if}}"> 
+	<div class="container">
+		<div class="navbar-header navbar-ts-brand">
+			<a class="navbar-brand home-link" href="/" title="home">
+				<img src="/images/ts_small.png"> 
+				<span class="ts-title hidden-xs">townsourced</span>
+			</a>  
+		</div>
+				
+		<div class="navbar-right navbar-header">
+			<ul class="nav navbar-nav ts-nav-right">
+			{{#if authenticated}} 
+				<li>
+					{{#if notifications === -1}}
+						<span class="navbar-text fa fa-spin fa-spinner"></span>
+					{{else}}
+						<a href="/user/" class="notification-link tooltipped tooltipped-s" 
+							aria-label="{{notifications || 'No'}} unread notifications">
+								{{#if notifications > 0}} 
+									<span class="notification-badge badge">{{notifications}}</span>
+								{{else}}
+									<span class="fa fa-bell"></span>
+								{{/if}}
+						</a>
+					{{/if}}
+				</li>
+				<li class="dropdown">
+					<a href="#" class="nav-img dropdown-toggle profile-btn" 
+						data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<userIcon user="{{user}}"></userIcon> <span class="caret"></span>
+					</a> 
+					<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel">
+						<li><a href="/user/"><span class="fa fa-user"></span> View Profile</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="#" on-click="logout"><span class="fa fa-sign-out"></span> Logout</a></li>
+					</ul>
+				</li>
+			{{else}} 
+				<li>
+				{{#if !usrLoaded}}
+					<span class="navbar-text fa fa-spin fa-spinner"></span>
+				{{else}}
+					<a href="#" on-click="loginModal" class="navbar-link">Log in / Sign up</a>
+				{{/if}}
+				</li>
+			{{/if}} 
+			</ul>
+		</div>
+		<!--small screen only-->
+		<div class="navbar-small-menu">
+			<ul class="nav navbar-nav ts-nav-right">
+			{{#if authenticated}} 
+				<li class="dropdown">
+					<a href="#" class="notification-link nav-img dropdown-toggle profile-btn" 
+						data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{#if notifications > 0}}
+							<span class="notification-badge badge">{{notifications}}</span>
+						{{else}}
+							<userIcon user="{{user}}"></userIcon>
+						{{/if}}
+						<span class="caret"></span>
+					</a> 
+					<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel">
+						<li><a href="/user/"><span class="fa fa-user"></span> View Profile</a></li>
+						{{#if navbarMenu}}
+							<li role="separator" class="divider"></li>
+							{{yield navbarMenu}}
+						{{/if}}
+						<li role="separator" class="divider"></li>
+						<li><a href="#" on-click="logout"><span class="fa fa-sign-out"></span> Logout</a></li>
+					</ul>
+				</li>
+			{{else}} 
+				{{#if !usrLoaded}}
+					<li>
+						<span class="navbar-text fa fa-spin fa-spinner"></span>
+					</li>
+				{{else}}
+					<li class="hidden-xs">
+						<a href="#" on-click="loginModal" class="navbar-link">Log in / Sign up</a>
+					</li>
+					<li class="hidden-sm active tooltipped tooltipped-w" aria-label="Log in / Sign up">
+						<a href="#" on-click="loginModal" class="navbar-link">
+							<span class="fa fa-sign-in"></span>
+						</a>
+					</li>
+				{{/if}}
+			{{/if}} 
+			</ul>
+		</div>
+		{{yield}}
+	</div>
+</nav> 
+
+<modal id="loginModal" title="{{ title || 'Log in or Sign up' }}" customFooter="true">
+	<login></login>
+</modal> 
+</div>
+
+<style>
+@import "components.less";
+
+.notification-link {
+	padding-bottom: 12px;
+}
+
+.notification-badge {
+	font-size: 17px;
+	background: @brand-warning;
+	color: @btn-warning-color;
+	border-radius: 11px;
+}
+
+.ts-nav-right {
+	margin-right: 0px;
+}
+
+.ts-nav-right > li {
+	display: inline-block;
+}
+
+.nav-img {
+	padding: 9px;
+}
+
+.navbar-small-menu {
+	.pull-right();
+	display: none;
+}
+
+@media (max-width: @screen-xs-min) { 
+	.navbar-small-menu {
+		margin-right: -15px
+	}
+
+}
+
+@media (max-width: @screen-sm-min) { 
+	.navbar-left {
+		display: none;
+	}
+
+	.navbar-right {
+		display: none;
+	}
+
+	.navbar-small-menu {
+		display: inline;
+	}
+}
+
+.town-brand {
+	font-size: 18px;
+}
+
+.ts-title {
+	white-space: nowrap;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+
+	max-width: 165px;
+	@media (min-width: @screen-md-min) { 
+		max-width: 145px;
+	}
+
+	@media (min-width: @screen-lg-min) { 
+		max-width: 240px;
+	}
+}
+
+.alt-border {
+		transition: all .5s ease;
+		border-bottom: @town-border;
+}
+
+</style>
+
+<script>
+
+import Navbar from "./js/navbar";
+component.exports = Navbar;
+</script>

@@ -1,0 +1,112 @@
+[[define "ADMIN"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+	<title>Admin Dashboard - townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+	<style type="text/less">
+		@import "css/page.less";
+
+	</style>
+</head>
+<body>
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+
+<script id="tMain" type="text/ractive">
+<page class="container" loaded="true">
+[[if .Error]]
+	<div class="center-block alert alert-danger" role="alert">
+	 [[.Error]]
+	</div>
+[[else]]
+{{#with stats}}
+<div class="row">		
+	<!--User Count-->
+	<div class="col-md-4">
+		<expandPanel title="Current User Count">
+			<h1 class="text-center">{{userCount}}</h1>	
+			<p>Last {{userLast.length}} Users</p>
+			<ul>
+				{{#userLast:i}}
+					<li><a href="/user/{{.username}}">{{.name || .username}}</a></li>
+				{{/userLast}}
+			</ul>
+		</expandPanel>
+	</div>
+
+	<!--Town Count-->
+	<div class="col-md-4">
+		<expandPanel title="Current Town Count">
+			<h1 class="text-center">{{townCount}}</h1>	
+			<p>Last {{townLast.length}} Towns</p>
+			<ul>
+				{{#townLast:i}}
+					<li><a href="/town/{{.key}}">{{.name}}</a></li>
+				{{/townLast}}
+			</ul>
+		</expandPanel>
+	</div>
+
+	<!--Post Count-->
+	<div class="col-md-4">
+		<expandPanel title="Current Post Count">
+			<h1 class="text-center">{{postCount}}</h1>	
+			<p>Last {{postLast.length}} Posts</p>
+			<ul>
+				{{#postLast:i}}
+					<li><a href="/post/{{.key}}">{{.title}}</a></li>
+				{{/postLast}}
+			</ul>
+		</expandPanel>
+	</div>
+</div><!--row-->
+<div class="row">
+	<!--User Count Trend-->
+	<div class="col-md-4">
+		<expandPanel title="User Count by Day">
+			<chart id="userCountTrend" chart="{{userCountTrendChart}}">
+			</chart>
+		</expandPanel>
+	</div>
+
+	<!--Town Count Trend-->
+	<div class="col-md-4">
+		<expandPanel title="Town Count by Day">
+			<chart id="townCountTrend" chart="{{townCountTrendChart}}">
+			</chart>
+		</expandPanel>
+	</div>
+
+	<!--Post Count Trend-->
+	<div class="col-md-4">
+		<expandPanel title="Post Count by Day">
+			<chart id="postCountTrend" chart="{{postCountTrendChart}}">
+			</chart>
+		</expandPanel>
+	</div>
+
+
+</div><!--row-->
+
+{{/with}}
+[[end]]
+</page>
+
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/admin.js"></script>
+<script type="application/json" id="payload">
+	[[json .Stats]]
+</script>
+</body>
+</html>
+[[end]]

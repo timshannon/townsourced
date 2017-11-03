@@ -1,0 +1,209 @@
+[[define "TOWN"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+	<meta name="description" content="[[.Town.Description]]">
+	<title>[[.Town.Name]] - townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+	<style type="text/less">
+		@import "css/page.less";
+
+		#navCenter {
+			&.fixed {
+				> .navbar-search {
+					margin-right: 40px;
+				}
+
+				> .navbar-category {
+					opacity: 1;
+					margin-right: 0px;
+				}
+			}
+		}
+
+		.navbar-search {
+				transition: all .5s ease;
+		}
+
+		.navbar-category {
+					transition: all .5s ease;
+					opacity: 0;
+					margin-right: -40px;
+					.pull-right();
+		}
+
+		#fixedTrigger {
+			position: absolute;
+			margin-top: -1 * @navbar-height;
+		}
+
+		.header-btn {
+			position: absolute;
+			top: 71px;
+			right: 20px;
+			z-index: 10;
+		}
+
+		.mod-panel {
+			> div, .btn {
+				margin-right: 10px;
+			}
+		}
+
+		.request-sent {
+			font-size: 18px;
+			font-weight: bold;
+		}
+
+	</style>
+</head>
+<body>
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+
+<script id="tMain" type="text/ractive">
+{{>modals}}
+<page currentUser="{{currentUser}}" navgap="false" customNavbar="true" loaded="true" town="{{town}}" altBrand="{{fixed}}">
+	<header town="{{town}}">
+	</header>
+	{{#if !isMember && ((!authenticated && !town.private) || canJoin)}} 
+		<button type="button" class="header-btn btn btn-lg town-btn" on-click="join"> 
+			Join Town
+		</button>
+	{{/if}}
+
+	<div id="fixedTrigger"></div>
+
+	{{#partial navbar}}
+		<ul class="nav navbar-nav navbar-left">
+			<li class="active">
+				<a href="#" on-click="infoPanel" class="tooltipped tooltipped-s" aria-label="View town information">
+					<span class="fa fa-info-circle"></span> 
+				</a>
+			</li>
+		</ul>
+		
+		<div class="navbar-center">
+			<form id="navCenter" class="navbar-center-form" on-submit="search">
+				<div class="navbar-category">
+					<categorySelect class="btn-sm hidden-xs" menu="true" townKeys="{{srcOptions.towns}}" towns="{{townLoad}}" town="{{town}}" 
+						selected="{{searchOptions.category}}" on-select="changeCategory">
+					</categorySelect>
+				</div>
+
+				<div class="navbar-search">
+					<div class="form-group has-feedback">
+						<label class="sr-only" for="search">Search Posts</label>
+						<input type="text" id="search" class="form-control input-sm" placeholder="Search Posts" 
+							value="{{searchOptions.search}}">
+						<a href="#" class="form-control-feedback" on-click="search">
+							<span class="fa fa-search"></span>
+						</a>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		{{#if !authenticated || canPost(town, currentUser)}}
+			<div class="navbar-form navbar-right">
+				<a href="/newpost?town={{town.key}}" class="btn btn-ghost-primary town-btn" on-click="post">
+					<span class="fa fa-pencil-square-o"></span> Post
+				</a>
+			</div>
+		{{/if}}
+	{{/partial}}
+	{{#partial navbarMenu}}
+		<li><a href="/newpost?town={{town.key}}" on-click="post"><span class="fa fa-pencil-square-o"></span> Post</a></li>
+		<li><a href="#" on-click="infoPanel">
+			<span class="fa fa-info-circle"></span> Information Panel</a>
+		</li>
+		{{#if !isMember && (!authenticated || canJoin)}} 
+			<li><a href="#" on-click="join"><span class="fa fa-sign-in"></span> Join Town</a></li>
+		{{/if}}
+	{{/partial}}
+
+
+	[[if .Private]]
+		<div class="text-center">
+			{{#if canJoin}}
+				<h2><span class="fa fa-lock"></span> This town is private, but you have been invited. <br> Click Join Town to become a member!</h2>
+				<div class="text-center">
+					<button type="button" class="btn btn-lg town-btn" on-click="join"> 
+						Join town
+					</button>
+				</div>
+			{{else}}
+				<h2><span class="fa fa-lock"></span> This town is private and you currently do not have access.</h2>
+				{{#if !canJoin}}
+					{{#if !requestSent}}
+						<button type="button" class="btn btn-lg town-btn" on-click="requestInvite"> 
+							<span class="fa fa-envelope-o"></span> Request Access 
+						</button>
+					{{else}}
+						<div class="request-sent" intro="scale">
+							Request sent!
+						</div>
+					{{/if}}
+				{{/if}}
+			{{/if}}
+		</div>
+	[[else]]
+		<postList posts="{{posts}}" user="{{currentUser}}" towns="{{townLoad}}" town="{{town}}" searchOptions="{{searchOptions}}">
+		</postList>
+	[[end]]
+</page>
+{{#partial modals}}
+	<modal id="infoPanel" customHeader="true" customFooter="true" teardown="true">
+		{{#partial header}}
+		{{/partial}}
+		<townPanel town="{{town}}" currentUser="{{currentUser}}" showInfo="true" inModal="true">
+			{{#if isMod}}
+				<hr>
+				<form class="mod-panel">
+					<a href="/town/{{town.key}}/settings" class="btn town-btn">
+						<span class="fa fa-gears"></span> Town Settings
+					</a>
+
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" checked="{{searchOptions.showModerated}}"> Show posts moderated in this town
+						</label>
+					</div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" checked="{{searchOptions.showModeratedAny}}"> Highlight posts moderated in other towns
+						</label>
+					</div>
+
+				</form>
+			{{/if}}
+		</townPanel>
+	</modal>
+
+	<postOptions town="{{town}}"></postOptions>
+{{/partial}}
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/message.js"></script>
+<script src="/js/town.js"></script>
+<script type="application/json" id="townPayload">
+	[[json .Town]]
+</script>
+<script type="application/json" id="postsPayload">
+	[[json .Posts]]
+</script>
+<script type="application/json" id="userPayload">
+	[[json .User]]
+</script>
+
+</body>
+</html>
+[[end]]

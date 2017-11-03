@@ -1,0 +1,31 @@
+<!-- body -->
+<div class="content">
+<table>
+	<tr>
+		<td>
+		<table width="100%"><tr><td align="center">
+			<p class="salutation">Hi {{.To.DisplayName}},</p>
+		</td></tr></table>
+		<p>You've been mentioned in the post <a href='{{url "post"}}/{{FromUUID .Post.Key}}'>{{.Post.Title}}</a>.</p>
+		<br>
+		<div class="content">
+			<!-- button -->
+			<table width="100%"><tr><td align="center">
+			<table class="btn-primary" cellpadding="0" cellspacing="0" border="0">
+			<tr>
+			<td>
+			<a href='{{url "post"}}/{{FromUUID .Post.Key}}'>Click here to view the post.</a>
+			</td>
+			</tr>
+			</table>
+			</table>
+			<!-- /button -->
+		</div>
+		<br>
+		Thank You,
+		<p class="signature">townsourced</p>
+		</td>
+	</tr>
+</table>
+</div>
+<!-- /body -->

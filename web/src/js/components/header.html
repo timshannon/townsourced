@@ -1,0 +1,166 @@
+{{#if image}}
+	<div class="header header-img" style="border-color: {{borderColor}}; background: {{backgroundColor}} 
+			url({{image}}) no-repeat center center; background-size: cover, cover;">
+		<div class="left">
+			{{#if left}}
+				{{>left}}
+			{{/if}}
+		</div>
+		<div class="center">
+			{{yield}}
+		</div>
+		<div class="right">
+			{{#if right}}
+				{{>right}}
+			{{/if}}
+		</div>
+	</div>
+{{else}}
+	<div class="header header-empty" style="border-color: {{borderColor}};">
+		<div class="left">
+			{{#if left}}
+				{{>left}}
+			{{/if}}
+		</div>
+		<div class="center">
+			{{yield}}
+		</div>
+		<div class="right">
+			{{#if right}}
+				{{>right}}
+			{{/if}}
+		</div>
+	</div>
+{{/if}}
+
+<style>
+	@import "components.less";
+
+	@pctFlat: 15%;
+
+	.header-right {
+		color: white;
+
+		font-size: 3em;
+		margin-top: @navbar-height + 15px;
+
+		@media (min-width: @screen-md-min) { 
+			font-size: 5em;
+			.vertical-align();
+			margin-top: @navbar-height / 2; 
+		}
+
+		@media (min-width: @screen-lg-min) { 
+			font-size: 6em;
+			.vertical-align();
+			margin-top: @navbar-height / 2;
+		}
+	}
+
+	.left {
+			float: left;
+			width: @pctFlat;
+			height: 100%;
+			text-align: center;
+	}
+
+	.right {
+			float: left;
+			width: @pctFlat;
+			height: 100%;
+	}
+
+
+	.center {
+			float: left;
+			height: 100%;
+			width: 100 - (@pctFlat * 2);
+	}
+
+	.header {
+		z-index: 10;
+		width: 100%;
+		border-bottom: @town-border;
+	}
+
+	.header-empty {
+		background: @default-header-bg url("/images/public_header.jpg") no-repeat center center; 
+		background-size: cover, cover;
+
+		@emptyRatio:  5;
+		height: @screen-sm-min / @emptyRatio;
+		
+		@media (min-width: @screen-md-min) { 
+			height: @screen-md-min / @emptyRatio;
+		}
+
+		@media (min-width: @screen-lg-min) { 
+			height: @screen-lg-min / @emptyRatio;
+		}
+	}
+
+	.header-img {
+
+		height: @header-height-xs;
+		@media (min-width: @screen-sm-min) { 
+				height: @header-height-sm;
+		}
+
+		@media (min-width: @screen-md-min) { 
+				height: @header-height-md;
+		}
+
+		@media (min-width: @screen-lg-min) { 
+				height: @header-height-lg;
+		}
+
+	}
+</style>
+<script>
+import "../lib/tinycolor";
+import {defaultTownColor} from "../ts/town";
+
+component.exports = {
+	isolated: true,
+	data: function() {
+		return {
+			town: {},
+			borderColor: defaultTownColor,
+			backgroundColor: tinycolor(defaultTownColor).lighten(20),
+		};
+	},
+	onrender: function() {
+		var r = this;
+	
+		r.observe({
+			"town": function(newval, oldval) {
+				if(newval) {
+					var color = r.get("town.color") || defaultTownColor;
+					r.set("borderColor", color);
+					r.set("backgroundColor", tinycolor(color).lighten(20));
+					var imageKey = r.get("town.headerImage");
+					if (!imageKey) {
+							r.set("image", null);
+							return;
+					}
+
+					var imgPath = "/api/v1/image/" + imageKey;
+
+					r.set("image", imgPath+"?placeholder");
+
+					var img = new Image();
+					img.onload = function() {
+						r.set("image", imgPath);
+					}
+
+					img.src = imgPath;
+					if (img.complete)  {
+						img.onload();	
+					}
+				}
+			},
+		});
+
+	} //onrender
+};
+</script>

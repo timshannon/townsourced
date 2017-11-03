@@ -1,0 +1,25 @@
+{{#if link && user}}
+	<a class="profile-btn" href="/user/{{user.username}}">
+		{{>icon}}
+	</a>
+{{else}}
+		{{>icon}}
+{{/if}}
+{{#partial icon}}
+	{{#if user}}
+		{{#if user.profileIcon}}
+			<img src="/api/v1/image/{{user.profileIcon}}">
+		{{else}}
+			<span class="profile-btn fa fa-2x fa-user"></span>
+		{{/if}}
+	{{else}}
+		<img src="/images/ts_small.png">
+	{{/if}}
+{{/partial}}
+
+
+<script>
+component.exports = {
+	isolated: true,
+};
+</script>

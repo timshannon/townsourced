@@ -1,0 +1,36 @@
+<link rel="ractive" href="./modal.html" name="modal">
+
+<modal title="{{title}}" teardown="true" large="true">
+	{{>content}}
+</modal>
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<a href="#" class="pull-right" on-click="expand"><span class="fa fa-expand"></span></a>
+		{{title}}
+	</div>
+	<div class="panel-body">
+		{{>content}}
+	</div>
+</div>
+
+<style>
+	@import "components.less";
+
+</style>
+<script>
+
+component.exports = {
+	isolated: false,
+	onrender: function() {
+		var r = this;
+
+		r.on({
+			expand: function(event) {
+				event.original.preventDefault();
+				r.findComponent("modal").fire("open");
+			},
+		});
+	} //onrender
+};
+</script>

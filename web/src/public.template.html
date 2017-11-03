@@ -1,0 +1,709 @@
+[[define "PUBLIC"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!--<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' www.google-analytics.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> -->
+
+	<meta property="og:type"               content="website" />
+	<meta property="og:title"              content="Townsourced" />
+	<meta property="og:site_name"          content="townsourced" />
+	<meta property="og:description" content="A locally moderated community bulletin board, built to help your communities discover events, share, shop and sell locally." />
+	<meta property="og:image" content="https://www.townsourced.com/images/facebookShare.jpg" />
+	<meta property="og:image:url" content="https://www.townsourced.com/images/facebookShare.jpg" />
+	<meta property="og:url" content="https://www.townsourced.com/" />
+
+	<meta itemprop="description" content="A locally moderated community bulletin board, built to help your communities discover events, share, shop and sell locally." />
+	<meta itemprop="image" content="https://www.townsourced.com/images/facebookShare.jpg" />
+	<meta itemprop="name" content="Townsourced" />
+	
+	<link rel="canonical" href="https://www.townsourced.com"/>
+
+	<title>townsourced - Share, shop and sell locally</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+
+	<style type="text/less">
+		@import "css/page.less";
+
+		.social-links {
+			position: absolute;
+			right: 0;
+			top: 0;
+			margin: 15px;
+			font-size: 2em;
+			> a {
+				margin-right: 0px;
+				color: white;
+				&:hover,
+				&:focus {
+					color: darken(white, 15%);
+					text-decoration: none; 
+				}
+			}
+		}
+
+		.site-description {
+			.center-block();
+			max-width: 930px;
+
+			font-weight: bold;
+			color: white;
+			font-size: @font-size-h4;
+			padding-right: 15px;
+			padding-left: 15px;
+			margin-top: 35px;
+			
+			@media (min-width: @screen-lg-min) {
+				font-size: @font-size-h3;
+			}
+		}
+
+		.fat-white {
+			border-color: white;
+			border-width: 6px;
+		}
+
+		.login-container {
+			position: relative;
+			overflow: hidden;
+			text-align: center;
+			//background-color: @ts-brand-3;
+			color: white;
+			padding: 20px;
+			& hr {
+				border-color: white;
+			}
+		}
+
+		#loginFrame {
+			position: absolute;
+			background-color: @ts-brand-3;
+			z-index: -1;
+			right: 0;
+			bottom: 0;
+			top: -2px;
+			left: 1px;
+			transform: skew(-5deg) rotate(-4deg);
+			transform-origin: bottom right;	
+			border: 2px solid @ts-brand-1;
+		}
+
+		#loginFrameBottomRight {
+			position: absolute;
+			background-color: transparent;
+			z-index: -1;
+			right: 0;
+			bottom: 0;
+			top: 0;
+			left: 0;
+			border: 2px solid @ts-brand-1;
+			border-top-width: 0;
+			border-left-width: 0;
+		}
+
+		.thirdparty {
+				padding-right: 5px;
+				padding-left: 5px;
+
+				> button {
+
+					@media (min-width: @screen-lg-min) { 
+						padding-left: 24px;
+					}
+
+					> .fa {
+						position: absolute;
+						padding: 4px;
+						left: 10px;
+
+						@media (min-width: @screen-md-min) and (max-width: @screen-md-max) { 
+							position: relative;
+							padding: 0;
+							left: 0;
+						}
+					}
+				}
+		}
+
+
+		#btnSignup {
+			color: @ts-brand-1;
+			background-color: white;
+			border-color: @ts-brand-1;
+			font-weight: bold;
+			border-width: 4px;
+			@media (min-width: @screen-lg-min) { 
+				font-size: 2em;
+			}
+
+
+
+			&:hover,
+			&:focus,
+			&.focus,
+			&:active,
+			&.active {
+				color: lighten(@ts-brand-1, 10%);
+				border-color: lighten(@ts-brand-1, 10%);
+			}
+		}
+
+		#btnLogin {
+			color: @ts-brand-1;
+			background-color: white;
+			font-weight: bold;
+			padding-right: 40px;
+			padding-left: 40px;
+
+			&:hover,
+			&:focus,
+			&.focus,
+			&:active,
+			&.active {
+				color: lighten(@ts-brand-1, 10%);
+			}
+		}
+
+		@post-inner-radius: 2px;
+
+		.post {
+			position: relative;
+			display: inline-block;
+			vertical-align: top;
+			color: @text-color;
+			text-decoration: none;
+			border: 1px solid darken(@panel-default-border, 10%);
+			border-radius: @border-radius-base;
+			background-color: @panel-bg;
+			margin-bottom: 10px;
+			margin-right: 10px;
+		}
+
+		.post-title {
+			position: absolute;
+			background-color: @gray-lighter;
+			color: @brand-primary;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			padding: 5px;
+			text-align: center;
+			opacity: .9;
+			z-index: 10;
+		}
+
+		.post-time {
+				position: absolute;
+				max-height: 50px;
+				top: 0;
+				left:0;
+				color: #fff;
+				font-size: 12px;
+				padding: 5px;
+				background-color: rgba(0, 0, 0, .5);	
+				border-bottom-right-radius: @border-radius-base;
+				border-top-left-radius: @post-inner-radius;
+				text-align: left;
+				margin-right: 5px;
+		}
+		
+		.post-img {
+			border-radius: @post-inner-radius;
+
+			width: 238px;
+			height: 238px;
+		}
+
+		.post-time {
+			font-size: 10px;
+		}
+
+		.post-overlay {
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			top: 0px;
+			bottom: 0px;
+			border-radius: @post-inner-radius;
+			opacity: 0;
+
+			&:hover {
+				opacity: 1;
+				background-color: rgba(0, 0, 0, .1);	
+			}
+		}
+
+		.left-center {
+			margin-top: 20px;
+			text-align: center;
+			font-size: 0; // fix extra space with inline-block elements
+		}
+
+		.town-search-title {
+			color: @gray-light;
+			font-weight: bold;
+			margin: 5px;
+		}
+
+		.town-search {
+			display: inline-block;
+			margin-left: 15px;
+			margin-top: 5px;
+		}
+
+		.ts-icon {
+			.vertical-align(absolute);
+			left: 0;
+			right: 0;
+			margin: 0 auto;
+			text-align: center;
+		}
+
+		.public-header {
+			z-index: 10;
+			width: 100%;
+			padding-top: 1px; // offset hero margin-top
+
+			height: @header-height-xs;
+			@media (min-width: @screen-sm-min) { 
+					height: @header-height-sm;
+			}
+
+			@media (min-width: @screen-md-min) { 
+					height: @header-height-md;
+			}
+
+			@media (min-width: @screen-lg-min) { 
+					height: @header-height-lg;
+			}
+			background: @default-header-bg url("/images/public_header.jpg") no-repeat center center; 
+			background-size: cover, cover;
+		}
+
+		#landingBrand {
+			display: inline-block;
+		}
+
+		//sections
+
+		section {
+			position: relative;
+			padding: 20px;
+		}
+
+		.section-text {
+			margin-top: 40px;
+		}
+
+		#loginSection {
+			padding-bottom: 50px;
+			z-index: 1;
+		}
+
+		#questionSection {
+			text-align: center;
+			background-color: @ts-brand-2; 
+			color: #fff;
+			padding-top: 60px;
+			padding-bottom: 60px;
+
+			h1 {
+				font-size: 36px;
+				@media (min-width: @screen-sm-min) { 
+					font-size: 48px;
+				}
+
+				font-weight: bold;
+			}
+		}
+
+		.image-section {
+			color: #fff;	
+			padding-top: 200px;
+			padding-bottom: 200px;
+			font-size: 1.5em;
+			text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+
+			h1 {
+				font-size: 30px;
+				font-weight: bold
+			}
+
+		}
+
+		#townsSection {
+			background: rgb(117, 83, 52) url("/images/door.jpg") no-repeat center center; 
+			background-size: cover, cover;
+
+			.section-text {
+				padding-right: 20px;
+			}
+		}
+
+
+		#securitySection {
+			background-color: @gray-lighter;
+			font-size: 1.5em;
+			padding-top: 150px;
+			padding-bottom: 150px;
+			.section-security-text {
+				padding-top: 64px;
+			}
+
+			ul {
+				color: @gray;
+			}
+
+			h1 {
+				font-size: 30px;
+				font-weight: bold
+			}
+
+		}
+
+		#socialSection {
+			background: rgb(84, 78, 53) url("/images/park_bench.jpg") no-repeat center center; 
+			background-size: cover, cover;
+
+			.section-text {
+				padding-right: 20px;
+			}
+		}
+
+		#signupSection {
+			padding-top: 100px;
+			padding-bottom: 100px;
+			background-color: @gray-lighter;
+			text-align: center;
+			h1 {
+				font-weight: bold;
+			}
+
+			p {
+				color: @gray;
+				font-size: 18px;
+				padding-left: 15px;
+				padding-right: 15px;
+
+				@media (min-width: @screen-md-min) { 
+					padding-left: 50px;
+					padding-right: 50px;
+				}
+			}
+
+			.signup-call {
+				padding-bottom: 40px;
+				.ts-em {
+					color: @ts-brand-1;
+				}
+			}
+			
+		}
+
+		#btnSignupBottom {
+			font-size: 2em;
+			font-weight: bold;
+		}
+
+		#content {
+			padding-bottom: 100px !important; // Fix this
+		}
+		
+	</style>
+
+</head>
+<body>
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+<script id="tMain" type="text/ractive">
+<modal id="loginModal" title="Log in or Sign up" customFooter="true">
+
+	<login></login>
+</modal> 
+
+<page loaded="true" skipNav="true">
+	<div class="public-header">
+		<div class="hero">
+			<h1 class="title">
+				<img id="landingBrand" class="hero-brand" src="/images/ts.svg"> 
+				townsourced
+				<p class="tag-line">Share, shop and sell locally.</p>
+			</h1>
+			<h3 class="site-description hidden-xs">
+				A locally moderated community bulletin board, built to help <em>your</em> communities discover events, 
+				share, shop and sell locally.
+			</h3>
+		</div>
+
+
+		<div class="social-links">
+			<a href="https://www.instagram.com/townsourced">
+				<span class="fa fa-fw fa-instagram"></span>
+			</a>
+			<a href="https://www.twitter.com/townsourced">
+				<span class="fa fa-fw fa-twitter"></span>
+			</a>
+			<a href="https://facebook.com/townsourced">
+				<span class="fa fa-fw fa-facebook"></span>
+			</a>
+			<a href="https://blog.townsourced.com">
+				<span class="fa fa-fw fa-rss"></span>
+			</a>
+		</div>
+	</div>
+
+	<section id="loginSection">
+		<div class="container">
+			<div class="row mid-page">
+				<h3 class="town-search-title text-center">See what's happening in towns near you...
+					<form class="form-inline town-search" on-submit="townSearch">
+						<div class="form-group has-feedback">
+							<label class="sr-only" for="search">Search for towns</label>
+							<input type="text" id="search" class="form-control input-lg" placeholder="Search for towns" 
+								value="{{townSearch}}">
+							<a href="#" class="form-control-feedback" on-click="townSearch">
+								<span class="fa fa-search"></span>
+							</a>
+						</div>
+					</form>
+				</h3>
+				<hr class="fat-white">
+				<div class="col-md-8">
+					<div class="left-center">
+						{{#local:i}}
+							<a href="/post/{{.key}}" class="no-select post">
+								{{#if .featuredImage}}
+									<image class="post-img" key="{{.featuredImage}}" thumb="true"></image>
+								{{else}}
+									<img class="post-img" src="/images/placeholder.png">
+									<span class="ts-icon">
+										<tsIcon></tsIcon>
+									</span>
+								{{/if}}
+								<h4 class="post-title overflow-title">{{.title}}</h4>
+								<div class="post-overlay">
+									<div class="post-time">
+										Posted {{since(this.published)}} ago
+										<br>
+										<span class="fa fa-map-marker"></span> {{postTown(this)}}
+									</div>
+								</div>
+							</a>
+						{{/local}}
+						{{#towns:i}}
+							<a href="/town/{{.key}}" class="no-select post">
+								{{#if .headerImage}}
+									<image class="post-img" key="{{.headerImage}}" thumb="true"></image>
+								{{else}}
+									<img class="post-img" src="/images/public_header.jpg">
+								{{/if}}
+								<h4 class="post-title overflow-title">{{.name}}</h4>
+								<div class="post-overlay">
+									<div class="post-time">
+										<span class="fa fa-university"></span> Registered {{since(this.created)}} ago
+									</div>
+								</div>
+							</a>
+						{{/towns}}
+					</div>
+				</div> <!-- col -->
+
+				<div class="col-md-4">
+					{{>login}}
+				</div> <!-- col -->
+			</div> <!-- row -->
+		</div> <!-- container -->
+	</section>
+
+	<section id="questionSection">
+		<div class="container">
+			<h1>What Makes Townsourced <em>Different?</em></h1>
+		</div> <!-- container -->
+	</section>
+
+	<section id="townsSection" class="image-section">
+		<div class="row">
+			<div class="col-sm-offset-6 col-sm-6">
+				<div class="section-text">
+					<h1>Townsourced is about more than just towns, 
+					<br>it's about <em>communities.</em></h1>
+					<ul class="fa-ul">
+						<li><i class="fa-li fa fa-check-square"></i>Register your school <em>to ask for volunteers.</em></li>
+						<li><i class="fa-li fa fa-check-square"></i>Register your dorm <em>and sell your old fridge.</em></li>
+						<li><i class="fa-li fa fa-check-square"></i>Register your clubs <em>to share your next fundraiser or meet-up.</em></li>
+						<li><i class="fa-li fa fa-check-square"></i><strong>And more!</strong></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="securitySection">
+		<div class="row">
+			<div class="col-sm-offset-1 col-sm-5">
+				<div class="section-security-text">
+					<h1>Safe and SPAM-Free</h1>
+					<ul class="fa-ul">
+						<li><i class="fa-li fa fa-check-square"></i>Locally moderated by members in <em>your</em> community.</li>
+						<li><i class="fa-li fa fa-check-square"></i>With private, secure messaging, you don't need to share personal 
+							information like email addresses or phone numbers.</li>
+						<li><i class="fa-li fa fa-check-square"></i>
+							You can log in with your social networks, while keeping them private and separate from Townsourced.
+						</li>
+						<li><i class="fa-li fa fa-check-square"></i>
+							Cash-less transactions mean you don't need to meet strangers with cash in hand.
+							<small><span class="tooltipped tooltipped-n" aria-label="Coming soon!">*</span></small>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="col-sm-5">
+				<img class="img-responsive" src="/images/laptop.png">
+			</div>
+		</div>
+	</section>
+
+	<section id="socialSection" class="image-section">
+		<div class="row">
+			<div class="col-sm-offset-6 col-sm-5">
+				<div class="section-text">
+					<h1>Not Another Social Network</h1>
+					<p>Townsourced isn't another place to share selfies or what you had for lunch, it's about being a <em>member in a community.</em></p>
+					<p>You are a member of multiple communities, and often they overlap.  Townsourced allows you to post to all 
+						of your communities once, <em>simultaneously</em>, without having to manage separate	posts in separate groups.</p>
+				</div>
+			</div>
+		</div>
+		</section>
+
+	<section id="signupSection">
+		<div class="row signup-call">
+			<div class="col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6">
+				<h1>See what's happening in your communities!</h1>
+				<p><span class="ts-em">Local is important.</span> Sign up and see first hand how strong, self-sustaining and connected your 
+				local communities can be. Easily browse and find something <span class="ts-em">used, but still useful</span> in 
+				<em>your</em> communities.
+				</p>
+			</div>
+		</div>
+		<button type="button" id="btnSignupBottom" class="btn btn-lg btn-brand-1" on-click="signupLink">
+			Sign Up Today!	
+		</button>
+	</section>
+
+</page>
+
+{{#partial login}}
+<div class="login-container">
+	<div id="loginFrame"></div>
+	<div id="loginFrameBottomRight"></div>
+
+	<h2>New User?</h2>
+	<button type="button" id="btnSignup"class="btn btn-lg btn-block" on-click="signupLink">
+		Sign Up Here	
+	</button>
+
+	<div class="row">
+		<div class="col-sm-4">
+			<hr class="hidden-xs">
+		</div>
+		<div class="col-sm-4">
+			<h4>Or use</h4>
+		</div>
+		<div class="col-sm-4">
+			<hr class="hidden-xs">
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="thirdparty col-sm-4">
+			<button on-click="loginFacebook" class="btn btn-block btn-facebook {{#waiting}} disabled{{/waiting}}">
+				<span class="fa fa-facebook"></span><span class="hidden-md"> Facebook</span></button>
+		</div>
+		<div class="thirdparty col-sm-4">
+			<button on-click="loginGoogle" class="btn btn-block btn-google {{#waiting}} disabled{{/waiting}}">
+				<span class="fa fa-google"></span><span class="hidden-md"> Google</span></button>
+		</div>
+		<div class="thirdparty col-sm-4">
+			<button on-click="loginTwitter" class="btn btn-block btn-twitter {{#waiting}} disabled{{/waiting}}">
+				<span class="fa fa-twitter"></span><span class="hidden-md"> Twitter</span></button>
+		</div>
+	</div>
+
+	<hr>
+	<h3>Have a login?</h3>		
+
+	<form class="form-horizontal" on-submit="doLogin">
+	<!--username-->
+		<div class="form-group {{#if loginErr}}has-error has-feedback{{/if}}">
+			<label class="sr-only" for="usernameFront">Username</label>	
+			<div class="col-sm-12 {{#loginErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{loginErr}}">
+				<input class="form-control" id="usernameFront" name="usernameFront" on-blur="usernameBlur"
+					placeholder="Enter your username or email" value="{{username}}">
+				{{#if loginErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+	<!--username-->
+	<!--password-->
+		<div class="form-group {{#if passwordErr}}has-error has-feedback{{/if}}">
+			<label class="sr-only" for="passwordFront">Password</label>
+			<div class="col-sm-12 {{#passwordErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{passwordErr}}">
+				<input type="password" class="form-control" id="passwordFront" name="passwordFront" placeholder="Password" 
+					value="{{password}}" on-blur="passwordBlur">
+				{{#if passwordErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="checkbox col-sm-6">
+				<label aria-label="Remember Password for 15 days" class="tooltipped tooltipped-s">
+					<input type="checkbox" id="rememberMeFront" name="rememberMeFront" checked="{{rememberMe}}"> Remember me
+				</label>
+			</div>
+			<div class="col-sm-6">
+				<a id="forgotPasswordFront" href="#" class="pull-right" tabindex="-1" on-click="forgotPasswordLink">
+					Forgot Password?
+				</a>
+			</div>
+		</div>
+		<button type="submit" id="btnLogin" class="btn btn-lg{{#waiting}} disabled{{/waiting}}" on-click="doLogin">
+			{{#if waiting}}<span class="fa fa-spin fa-spinner"></span>{{/if}}  Login
+		</button>
+
+	</form>
+
+</div>
+{{/partial}}
+</script>
+<script src="js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/public.js"></script>
+<script type="application/json" id="local">
+	[[json .Local]]
+</script>
+<script type="application/json" id="towns">
+	[[json .Towns]]
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-76243856-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
+[[end]]

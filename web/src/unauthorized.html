@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+	<title>Login to Continue - townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+
+	<style type="text/less">
+		@import "css/page.less";
+
+	</style>
+</head>
+<body>
+	<nav class="navbar navbar-default navbar-static-top" role="navigation"> 
+		<div class="container">
+			<div class="navbar-header navbar-ts-brand">
+				<a class="navbar-brand" href="/" title="home">
+					<img src="/images/ts_small.png"><span class="ts-title">townsourced</span>
+				</a>  
+			</div>
+		</div>
+	</nav> 
+
+	<div id="main">
+	</div>
+
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+
+	
+<script id="tMain" type="text/ractive">
+<div class="container">
+	<div class="row">
+		<div class="col-sm-2">
+		</div>
+		<div class="col-sm-8">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Please Login to Continue</h3>
+				</div>
+				<div class="panel-body">
+					<login></login>
+				</div>
+			</div> <!-- panel -->
+		</div> <!-- col -->
+	</div> <!-- row -->
+</div> <!-- container -->
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/unauthorized.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,238 @@
+<link rel="ractive" href="./navbar.html" name="navbar">
+
+<div id="pageContainer">
+	{{#if !skipNav}}
+		<navbar user="{{currentUser}}" navbarMenu="{{customNavbar}}" town="{{town}}" altBrand="{{altBrand}}">
+			{{#if customNavbar}}
+				{{yield navbar}}
+			{{/if}}
+			{{#partial navbarMenu}}
+				{{yield navbarMenu}}
+			{{/}}
+		</navbar>
+		{{#if navgap}}
+			<div class="nav-gap"></div>
+		{{/if}}
+	{{/if}}
+
+	{{#if loaded}}
+		{{#if four04}} 
+			<div class="container">
+				<div class="lead-text">
+					<h1 class="errmsg-1 text-center text-brand-2">Sorry!</h1>
+					<h1 class="errmsg-2 text-center">We must have missed a turn...</h1>
+				</div>
+				<img class="img-responsive panel panel-default" src="/images/404.jpg">
+			</div>
+		{{elseif error}}
+			<div class="container">
+				<div class="lead-text">
+					<h1 class="errmsg-1 text-center text-brand-2">Oops!</h1>
+					<h1 class="errmsg-2 text-center">Something didn't go quite as planned...</h1>
+				</div>
+				<img class="img-responsive panel panel-default" src="/images/500.jpg">
+			</div>
+		{{elseif versionConflict}}
+			<div class="container">
+				Version Conflict please <a href="javascript:location.reload()">refresh the page</a> and try again.
+			</div>
+		{{elseif invalidCSRF}}
+			<div class="container">
+				Please <a href="javascript:location.reload()">refresh the page</a> and try again.
+			</div>
+		{{elseif tooManyRequests }}
+			<div class="container">
+				<div class="lead-text">
+					<h1 class="errmsg-1 text-center text-brand-2">Whoa!</h1>
+					<h1 class="errmsg-2 text-center">Slow down and let me catch up...</h1>
+				</div>
+				<img class="img-responsive panel panel-default" src="/images/429.jpg">
+			</div>
+		{{elseif notAuthenticated}}
+			<div class="container">
+				<span class="center-block alert alert-warning">
+					<span class="fa fa-exclamation-triangle text-danger"></span>  
+					{{notAuthenticated}} <a href="#" class="alert-link" on-click="login">Log in here</a>.
+				</span>
+			</div>
+		{{else}}
+			<div id="content" class="{{class}}">
+				{{yield}}
+			</div>
+		{{/if}}
+	{{else}}
+		<h3 class="text-center"><span class="fa fa-spinner fa-spin"></span>  loading</h3>
+	{{/if}}
+
+	{{#if !skipFooter}}
+	<div id="footer">
+		<p class="copyright hidden-xs"><strong>© 2016 townsourced</strong></p>
+		<ul class="list-inline footer-links">
+			<li><a href="/help/">Help</a></li>
+			<li><a href="mailto:info@townsourced.com">Contact</a></li>
+			<li><a href="https://solutions.townsourced.com">Solutions</a></li>
+			<li><a href="/attribution">Attribution</a></li>
+		</ul>
+		<ul class="list-inline footer-social-links">
+			<li>
+				<a href="https://www.instagram.com/townsourced">
+					<span class="fa fa-fw fa-instagram"></span>
+				</a>
+			</li>
+			<li>
+				<a href="https://www.twitter.com/townsourced">
+					<span class="fa fa-fw fa-twitter"></span>
+				</a>
+			</li>
+			<li>
+				<a href="https://facebook.com/townsourced">
+					<span class="fa fa-fw fa-facebook"></span>
+				</a>
+			</li>
+			<li>
+				<a href="https://blog.townsourced.com">
+					<span class="fa fa-fw fa-rss"></span>
+				</a>
+			</li>
+		</ul>
+	</div>
+	{{/if}}
+</div>
+
+<style>
+	@import "components.less";
+
+	#pageContainer {
+		position: relative;
+		min-height: 100%;
+	}
+
+	#content {
+		padding-bottom: 150px;
+	}
+
+	#footer {
+		text-align: center;
+		width: 100%;
+		position: absolute;
+		bottom: 0;
+		height: 100px;
+		font-size: 1em;
+		background-color: #6B9F3B;
+		color: white;
+		padding: 15px;
+	}
+
+	.copyright {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		padding: 15px;
+		margin: 0;
+	}
+
+	.nav-gap {
+		position: relative;
+		height: @navbar-height;
+		margin-bottom: @navbar-margin-bottom;
+	}
+
+	.errmsg-1 {
+		font-weight: bold;
+		font-size: 4.5em;
+	}
+
+	@media (min-width: @screen-sm) { 
+		.lead-text {
+			position: absolute;	
+			left: 50%;
+			z-index: 10;	
+		}
+	}
+	.errmsg-2 {
+		font-weight: bold;
+		margin-top: 10px;
+	}
+
+	.footer-links {
+		margin-bottom: 5px;
+		& a {
+			color: white;
+		}
+	}
+
+	.footer-social-links {
+		font-size: 2em;
+		margin-bottom: 0;
+		& a {
+			color: white;
+			&:hover,
+			&:focus {
+				color: darken(white, 15%);
+				text-decoration: none; 
+			}
+		}
+	}
+</style>
+<script>
+import {setPage} from "../ts/error";
+import {
+    overflowToTitle
+}
+from "../ts/util";
+
+component.exports = {
+	data: {
+		loaded: false,
+		four04: false,
+		tooManyRequests: false,
+		error: false,
+		versionConflict: false,
+		invalidCSRF: false,
+		notAuthenticated: false,
+		customNavbar: false,
+		navgap: true,
+		town: null,
+		altBrand: false,
+	},
+	onrender: function() {
+		var r = this;
+		setPage(r);
+
+		overflowToTitle();
+		r.on({
+			"login": function(event) {
+				if(event) {
+					event.original.preventDefault();
+				}
+				r.findComponent("navbar").fire("login", "Login In to continue");
+			},
+			"four04": function(error) {
+				r.set("loaded", true);
+				r.set("four04", true);
+			},
+			"error": function(error) {
+				r.set("loaded", true);
+				r.set("error", true);
+			},
+			"tooManyRequests": function(error) {
+				r.set("loaded", true);
+				r.set("error", true);
+			},
+			"versionConflict": function(error) {
+				r.set("loaded", true);
+				r.set("versionConflict", true);
+			},
+			"invalidCSRF": function(error) {
+				r.set("loaded", true);
+				r.set("invalidCSRF", true);
+			},
+			"notAuthenticated": function(error) {
+				r.set("loaded", true);
+				r.set("notAuthenticated", error || "You must be logged in to use this page!");
+			},
+		});
+		
+	} //onrender
+};
+</script>

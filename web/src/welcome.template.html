@@ -1,0 +1,392 @@
+[[define "WELCOME"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+	<title>Welcome to townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+
+	<style type="text/less">
+		@import "css/page.less";
+
+		#pageContainer {
+			background: @default-header-bg url("/images/background1.jpg") no-repeat center center; 
+			background-size: cover;
+		}
+
+		//steps
+
+		.step-panel {
+			position: relative;
+			margin-top: 40px;
+			> .panel-body {
+				background-color: @background-color;
+			}
+		}
+
+		.step-header {
+			text-align: center;
+			font-size: 28px;
+			margin-top: 5px;
+			.small {
+				font-size: 60%;	
+			}
+		}
+
+		.step-counter {
+			position: absolute;
+			top: 0;
+			right: 0;
+			margin: 15px;
+			color: @gray-light;
+		}
+
+
+		.step-btn-group {
+			text-align: right;
+		}
+
+
+		//towns
+
+		.town-select {
+			display: inline-block;
+			vertical-align: top;
+			width: 248px;
+			text-align: right;
+			margin-bottom: 10px;
+
+			@media (min-width: @screen-xs-min) {
+				width: 359px;
+				margin-right: 5px;
+				margin-left: 5px;
+			}
+		}
+
+		.town-select-header {
+			top:0;
+			left:0;
+			right:0;
+			height: 150px;
+			background: @default-header-bg url("/images/public_header.jpg") no-repeat center center; 
+			background-size: cover;
+			border-top-left-radius: @panel-border-radius - 1px;
+			border-top-right-radius: @panel-border-radius - 1px;
+
+		}
+
+		.town-select-border {
+			position: relative;
+			border-bottom: @town-border;
+		}
+
+		.town-select-overlay {
+			position: absolute;
+			background-color: rgba(0,0,0,.4);	
+			color: white;
+			top: 0;
+			left: 0;
+			right:0;
+			bottom:0;
+			margin: 0;
+			padding: 10px;
+			transition: all .3s ease;
+			border-top-left-radius: @panel-border-radius;
+			border-top-right-radius: @panel-border-radius;
+			&:hover {
+				opacity: 0;
+			}
+		}
+
+		.town-select-title {
+			text-align: left;
+			font-weight: bold;
+			.text-overflow();
+			margin: 0;
+		}
+
+		.town-select-pop {
+			position: absolute;
+			bottom: 0;
+			right:0;
+			margin: 10px;
+		}
+
+		.town-pager {
+			position: relative;
+		}
+
+		#townBack {
+			position: absolute;
+			left: 0;
+		}
+
+		//profile
+		.profile-image-placeholder {
+			height: 300px;
+			width: 300px;
+			background: @gray-light;
+			border-radius: @border-radius-large;
+			a {
+				.vertical-align(absolute);
+				right:0;
+				left:0;
+				font-size: 5.5em;
+				font-weight: bold;
+				line-height: 1;
+				text-align: center;
+				vertical-align: middle;
+				padding: 15px;
+				color: #fff;
+				&:hover {
+					text-decoration:none;
+					color: darken(#fff, 15%);
+				}
+			}
+			.fa-user {
+				font-size: 21em;	
+			}
+		}
+
+		.profile-image-container {
+			height: 300px;
+			width: 300px;
+			display: inline-block;
+			position: relative;
+		}	
+
+		#profileImageUpload {
+			min-height: 250px;
+		}
+	
+		.profile-image-btn {
+			position: absolute;
+			bottom: 10px;
+			left: 0;
+			width: 100%;
+			display: inline;
+			padding: 0.2em 0.6em 0.3em;
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+
+		.profile-image-btn > a , .profile-image-btn > a:hover {
+			font-size: 1.3em;
+			line-height: 1;
+			color: #FFF;
+			text-align: center;
+			vertical-align: baseline;
+			text-decoration: none;
+		}
+
+		.set-profile-image {
+			position: absolute;
+			top:0;
+			left:0;
+			right:0;
+			bottom:0;
+			background-color: rgba(0, 0, 0, 0.5);
+			color: #fff;
+			font-size: 1.3em;
+		}
+
+		.profile-name {
+			margin-top: 30px;
+		}
+
+		#nameChange {
+			font-weight: bold;
+		}
+
+	</style>
+</head>
+<body>
+
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+
+<script id="tMain" type="text/ractive">
+{{>modals}}
+<page skipNav="true" skipFooter="true" class="container" currentUser="{{user}}" loaded="true">
+	<div class="step-panel panel panel-default">
+		<div class="panel-body">
+			<alert error="{{error}}"></alert>
+			<small class="step-counter">Step {{stepIndex+1}} of {{steps.length}}</small>
+
+			{{>steps[stepIndex]}}
+
+			<div class="step-btn-group">
+				<hr>
+				<button type="button" class="{{#if stepIndex==0}}disabled{{/if}} btn btn-default btn-lg pull-left" on-click="prev">
+					<span class="fa fa-caret-left"></span> Previous
+				</button>
+
+				{{#if stepIndex == (steps.length-1)}}
+					<button type="button" class="btn btn-primary btn-lg" on-click="finish">
+						Continue to Townsourced <span class="fa fa-caret-right"></span>
+					</button>
+
+				{{else}}
+					<button type="button" class="btn btn-primary btn-lg" on-click="next">
+						Next <span class="fa fa-caret-right"></span>
+					</button>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+
+</page> 
+
+{{#partial towns}}
+	<h1 class="step-header">
+		Join some towns near you <br>
+		<small>Townsourced is for communities of any size, including communties like schools, dorms, and clubs.</small></h1>
+		<hr>
+		<div class="towns text-center">
+		{{#location}}
+			<p>Location best guess: <a href="#" on-click="setLocation" class="tooltipped tooltipped-n" 
+				aria-label="Set precise location">
+				<span class="fa fa-map-marker"></span> 
+				<strong>{{city}}{{#region}}, {{region}}{{/}}</strong>
+				</a>
+			</p>
+		{{/}}
+
+		{{#towns.data:i}}
+			{{#if onPage("towns", i) }}
+				<div class="town-select panel panel-default" intro="townLoad">
+					<div class="town-select-border" style="{{#if .color}}border-color: {{.color}};{{/if}}">
+						{{#if .headerImage}}
+							<image class="town-select-header" key="{{.headerImage}}" ></image>
+						{{else}}
+							<div class="town-select-header"></div>
+						{{/if}}
+						<div class="town-select-overlay">
+							<h3 class="town-select-title">{{.name}}</h3>
+							<div class="town-select-pop">population {{.population}}</div>
+						</div>
+					</div>
+					<div class="panel-body">
+						<button type="button" class="btn btn-link pull-left" on-click="moreInfo:{{.}}">
+							More <span class="hidden-xs">Information</span>...
+						</button>
+
+						{{#if !isMember(this)}} 
+							<button type="button" style="{{.btnStyle}}" class="btn btn-primary" on-click="join:{{.}}">
+								Join Town
+							</button>
+						{{else}}
+							<button type="button" class="btn btn-warning" on-click="leave:{{.}}">
+								Leave Town
+							</button>
+						{{/if}}
+					</div>
+				</div>
+			{{/if}}
+		{{/towns.data}}
+		<div class="town-pager">	
+			{{#if towns.page!=1}}
+				<button id="townBack"type="button" class="btn btn-link"	on-click="backTowns">
+					<span class="fa fa-caret-left"></span> back
+				</button>
+			{{/if}}
+
+			{{#if !(lastPage('towns') && towns.page == 1)}}
+				<button id="moreTowns" type="button" class="btn btn-ghost-primary{{#if lastPage('towns')}} disabled{{/if}}" 
+					on-click="moreTowns">
+					More... 
+				</button>
+			{{/if}}
+		</div>
+	</div>
+
+
+{{/partial}}
+
+
+{{#partial profile}}
+<h1 class="step-header">
+	Setup your Profile <br>
+	<small>Setting your name and photo will allow you to be recognized in your communities.</small>
+</h1>
+<hr>
+
+<div class="profile text-center">
+{{#with user}}
+	<div class="profile-image-container text-center">
+		{{#if .profileImage}}
+			<img src="/api/v1/image/{{.profileImage}}?new" class="center-block img-responsive img-rounded">
+			<div class="profile-image-btn">
+				<a href="#" on-click="imageModal">Change your Profile Image</a>
+			</div>
+		{{else}}
+			<div class="profile-image-placeholder">
+				<span class="fa fa-user"></span>
+				<a href="#" on-click="imageModal">
+					Upload a Photo
+				</a>
+			</div>
+		{{/if}}
+	</div>
+	<div class="profile-name row">
+		<div class="col-md-offset-3 col-md-6">
+			<form on-submit="cancel">
+				<span id="nameChangeHelp" class="help-block">
+				Do your friends know you as something other than <strong><em>{{.username}}</em></strong> ? <br>
+				Take a moment to set your name to something more personal than your username.
+				</span>
+				<input type="text" class="form-control input-lg" id="nameChange" value="{{nameChange}}" placeholder="Enter your name"
+					aria-describedby="nameChangeHelp">
+			</form>
+		</div>
+	</div>
+{{/with}}
+</div>
+
+{{/partial}}
+
+{{#partial modals}}
+<modal id="infoPanel" customHeader="true" customFooter="true" teardown="true">
+	{{#partial header}}
+	{{/partial}}
+	<townPanel town="{{town}}" currentUser="{{user}}" showInfo="true" showVisit="false" inModal="true"></townPanel>
+</modal>
+
+<modal id="imageModal" title="Set your Profile Image" customFooter="true" static="true">
+		<imageUpload id="profileImageUpload" key="{{newProfileImage.key}}" x0="{{newProfileImage.x0}}" 
+			y0="{{newProfileImage.y0}}" x1="{{newProfileImage.x1}}" y1="{{newProfileImage.y1}}"></imageUpload>
+	<div class="modal-footer">	
+		<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+		<button class="btn btn-primary {{^newProfileImage.key}}disabled{{/}}" on-click="imageSet">Save</button>			
+	</div>
+</modal>
+
+{{/partial}}
+
+
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/message.js"></script>
+<script src="/js/welcome.js"></script>
+<script type="application/json" id="user">
+	[[json .User]]
+</script>
+<script type="application/json" id="towns">
+	[[json .Towns]]
+</script>
+<script type="application/json" id="location">
+	[[json .Location]]
+</script>
+<script type="application/json" id="csrf">
+	[[json .CSRF]]
+</script>
+
+</body>
+</html>
+[[end]]

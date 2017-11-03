@@ -1,0 +1,46 @@
+.btn-ghost-default {
+	.button-ghost-variant(#fff, @btn-default-color);
+}
+
+.btn-ghost-primary {
+	.button-ghost-variant(@btn-primary-bg);
+}
+
+.btn-ghost-danger {
+	.button-ghost-variant(@btn-danger-bg);
+}
+
+.btn-ghost-warning {
+	.button-ghost-variant(@btn-warning-bg);
+}
+
+.btn-ghost-info {
+	.button-ghost-variant(@btn-info-bg);
+}
+
+
+
+// button overrides  make them pop a bit more
+.btn {
+  .button-size(@padding-base-vertical - 1.5; @padding-base-horizontal - 1.5; @font-size-base + 2; @line-height-base; @border-radius-base);
+}
+
+//set back to normal for link buttons
+.btn-link {
+  .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @border-radius-base);
+}
+
+.btn-lg {
+  // line-height: ensure even-numbered height of button next to large input
+  .button-size(@padding-large-vertical - 1.5; @padding-large-horizontal - 1.5; @font-size-large + 2; @line-height-large; @border-radius-large);
+}
+
+.btn-sm {
+  // line-height: ensure proper height of button next to small input
+  .button-size(@padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+}
+.btn-xs {
+  .button-size(@padding-xs-vertical; @padding-xs-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+}
+
+

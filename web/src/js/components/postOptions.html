@@ -1,0 +1,146 @@
+<link rel="ractive" href="./modal.html" name="modal">
+{{#if modal}}
+<modal id="newPostModal" title="Add a New Post" customFooter="true">
+	{{>options}}
+</modal>
+{{else}}
+	{{>options}}
+{{/if}}
+
+{{#partial options}}
+	<div class="text-center">
+		<a href="/newpost{{#if town}}?town={{town.key}}{{/if}}" class="btn {{#if town}}town-btn{{else}}btn-primary{{/if}} btn-lg">
+			<span class="fa fa-plus"></span> Create New
+		</a>
+		<div class="row options-or">
+			<div class="col-xs-offset-1 col-xs-4"><hr></div>
+			<div class="col-xs-2 or">or</div>
+			<div class="col-xs-4"><hr></div>
+		</div>
+		<form on-submit="newShare">
+			<div class="form-group {{#urlErr}}has-error has-feedback{{/}}">
+				<label for="postURL">Share an existing post from another website</label>
+				<div class="options-url">
+					<div class="form-group {{#urlErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{urlErr}}">
+						<input type="url" class="form-control" id="postURL" placeholder="http://www.craigslist.org/..." 
+							value="{{url}}">
+						{{#if urlErr}}
+							<span class="form-control-feedback fa fa-times">
+							</span>
+						{{/if}}
+					</div>
+					<button type="submit" class="btn btn-default">Next</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div>
+		<a href="#" on-click="toggleAdvanced">
+			<span class="fa fa-caret-{{#if advanced}}down{{else}}right{{/if}}"></span> Advanced
+		</a>
+		{{#if advanced}}
+			<div class="text-center">
+				<hr>
+				<p>Want to post to Townsourced directly from <em>any</em> website?<br>
+				Drag the <strong>Share to Townsourced</strong> button below to your bookmark bar.</p>
+				<p>
+					<a href="javascript:void({{bookmarklet}});" class="btn btn-large btn-brand-1 bookmarklet">
+						<span class="fa fa-share"></span> Share to Townsourced</a>
+				</p>
+				<p class="small">Click the bookmark anytime you want to share a page to townsourced.</p>
+			</div>
+		{{/if}}
+	</div>
+{{/partial}}
+
+<style>
+	@import "components.less";
+
+	.options-or {
+		margin-top: 10px;
+		margin-bottom: 10px;
+		font-size: 18px;
+		font-weight: bold;
+		> .or {
+			padding-top: 7px;
+		}
+	}
+
+	.options-url {
+		text-align: left;
+		> .form-group {
+			display: inline-block;
+			margin-bottom: 0;
+			width: 82%;
+			@media (min-width: @screen-sm-min) { 
+				width: 88%;
+			}
+		}
+		> button {
+			display: inline-block;
+			float: right;
+		}
+	}
+
+</style>
+
+<script>
+import {
+	isURL,
+} from "../ts/util";
+
+import {
+	bookmarklet,
+} from "../ts/bookmarklet";
+
+component.exports = {
+	isolated: true,
+	data: function() {
+		return {
+			town: null,
+			url: "",
+			urlErr: null,
+			advanced: false,
+			bookmarklet: bookmarklet(),
+			modal: true,
+		};
+	},
+	onrender: function() {
+		var r = this;
+
+		r.on({
+			"show": function(event) {
+				r.set("url", "");
+				r.set("urlErr", null);
+
+				$("#newPostModal").modal();
+			},
+			"newShare": function(event) {
+				event.original.preventDefault();
+				var url = r.get("url");
+				if(!url) {
+					return;
+				}
+
+				if(!isURL(url)) {
+					r.set("urlErr", "Please, specify a proper URL");
+					return;
+				}
+
+				var shareURL = "/share/?url="+encodeURIComponent(url);
+				if(r.get("town")) {
+					shareURL += "&town="+r.get("town.key");
+				}
+				window.location = shareURL;
+			},
+			"toggleAdvanced": function(event) {
+				event.original.preventDefault();
+				r.toggle("advanced");
+			},
+		});
+
+	}, //onrender
+};
+
+</script>
+

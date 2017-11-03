@@ -1,0 +1,141 @@
+<div class="dropdown">
+	<button id="colorSelect" type="button" class="{{class}} dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		Choose a color
+    <span class="caret"></span>
+	</button>
+
+  <ul class="dropdown-menu color-list">
+		{{#options}}
+    <li>
+			{{#.}}
+				{{#if . == "custom"}}
+					{{>custom}}
+				{{else}}
+					{{>option { colorOpt: . }}}
+				{{/if}}
+			{{/}}
+		</li>
+		{{/options}}
+  </ul>
+</div>
+
+{{#partial option}}
+	<button type="button" class="{{#if color == colorOpt}}active{{/if}} btn btn-default color-btn" style="background-color: {{colorOpt}};" 
+		on-click="setColor:{{colorOpt}}"></button>
+{{/partial}}
+
+{{#partial custom}}
+	{{#if !showCustom}}
+		<button type="button" class="btn color-btn btn-default tooltipped tooltipped-w"	on-click="showCustom" aria-label="Choose a custom color">
+			<span class="fa fa-plus"></span></button>
+	{{else}}
+		<form class="form-inline custom-color-form" on-submit="saveCustom">
+			<div class="input-group custom-color-input">
+				<span class="input-group-btn">
+					<button type="button" class="btn btn-default color-btn"	style="background-color: {{customColorSet}}; color: {{customColorText}};"
+						on-click="showCustom"><strong>#</strong></button>
+				</span>
+					<input type="text" id="customInput" class="form-control" placeholder="{{color.slice(1)}}" 
+						on-keyup="validateColor" on-click="stopDrop" value="{{customColor}}">
+			</div>
+
+			<button type="button" class="btn color-btn btn-primary tooltipped tooltipped-e"	 aria-label="Save custom color"
+				on-click="saveCustom">
+				<span class="fa fa-save"></span>
+			</button>
+		</form>
+	{{/if}}
+{{/partial}}
+<style>
+	@import "components.less";
+	.color-list {
+		padding-top: 8px;
+		padding-right: 8px;
+		padding-left: 5px;
+	}
+
+	.color-btn {
+		margin-left: 4px;
+		margin-bottom: 4px;
+		height: 34px;
+		width: 34px;
+		padding: 0px;
+	}
+
+	.custom-color-form {
+		display: inline;
+	}
+
+	.custom-color-input {
+		width: 111px;
+	}
+</style>
+
+<script>
+import "../lib/bootstrap/dropdown";
+import "../lib/tinycolor";
+import {defaultTownColor} from "../ts/town";
+
+component.exports = {
+	data: {
+		color: defaultTownColor,
+		customColor: null,
+	},
+	oninit: function() {
+		this.set("options", [
+			["#be202e", "#f06029", "#f79421", "#895a37"],
+			["#f7ec35", "#246b08", "#79ac0b", "#089083"],
+			["#34bdca", "#729aaf", "#003469", "#00426f"],
+			["#5a28ae", "#ac90c3", "#ed2e7c", "#bbbab9"],
+			["#9c9da1", "#243138", "#000000", "#ffffff"],
+			["custom"],
+		]);
+	},
+	onrender: function() {
+		var r = this;
+
+		r.on({
+			"setColor": function(event, color) {
+				r.set("color", color);
+				if(event) {
+					r.set("customColor", null);
+					r.set("customColorSet", null);
+					r.set("customColorText", null);
+					r.set("showCustom", false);
+				}
+
+				$(r.nodes.colorSelect).dropdown("toggle")
+			},
+			"stopDrop": function(event) {
+				event.original.stopPropagation();
+			},
+			"validateColor": function(event) {
+				var value = r.get("customColor");
+				r.set("customColor",  value.replace(/[^A-Fa-f0-9]/g, "").slice(0,6));
+				value = "#"+value;
+				if(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)) {
+					r.set("customColorSet", value);
+					r.set("customColorText", tinycolor.mostReadable(value, ["#fff", "#000"]));
+				}
+			},
+			"saveCustom": function(event) {
+				if(event) {
+					event.original.preventDefault();
+				}
+
+				r.fire("setColor", null, r.get("customColorSet"));
+			},
+			"showCustom": function(event) {
+				event.original.stopPropagation();
+				r.toggle("showCustom");
+				r.set("customColor", null);
+				r.set("customColorSet", null);
+				r.set("customColorText", null);
+
+				$("#customInput").focus();
+			}
+		});
+
+	} //onrender
+};
+</script>

@@ -1,0 +1,19 @@
+{
+  "name": "gobble-townsourced-build",
+  "version": "0.1.0",
+  "devDependencies": {
+    "gobble": "^0.12.0",
+    "gobble-autoprefixer": "^0.1.1",
+    "gobble-concat": "^0.4.0",
+    "gobble-less": "^0.3.0",
+    "gobble-ractive": "^0.2.0",
+    "gobble-rollup": "^0.10.0",
+    "gobble-uglifyjs": "^0.2.1",
+    "juice": "^1.10.0",
+    "less": "^2.5.3",
+    "ractive": "^0.7.3",
+    "rcu": "^0.4.2",
+    "rcu-builders": "^0.2.0",
+    "sander": "^0.3.8"
+  }
+}

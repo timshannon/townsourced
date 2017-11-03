@@ -1,0 +1,152 @@
+<link rel="ractive" href="./gallery.html" name="gallery">
+<link rel="ractive" href="./imageZoom.html" name="imageZoom">
+
+{{#if post.format == "standard"}}
+	<div intro="fade" class="{{#if post.status == 'closed'}}text-muted{{/if}}">
+		{{>standard}}
+	</div>
+{{elseif post.format == "article"}}
+	<div intro="fade" class="{{#if post.status == 'closed'}}text-muted{{/if}}">
+		{{>article}}
+	</div>
+{{elseif post.format == "gallery"}}
+	<div intro="fade" class="{{#if post.status == 'closed'}}text-muted{{/if}}">
+		{{>gallery}}
+	</div>
+{{elseif post.format == "poster"}}
+	<div intro="fade" class="{{#if post.status == 'closed'}}text-muted{{/if}}">
+		{{>poster}}
+	</div>
+{{/if}}
+
+{{#partial standard}}
+	{{{parsed}}}
+	{{#if post.images.length > 0}}
+		<hr>
+		<div class="text-center">
+			<gallery  imageClass="post-image" images="{{post.images}}"></gallery>
+		</div>
+	{{/if}}
+{{/partial}}
+
+{{#partial article}}
+	<div class="clearfix">
+		{{#if post.images.length > 0}}
+			<imageZoom key="{{post.featuredImage}}" class="post-image article-image"></imageZoom>
+		{{/if}}
+		{{{parsed}}}
+	</div>
+	{{#if post.images.length > 1}}
+		<hr>
+		<div class="text-center">
+			<gallery  imageClass="post-image" images="{{trimmedGallery}}"></gallery>
+		</div>
+	{{/if}}
+{{/partial}}
+
+{{#partial gallery}}
+	{{#if post.images.length > 0}}
+		<div class="text-center">
+			<gallery imageClass="gallery-image" images="{{post.images}}" fullSized="true"></gallery>
+		</div>
+		<hr>
+	{{/if}}
+	{{{parsed}}}
+{{/partial}}
+
+
+{{#partial poster}}
+	{{#if post.images.length > 0}}
+		<img src="/api/v1/image/{{post.featuredImage}}" class="poster img-responsive img-rounded center-block">
+	{{/if}}
+	<hr>
+	{{{parsed}}}
+	{{#if post.images.length > 1}}
+	<hr>
+	<div class="text-center">
+		<gallery  imageClass="post-image" images="{{trimmedGallery}}"></gallery>
+	</div>
+	{{/if}}
+
+{{/partial}}
+
+
+<style>
+	@import "components.less";
+
+	.post-image {
+		width: 250px;
+		height: 250px;
+	}
+
+	.gallery-image {
+		width: 400px;
+		height: 400px;
+	}
+
+	.article-image {
+		margin: 10px;
+		.pull-right();
+	}
+
+	.poster {
+		//max height based on widescreen ratio of largest screen
+		max-height: (@screen-lg / (16/9))*1.5;  
+	}
+	
+</style>
+
+
+<script>
+import fade from "../lib/ractive-transitions-fade";
+
+component.exports = {
+	data: function() {
+		return {
+			parsed: "",
+			post: {
+				images: [],
+				content: "",
+			},
+		};
+	},
+	transitions: {
+		fade: fade,
+	},
+	onrender: function() {
+		var r = this;
+
+		r.on({
+			"parse": function() {
+					r.set("parsed", ts.processMessage(r.get("post.content"))).then(function() {
+						r.findComponent("gallery").fire("setOverlap");
+					});
+			},
+		});
+
+		r.observe({
+			"post.images post.featuredImage": function(newVal) {
+				if(!r.get("post.images") || !r.get("post.images").length || r.get("post.images").length < 1) {
+					r.set("trimmedGallery", []);
+					return;
+				}
+
+				var images = r.get("post.images");
+				if(!r.get("post.featuredImage")) {
+					r.set("post.featuredImage", images[0]);
+				}
+
+				var trimmed =  images.slice();
+				for(var i = 0; i < trimmed.length; i++) {
+					if(trimmed[i] === r.get("post.featuredImage")) {
+						trimmed.splice(i, 1);
+						r.set("trimmedGallery", trimmed);
+						return;
+					}
+				}
+			},
+		});
+
+	} //onrender
+};
+</script>

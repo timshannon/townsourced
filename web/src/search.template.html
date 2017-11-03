@@ -1,0 +1,144 @@
+[[define "SEARCH"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+
+	[[if .Town]]
+		<title>Search [[.Town.Name]] - townsourced</title>
+	[[else]]
+		<title>Search - townsourced</title>
+	[[end]]
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+
+	<style type="text/less">
+		@import "css/page.less";
+
+		.search-form {
+			margin-top: 15px;
+			.vertical-align();
+		}
+
+		#navCenter {
+			opacity: 0;
+			transition: opacity .5s ease;
+			&.fixed {
+				opacity: 1;
+			}
+		}
+
+		.navbar-search {
+			margin-right: 40px;
+		}
+
+		.navbar-category {
+			.pull-right();
+		}
+
+		#fixedTrigger {
+			position: absolute;
+			margin-top: -1 * @navbar-height;
+		}
+
+		.alt-search {
+			padding-top: 40px;
+		}
+
+	</style>
+</head>
+<body>
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+<script id="tMain" type="text/ractive">
+{{>modals}}
+<page currentUser="{{currentUser}}" navgap="false" customNavbar="true" loaded="true" town="{{town}}" altBrand="{{fixed}}">
+	<header town="{{town}}">
+		<div class="search-form">
+			<alert error="{{error}}"></alert>
+			<form on-submit="searchInput">
+				<div class="input-group">
+					<input type="text" id="search" class="form-control input-lg" placeholder="Search Posts" 
+						value="{{srcOptions.search}}">
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-lg btn-primary town-btn" on-click="searchInput">
+							<span class="fa fa-search"></span><span class="hidden-xs">  Search</span>
+						</button>
+					</span>
+				</div>
+			</form>
+		</div>
+	</header>
+	<div id="fixedTrigger"></div>
+
+	{{#partial navbar}}
+		<div id="navCenter" class="navbar-center">
+			<form class="navbar-center-form" on-submit="searchInput">
+				<div class="navbar-category">
+					<categorySelect class="btn-sm" menu="true" townKeys="{{srcOptions.towns}}" towns="{{townLoad}}" town="{{town}}" 
+						selected="{{srcOptions.category}}" on-select="changeCategory">
+					</categorySelect>
+				</div>
+
+				<div class="navbar-search">
+					<div class="form-group has-feedback">
+						<label class="sr-only" for="searchSmall">Search Posts</label>
+						<input type="text" id="searchSmall" class="form-control input-sm" placeholder="Search Posts" 
+							value="{{srcOptions.search}}">
+						<a href="#" class="form-control-feedback" on-click="searchInput">
+							<span class="fa fa-search"></span>
+						</a>
+					</div>
+				</div>
+			</form>
+		</div>
+		{{#if currentUser}}
+			<div class="navbar-form navbar-right">
+				<a href="/newpost" class="btn btn-ghost-primary town-btn" on-click="post">
+					<span class="fa fa-pencil-square-o"></span> Post
+				</a>
+			</div>
+		{{/if}}
+	{{/partial}}
+	{{#partial navbarMenu}}
+		{{#if currentUser}}
+			<li><a href="/newpost" on-click="post"><span class="fa fa-pencil-square-o"></span> Post</a></li>
+		{{/if}}
+	{{/partial}}
+
+	<searchSidebar options="{{srcOptions}}" posts="{{posts}}" on-changed="search" isMod="{{isMod}}" hidden="{{sidebarHidden}}" 
+		searchLocationLink="{{'/search/location?'+buildSearchParams(srcOptions)}}">
+	</searchSidebar>
+	<postList search="true" searchOptions="{{srcOptions}}" posts="{{posts}}" user="{{currentUser}}" town="{{town}}" 
+		towns="{{townLoad}}" sidebar="{{!sidebarHidden}}">
+	</postList>
+</page>
+
+{{#partial modals}}
+	<postOptions town="{{town}}"></postOptions>
+{{/partial}}
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/search.js"></script>
+<script type="application/json" id="postsPayload">
+	[[json .Posts]]
+</script>
+<script type="application/json" id="userPayload">
+	[[json .User]]
+</script>
+<script type="application/json" id="townPayload">
+	[[json .Town]]
+</script>
+<script type="application/json" id="errorPayload">
+	[[json .Error]]
+</script>
+
+</body>
+</html>
+[[end]]

@@ -1,0 +1,135 @@
+.dropdown-menu > li > a, .dropdown-menu > a{
+	.menu-color(@dropdown-link-active-bg);
+}
+
+
+
+.dropdown-segment {
+  float: left;
+  width: 100%;
+  padding: 0px;
+  margin: 0px; 
+  list-style: none;
+  font-size: @font-size-base;
+  text-align: left; 
+
+  .divider {
+    .nav-divider(@dropdown-divider-bg);
+  }
+
+  // Links within the dropdown menu
+  > li > a {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: @line-height-base;
+    color: @dropdown-link-color;
+    white-space: nowrap; 
+  }
+}
+
+// Hover/Focus state
+.dropdown-segment > li > a {
+	.menu-color(@dropdown-link-active-bg);
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+    color: @dropdown-link-hover-color;
+    background-color: @dropdown-link-hover-bg;
+  }
+}
+
+// Active state
+.dropdown-segment > .active > a {
+  &,
+  &:hover,
+  &:focus {
+    color: @dropdown-link-active-color;
+    text-decoration: none;
+    outline: 0;
+    background-color: @dropdown-link-active-bg;
+  }
+}
+
+// Disabled state
+//
+// Gray out text and ensure the hover/focus state remains gray
+
+.dropdown-segment > .disabled > a {
+  &,
+  &:hover,
+  &:focus {
+    color: @dropdown-link-disabled-color;
+  }
+
+  // Nuke hover/focus effects
+  &:hover,
+  &:focus {
+    text-decoration: none;
+    background-color: transparent;
+    background-image: none; // Remove CSS gradient
+    .reset-filter();
+    cursor: @cursor-disabled;
+  }
+}
+
+
+// Select Menu
+
+.select-menu > li > a:before, .select-menu > a:before { 
+	.fa();
+	content: @fa-var-check; 
+	padding-right: 10px;
+	color: transparent
+}
+
+.select-menu > .active > a:before, .select-menu > a.active:before { 
+	color: inherit;
+}
+
+
+.select-menu > li > a > .fa , .select-menu > a > .fa {
+    margin-left: -25px;
+    display: inline-block;
+    padding-right: 10px;
+}
+
+.select-menu > li > a, .select-menu > a{
+	padding-left: 10px;
+	padding-top: 7px;
+	padding-bottom: 7px;
+
+
+	&.menu-category-all {
+		.menu-color(@gray-light);
+	}
+
+	&.menu-category-notice {
+		.menu-color(@category-notice);
+	}
+
+	&.menu-category-buysell {
+		.menu-color(@category-buysell);
+	}
+
+	&.menu-category-event {
+		.menu-color(@category-event);
+	}
+
+	&.menu-category-jobs {
+		.menu-color(@category-jobs);
+	}
+
+	&.menu-category-volunteer {
+		.menu-color(@category-volunteer);
+	}
+
+	&.menu-category-housing {
+		.menu-color(@category-housing);
+	}
+
+}
+
+

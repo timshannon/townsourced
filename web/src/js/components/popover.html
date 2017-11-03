@@ -1,0 +1,31 @@
+<a href="#" id="navHelp" tabindex="0"  title="{{title}}" role="button"  
+				data-content="{{text}}" decorator="popover" data-placement="{{placement || 'bottom'}}">
+	{{yield}} ||
+	<span class="fa fa-{{icon || 'info-circle'}}"></span>
+</a>
+
+
+
+<script>
+import "../lib/bootstrap/tooltip";
+import "../lib/bootstrap/popover";
+
+component.exports = {
+	decorators: {
+		popover: function (node) {
+			$(node).popover({
+							animation: true,
+							trigger: "focus",
+							html: true,
+							container: "body",
+				});
+			return {
+				teardown: function () {
+					$(node).popover("destroy");
+				}
+			};
+		},
+	},
+};
+
+</script>

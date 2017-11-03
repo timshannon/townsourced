@@ -1,0 +1,107 @@
+<div class="toggleswitch">
+	<input type="checkbox" class="toggleswitch-checkbox" id="{{id}}" checked="{{checked}}" on-click="toggle">
+	<label class="toggleswitch-label {{#disabled}}disabled{{/disabled}}" for="{{id}}">
+		<span class="toggleswitch-inner"></span>
+		<span class="toggleswitch-switch"></span>
+	</label>
+</div>
+<style>
+@import "components.less";
+
+.toggleswitch {
+	position: relative; 
+	width: 88px;
+	-webkit-user-select:none; 
+	-moz-user-select:none; 
+	-ms-user-select: none;
+}
+.toggleswitch-checkbox {
+	display: none;
+}
+.toggleswitch-label {
+	display: block; 
+	overflow: hidden; 
+	cursor: pointer;
+	border: 1px solid @btn-default-border; 
+	border-radius: @border-radius-base;
+	margin-bottom: 0px;
+
+	&.disabled,
+	  fieldset[disabled] & {
+	    cursor: @cursor-disabled;
+	    pointer-events: none; 
+	    .opacity(.65);
+	    .box-shadow(none);
+	  }
+}
+
+.toggleswitch-label:hover {
+	border-color: darken(@btn-default-border, 12%);
+}
+
+.toggleswitch-inner {
+	display: block; 
+	width: 200%; 
+	margin-left: -100%;
+	transition: margin 0.3s ease-in 0s;
+
+	
+}
+.toggleswitch-inner:before, .toggleswitch-inner:after {
+	display: block; 
+	float: left; 
+	width: 50%; 
+	height: 34px; 
+	padding: 0; 
+	line-height: 1+@line-height-base;
+	font-size: @font-size-base; 
+	box-sizing: border-box;
+
+	vertical-align: middle;
+}
+
+.toggleswitch-inner:before {
+	content: "Yes";
+	padding-left: 8px;
+	background-color: @btn-primary-bg; 
+	color: @btn-primary-color;
+	box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.45) inset;
+}
+	
+.toggleswitch-inner:after {
+	content: "No";
+	padding-right: 8px;
+	background-color: @gray-lighter; 
+	color: @btn-default-color;
+	text-align: right;
+	box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.45) inset;
+}
+.toggleswitch-switch {
+	display: block; 
+	width: 26px; 
+	margin: 4px;
+	background: @btn-primary-color;
+	position: absolute; 
+	top: 0; 
+	bottom: 0;
+	right: 50px;
+	border: 1px solid @btn-default-border; 
+	border-radius: @border-radius-base;
+	transition: all 0.3s ease-in 0s; 
+	box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.77);
+}
+
+.toggleswitch-checkbox:checked + .toggleswitch-label .toggleswitch-inner {
+	margin-left: 0;
+}
+.toggleswitch-checkbox:checked + .toggleswitch-label .toggleswitch-switch {
+	right: 0px; 
+}
+
+</style>
+
+<script>
+component.exports = {
+	isolated: true,
+};
+</script>

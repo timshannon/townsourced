@@ -1,0 +1,181 @@
+.text-brand-1 {
+	color: @ts-brand-1;
+}
+
+.text-brand-2 {
+	color: @ts-brand-2;
+}
+
+.text-brand-3 {
+	color: @ts-brand-3;
+}
+
+.text-brand-4 {
+	color: @ts-brand-4;
+}
+
+.brand-1 {
+	background-color: @ts-brand-1; color: @ts-brand-text;
+}
+
+.brand-2 {
+	background-color: @ts-brand-2;
+	color: @ts-brand-text;
+}
+
+.brand-3 {
+	background-color: @ts-brand-3; color: @ts-brand-text;
+}
+
+.brand-4 {
+	background-color: @ts-brand-4;
+	color: @ts-brand-text;
+}
+
+
+@btn-brand-1-color:	#fff;
+@btn-brand-1-bg:	@ts-brand-1;
+@btn-brand-1-border:	@btn-brand-1-bg;
+
+.btn-brand-1 {
+  .button-variant(@btn-brand-1-color; @btn-brand-1-bg; @btn-brand-1-border);
+}
+
+@btn-brand-2-color:	#fff;
+@btn-brand-2-bg:	@ts-brand-2;
+@btn-brand-2-border:	darken(@btn-brand-2-bg, 5%);
+
+.btn-brand-2 {
+  .button-variant(@btn-brand-2-color; @btn-brand-2-bg; @btn-brand-2-border);
+}
+
+@btn-brand-3-color:	#fff;
+@btn-brand-3-bg:	@ts-brand-3;
+@btn-brand-3-border:	@btn-brand-3-bg;
+
+.btn-brand-3 {
+  .button-variant(@btn-brand-3-color; @btn-brand-3-bg; @btn-brand-3-border);
+}
+
+@btn-brand-4-color:	#fff;
+@btn-brand-4-bg:	@ts-brand-4;
+@btn-brand-4-border:	@btn-brand-4-bg;
+
+.btn-brand-4 {
+  .button-variant(@btn-brand-4-color; @btn-brand-4-bg; @btn-brand-4-border);
+}
+
+
+
+.icon-primary {
+  .text-emphasis-variant(@brand-primary);
+}
+.icon-success {
+  .text-emphasis-variant(@brand-success);
+}
+.icon-info {
+  .text-emphasis-variant(@brand-info);
+}
+.icon-warning {
+  .text-emphasis-variant(@brand-warning);
+}
+.icon-danger {
+  .text-emphasis-variant(@brand-danger);
+}
+
+.btn-townsourced {
+  .button-variant(@btn-brand-1-color; @btn-brand-1-bg; @btn-brand-1-border);
+  font-size: @font-size-large;
+}
+
+
+
+// 3rd party
+
+// facebook login button
+@brand-facebook: 	#3B5999;
+@btn-facebook-color:	#fff;
+@btn-facebook-bg:	@brand-facebook;
+@btn-facebook-border:	@btn-facebook-bg;
+
+.btn-facebook {
+  .button-variant(@btn-facebook-color; @btn-facebook-bg; @btn-facebook-border);
+  font-size: @font-size-large;
+}
+
+// google login button
+@brand-google: 	#dd4b39;
+@btn-google-color:	#fff;
+@btn-google-bg:	@brand-google;
+@btn-google-border:	@btn-google-bg;
+
+.btn-google {
+  .button-variant(@btn-google-color; @btn-google-bg; @btn-google-border);
+  font-size: @font-size-large;
+}
+
+// twitter login button
+@brand-twitter: 	#55ACEE;
+@btn-twitter-color:	#fff;
+@btn-twitter-bg:	@brand-twitter;
+@btn-twitter-border:	@btn-twitter-bg;
+
+.btn-twitter {
+  .button-variant(@btn-twitter-color; @btn-twitter-bg; @btn-twitter-border);
+  font-size: @font-size-large;
+}
+
+
+.btn>.brand-icon {
+	position: absolute;
+	padding: 4px;
+	left: 24px;
+}
+
+
+.thirdparty.facebook-background {
+	background-color: @brand-facebook;
+	color: @btn-facebook-color;
+}
+
+.thirdparty.google-background {
+	background-color: @brand-google;
+	color: @btn-google-color;
+}
+
+.thirdparty.twitter-background {
+	background-color: @brand-twitter;
+	color: @btn-twitter-color;
+}
+
+.text-twitter {
+  .text-emphasis-variant(@brand-twitter);
+}
+
+.text-facebook {
+  .text-emphasis-variant(@brand-facebook);
+}
+
+.text-google {
+  .text-emphasis-variant(@brand-google);
+}
+
+.text-notice {
+	color: @category-notice;
+}
+.text-buysell {
+	color: @category-buysell;
+}
+.text-event {
+	color: @category-event;
+}
+.text-jobs {
+	color: @category-jobs;
+}
+.text-volumnteer {
+	color: @category-volunteer;
+}
+.text-housing {
+	color: @category-housing;
+}
+

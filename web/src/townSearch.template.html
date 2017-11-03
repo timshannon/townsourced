@@ -1,0 +1,183 @@
+[[define "TOWNSEARCH"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Town Search - townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+	<style type="text/less">
+		@import "css/page.less";
+
+		.search-form {
+			margin-top: 15px;
+			.vertical-align();
+		}
+
+		.search-result {
+			margin-top: 15px;
+		}
+		
+		#navCenter {
+			opacity: 0;
+			transition: opacity .5s ease;
+			&.fixed {
+				opacity: 1;
+			}
+		}
+
+		#fixedTrigger {
+			position: absolute;
+			margin-top: -1 * @navbar-height;
+		}
+
+		.welcome {
+			.vertical-align();
+			color: white;
+		}
+
+	</style>
+</head>
+<body>
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+
+<script id="tMain" type="text/ractive">
+{{>modals}}
+<page currentUser="{{currentUser}}" navgap="false" customNavbar="true" loaded="true">
+	<header>
+		<div class="search-form">
+			<form on-submit="searchInput">
+				<div class="input-group">
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-lg btn-brand-1 tooltipped tooltipped-s" aria-label="Use My Location"
+							on-click="myLocation">
+							<span class="fa fa-map-marker"></span>
+						</button>
+					</span>
+					<input type="text" id="search" class="form-control input-lg" placeholder="Search For Towns" 
+						value="{{srcOptions.search}}">
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-lg btn-primary" on-click="searchInput">
+							<span class="fa fa-search"></span><span class="hidden-xs"> Search</span>
+						</button>
+					</span>
+				</div>
+			</form>
+		</div>
+	</header>
+	<div id="fixedTrigger"></div>
+
+
+	{{#partial navbar}}
+		<div id="navCenter" class="navbar-center">
+			<form class="navbar-center-form" on-submit="navSearchInput">
+				<div class="navbar-search">
+					<div class="form-group has-feedback">
+						<label class="sr-only" for="searchSmall">Search Posts</label>
+						<input type="text" id="searchSmall" class="input-sm form-control" placeholder="Search for Towns" 
+							value="{{srcOptions.search}}">
+						<a href="#" class="form-control-feedback" on-click="navSearchInput">
+							<span class="fa fa-search"></span>
+						</a>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="navbar-form navbar-left">
+			<a href="/newtown" class="btn btn-ghost-primary">
+				<span class="fa fa-plus"></span> Add a Town
+			</a>
+		</div>
+	{{/partial}}
+	{{#partial navbarMenu}}
+		{{#if currentUser}}
+			<li><a href="/newtown"><span class="fa fa-plus"></span> Add a Town</a></li>
+		{{/if}}
+	{{/partial}}
+	
+	<div class="search-result container">
+		<alert error="{{error}}"></alert>
+		<div class="row">
+			<div class="col-sm-6">
+				<townMap town="{{town}}" towns="{{mapTowns}}"></townMap>
+			</div>
+			<div class="col-sm-6">
+				{{#if showResult}}
+					{{#if town}}
+						<townPanel town="{{town}}" currentUser="{{currentUser}}" showVisit="true"></townPanel>
+					{{else}}
+						<div class="alert alert-warning text-center">
+							<h3><strong>No registered towns found!</strong></h3>
+							<p>You could try looking for towns near</p>
+							<button type="button" class="btn btn-ghost-primary" on-click="myLocation">
+								<span class="fa fa-map-marker"></span>  Your Current Location
+							</button>
+							<br>
+							<strong>Or</strong>  
+							<br>
+							<a href="/newtown" class="btn btn-ghost-primary">
+								<span class="fa fa-plus"></span>  Add a New Town
+							</a>
+						</div>
+					{{/if}}
+				{{/if}}
+			</div>
+		</div>
+		{{#if towns.data && towns.data.length > 0}}
+			<h3>Towns
+			<div class="btn-group pull-right" role="group" aria-label="notification pager">
+				<button type="button" class="btn btn-default {{#if towns.page==1}}disabled{{/if}}" 
+					on-click="prevPage('towns')">
+					<span class="fa fa-chevron-left"></span>
+				</button>
+				<button type="button" class="btn btn-default {{#if lastPage('towns')}}disabled{{/if}}" 
+						on-click="nextPage('towns')">
+					<span class="fa fa-chevron-right"></span>
+				</button>
+			</div></h3>
+			<hr>
+			<div class="list-group">
+				{{#towns.data:i}}
+					{{#if onPage("towns", i) }}
+						<a href="#" class="list-group-item {{#if town.key === .key}}active{{/if}}" on-click="selectTown">
+							<a href="/town/{{.key}}" class="pull-right btn btn-default" on-click="visitTown">Visit Town</a>
+							<h4 class="list-group-item-heading">{{.name}}</h4>
+							<p class="list-group-item-text">{{.description}}</p>
+						</a>
+					{{/if}}
+				{{/towns.data}}
+			</div>
+		{{/if}}
+	</div>
+
+</page>
+
+{{#partial modals}}
+<modal id="infoPanel" customHeader="true" customFooter="true" teardown="true">
+	{{#partial header}}
+	{{/partial}}
+	<townPanel town="{{town}}" currentUser="{{currentUser}}" showInfo="true" showVisit="true" inModal="true"></townPanel>
+</modal>
+{{/partial}}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=[[.GoogleMapsAPIKey]]&libraries=places"></script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/message.js"></script>
+<script src="/js/townSearch.js"></script>
+<script type="application/json" id="userPayload">
+	[[json .User]]
+</script>
+<script type="application/json" id="locationPayload">
+	[[json .Location]]
+</script>
+
+
+</body>
+</html>
+[[end]]

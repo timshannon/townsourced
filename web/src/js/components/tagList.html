@@ -1,0 +1,132 @@
+<div class="tags {{class}}">
+	{{#if tags.length === 0}}
+		no tags found
+	{{else}}
+		{{#tags:i}}
+			{{#if selectedTags.indexOf(this) == -1}}
+				<button type="button" class="btn btn-sm btn-default" 
+					title="{{tagLookup(this)}} ({{tagCounts[this]}})" on-click="addTag:{{.}}" intro="fade">
+					<span class="fa fa-tag"></span>  {{.}}
+				</button>
+			{{else}}
+				<button type="button" class="btn btn-sm btn-primary" 
+					title="{{tagLookup(this)}} ({{tagCounts[this]}})" on-click="removeTag:{{.}}" intro="fade">
+					<span class="fa fa-tag"></span>  {{.}}
+				</button>
+			{{/if}}
+		{{/tags}}
+	{{/if}}
+</div>
+<style>
+	@import "components.less";
+
+	.tags {
+		text-align: left;
+	}
+
+	.tags > .btn {
+		margin-right: 2px;
+		margin-bottom: 2px;
+		max-width: 218px;
+		white-space: nowrap;
+		overflow-x: hidden;
+		text-overflow: ellipsis;
+	}
+
+</style>
+
+<script>
+import emoji from "../ts/emoji";
+import {
+    pluck,
+    unique,
+}
+from "../ts/util";
+import fade from "../lib/ractive-transitions-fade";
+
+component.exports = {
+	isolated: true,
+	transitions: {
+		fade: fade,
+	},
+	data: function() {
+		return {
+			posts: [],
+			tags: [],
+			tagCounts: {},
+			selectedTags: [],
+			tagLookup: function(tag) {
+				if (!tag) {
+						return "";
+				}
+				var t = emoji.tag(tag);
+				if (t) {
+						return t.name;
+				} else {
+						return tag;
+				}
+			},
+		};
+	},
+	onrender: function() {
+		var r = this;	
+
+		r.on({
+			"addTag": function(event, tag) {
+					r.push("selectedTags", tag);
+					r.fire("tagChange");
+			},
+			"removeTag": function(event, tag) {
+				var index = r.get("selectedTags").indexOf(tag);
+				if (index != -1) {
+						r.splice("selectedTags", index, 1);
+						r.fire("tagChange");
+				}
+			},
+			"reset": function() {
+				r.set("tags", []);
+				r.set("tagCounts", {});
+				r.set("selectedTags", []);
+				getTags(r.get("posts"));
+			},
+		});
+	
+		r.observe({
+			"posts.length": function(post) {
+					getTags(r.get("posts"));
+			},
+    });
+
+		function getTags(posts) {
+        if (!posts) {
+            return;
+        }
+
+				var tags = [].concat.apply([], pluck(posts, "hashTags"))
+        var tagCounts = {};
+
+        for (var i = 0; i < tags.length; i++) {
+            if (!tags[i]) {
+                continue;
+            }
+            if (tagCounts[tags[i]]) {
+                tagCounts[tags[i]]++;
+            } else {
+                tagCounts[tags[i]] = 1;
+            }
+        }
+        r.set("tagCounts", tagCounts);
+
+        tags = Object.getOwnPropertyNames(tagCounts);
+
+        tags.sort(function(a, b) {
+            return tagCounts[b] - tagCounts[a];
+        });
+
+        r.set("tags", tags);
+    }
+
+	}, //onrender
+};
+</script>    
+

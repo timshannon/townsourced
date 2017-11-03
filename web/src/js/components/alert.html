@@ -1,0 +1,52 @@
+{{#error}}
+	<div class="{{class}} center-block alert alert-danger alert-dismissible" role="alert" intro="scale" outro="scale"
+		decorator="alert">
+		<button type="button" class="close" on-click="dismissAlert" aria-label="Close">
+			<span aria-hidden="true">&times;</span></button>
+		<span class="alert-icon fa fa-warning"></span> {{error}}
+	</div>
+{{/error}}
+
+<style>
+	.alert-icon {
+		margin-right: 10px;
+		font-size: 1.3em;
+	}
+</style>
+<script>
+import {scale} from "../lib/ractive-transition-scale";
+
+component.exports = {
+	isolated: true,
+	transitions: {
+		scale: scale,
+	},
+	decorators: {
+		"alert": function(node) {
+				if(this.get("error") && this.get("scroll")) {
+					$("html, body").animate({
+						scrollTop:  node.offsetTop - node.offsetHeight - 1,
+					}, 300);
+				}
+			return {
+				teardown: function() {
+				},
+			};
+		},
+	},
+	data: {
+		node: null,
+		error: null,
+		scroll: true,
+	},
+	onrender: function() {
+		var r = this;
+
+		r.on({
+			"dismissAlert": function() {
+					r.set("error", null);
+			},
+		});
+	} //onrender
+};
+</script>

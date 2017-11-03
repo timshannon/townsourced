@@ -1,0 +1,966 @@
+[[define "USER"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+	<title>User - townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+
+	<style type="text/less">
+		@import "css/page.less";
+
+		.edit-icon {
+			vertical-align: middle;
+		}
+
+		.profile-details {
+			font-size: 1.5em;
+		}
+
+		.profile-image-placeholder {
+			height: 300px;
+			width: 300px;
+			font-size: 10em;
+		}
+
+		.profile-image-container {
+			height: 300px;
+			width: 300px;
+
+			position: relative;
+		}	
+
+		#profileImageUpload {
+			min-height: 250px;
+		}
+	
+		.profile-image-btn {
+			position: absolute;
+			bottom: 10px;
+			left: 0;
+			width: 100%;
+			display: inline;
+			padding: 0.2em 0.6em 0.3em;
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+
+		.profile-image-btn > a , .profile-image-btn > a:hover {
+			font-size: 1.3em;
+			line-height: 1;
+			color: #FFF;
+			text-align: center;
+			vertical-align: baseline;
+			text-decoration: none;
+		}
+
+		.toggle-buttons {
+			margin-bottom: 15px;
+		}
+
+		.icon-col {
+			width: 40px;
+		}
+
+		.table-link, .table-link:hover, .table-link:focus {
+			color: inherit;
+			text-decoration: none;	
+		}
+	
+		.settings > .list-group-item {
+			font-size: 1.1em;
+		}
+
+		.setting-text {
+			vertical-align: top;
+			line-height: 2;
+			padding-left: 10px;
+		}
+
+		.setting-toggle {
+			.vertical-align(absolute);
+			right: 0;
+			padding-right: 15px;
+		}
+
+		.list-group-item > h4 {
+			margin-top: 10px;
+			font-weight: bold;
+		}
+
+		.post-table-title {
+			width: 70%;
+		}
+
+		.post-table-category {
+			width: 15%;
+		}
+
+		.post-table-status {
+			width: 15%;
+			padding-right: 5px;
+		}
+
+		.btn-saved {
+			margin-right: 15px;
+		}
+
+		.tab-title {
+			display: inline-block;
+		}
+
+		.mark-as-read {
+			.pull-right();
+			text-align: right;
+			min-width: 150px;
+		}
+
+		.comment-table {
+			table-layout: fixed;
+			width: 100%;
+		}
+
+		.comment-link {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
+
+		.comment-cell {
+			position: relative;
+			width: auto;
+			overflow: hidden;		
+			white-space: nowrap;
+			text-overflow: ellipsis;
+
+			//override all comment styling to fit on one table row without growing (too much) vertically
+			// how exciting one place I should actually use !important
+			& * {
+				font-size: 1em !important;
+				display: inline !important;
+				line-height: 1 !important;
+				margin-top: 0 !important;
+				margin-bottom: 0 !important;
+				padding-top: 0 !important;
+				padding-bottom: 0 !important;
+				vertical-align: bottom !important;
+			}
+			& * br {
+				display: none !important;
+			}
+		}
+
+		.comment-timestamp {
+			width: 110px;
+		}
+
+
+		#memberAge {
+			font-size: 14px;	
+			color: @gray;
+		}
+
+</style>
+</head>
+<body>
+
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+
+<script id="tMain" type="text/ractive">
+
+{{>modals}}
+<page class="container" loaded="true">
+	{{#user}}
+		<div class="row">
+			<div class="col-md-4">
+				{{>name}}
+				{{>image}}
+				{{>details}}
+			</div>
+			<div class="col-md-8">
+				<h2><small>{{tab}}</small></h2>
+				<ul id="userContent" class="nav nav-tabs" role="tablist">
+					{{#if .self}}
+						<li role="presentation"class="tooltipped tooltipped-s active" aria-label="Notifications">
+							<a href="#notifications" on-click="notifications" aria-controls="notifications" role="tab" data-toggle="tab">
+								<span class="fa fa-bell"></span>
+							</a>
+						</li>
+					{{/if}}
+					<li role="presentation" class="tooltipped tooltipped-s{{^.self}} active{{/}}" aria-label="Posts">
+						<a href="#posts" on-click="posts" aria-controls="posts" role="tab" data-toggle="tab">
+							<span class="fa fa-pencil-square-o"></span>
+						</a>
+					</li>
+					<li role="presentation"class="tooltipped tooltipped-s" aria-label="Comments">
+						<a href="#comments" on-click="comments" aria-controls="comments" role="tab" data-toggle="tab">
+							<span class="fa fa-comment"></span>
+						</a>
+					</li>
+					<li role="presentation"class="tooltipped tooltipped-s" aria-label="Towns">
+						<a href="#towns" on-click="towns" aria-controls="towns" role="tab" data-toggle="tab">
+							<span class="fa fa-university"></span>
+						</a>
+					</li>
+					{{#if .self}}
+						<li role="presentation"class="tooltipped tooltipped-s" aria-label="Settings">
+							<a href="#settings" on-click="settings" aria-controls="settings" role="tab" data-toggle="tab">
+								<span class="fa fa-gears"></span>
+							</a>
+						</li>
+					{{/if}}
+				</ul>
+
+				<!-- Tab panes -->
+				<div class="tab-content tab-content-panel">
+					{{#if .self}}
+					<div role="tabpanel" class="tab-pane active" id="notifications">
+						{{#if notificationErr}}
+							<div class="alert alert-danger">{{notificationErr}}</div>
+						{{else}}
+							{{>notifications}}
+						{{/if}}
+					</div>
+					{{/if}}
+					<div role="tabpanel" class="tab-pane{{^.self}} active{{/}}" id="posts">
+						{{>posts}}
+					</div>
+					<div role="tabpanel" class="tab-pane" id="comments">
+						{{>comments}}
+					</div>
+					<div role="tabpanel" class="tab-pane" id="towns">
+						{{#if townErr}}
+							<div class="alert alert-danger">{{townErr}}</div>
+						{{else}}
+							{{>towns}}
+						{{/if}}
+					</div>
+					<div role="tabpanel" class="tab-pane" id="settings">
+						{{>settings}}
+					</div>
+				</div>
+
+			</div> 
+		</div> <!-- row -->
+	{{/user}}
+</page> 
+
+<!--partials-->
+{{#partial name}}
+	{{#if .self}}
+		{{#if noName}}
+			<h2 class="text-center">{{.name}}
+				<small class="edit-icon"><a href="#" on-click="nameModal" class="tooltipped tooltipped-e tooltipped-warning" 
+					aria-label="No Name Set! Click here to set your name">
+					<span class="fa fa-exclamation-circle icon-warning"></span>
+				</a></small>
+			</h2>
+		{{else}}
+			<h2 class="text-center">{{.name}}
+				<small class="edit-icon"><a href="#" on-click="nameModal" class="tooltipped tooltipped-e" aria-label="Change your name">
+					<span class="fa fa-pencil"></span>
+				</a></small>  
+			</h2>
+		{{/if}}
+	{{else}}
+			<h2 class="text-center">{{.name}}</h2>
+	{{/if}}
+{{/partial}}
+
+{{#partial image}}
+	<div class="center-block profile-image-container text-center ">
+	{{#if .profileImage}}
+		<img src="/api/v1/image/{{.profileImage}}" class="center-block img-responsive img-rounded">
+	{{else}}
+		<div class="center-block panel panel-default profile-image-placeholder">
+			<span class="fa fa-user"></span>
+		</div>
+	{{/if}}
+		{{#if .self}}
+			<div class="profile-image-btn">
+				<a href="#" on-click="imageModal">Set your Profile Image</a>
+			</div>
+		{{/if}}
+	</div>
+{{/partial}}
+
+{{#partial details}}
+<hr>
+<div class="profile-details">
+	<div class="row">
+		<div class="col-xs-2 tooltipped tooltipped-w" aria-label="Username"><span class="fa fa-user"></span></div>
+		<div class="col-xs-10 overflow-title">{{.username}}</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-offset-2 col-xs-10">
+			<p id="memberAge">
+				Member for <span class="tooltipped tooltipped-s" aria-label="{{formatDate(.created)}}">{{since(.created)}}</span>
+			</p>
+		</div>
+	</div>
+
+	
+
+	{{#if .self}}
+		<div class="row">
+			<div class="col-xs-2 tooltipped tooltipped-w" aria-label="Email">
+				<span class="fa fa-envelope-o"></span>
+			</div>
+			<div class="col-xs-10 tooltipped tooltipped-w" aria-label="Change your email">
+				<div class="overflow-title">
+					<a href="#" on-click="emailModal">{{.email}}</a>
+				</div>
+			</div>
+		</div>
+		{{#if .hasPassword}}
+			<div class="row">
+				<div class="col-xs-offset-2 col-xs-12">
+					<a href="#" on-click="passwordModal">Change your password</a>
+				</div>
+			</div>
+		{{/if}}
+		{{#if !.emailValidated}}
+			<div class="row">
+				{{#if !confirmEmailSent}}
+				<div class="col-xs-2 tooltipped tooltipped-w tooltipped-warning" aria-label="Unconfirmed Email">
+					<span class="fa fa-exclamation-circle icon-warning"></span>
+				</div>
+				<div class="col-xs-10">
+					<a href="#" on-click="confirmEmail">Send email confirmation</a>
+				</div>
+				{{else}}
+					<div class="col-xs-offset-2 col-xs-12" intro="scale">
+						Email sent!
+					</div>
+				{{/if}}
+			</div>
+		{{/if}}
+		<div class="row">
+			<div class="col-xs-offset-1 col-xs-10"><hr></div>
+		</div>
+		
+	{{else}}	
+		{{#if currentUser}}
+			<hr>
+			<button type="button" class="center-block btn btn-primary tooltipped tooltipped-e" on-click="sendDM" 
+				aria-label="Send {{.name}} a private message">
+				<span class="fa fa-envelope-o"></span> Send a message
+			</button>
+		{{/if}}
+
+	{{/if}}
+
+</div>
+
+{{/partial}}
+
+{{#partial notifications}}
+<div class="toggle-buttons">
+	<buttonGroup selected="{{notificationView}}" items="{{['Unread', 'All']}}">
+	</buttonGroup>
+	<buttonGroup selected="{{notificationView}}" items="{{['Sent']}}">
+	</buttonGroup>
+
+	{{#if nLoading}}
+		<span class="fa fa-spin fa-spinner"></span>
+	{{/if}}
+	<div class="btn-group pull-right" role="group" aria-label="notification pager">
+		<button type="button" class="btn btn-default {{#if notifications.page==1}}disabled{{/if}}" 
+			on-click="prevPage('notifications')">
+			<span class="fa fa-chevron-left"></span>
+		</button>
+		<button type="button" class="btn btn-default {{#if lastPage('notifications')}}disabled{{/if}}" 
+				on-click="nextPage('notifications')">
+			<span class="fa fa-chevron-right"></span>
+		</button>
+	</div>
+</div>
+{{#if notifications.data.length == 0 && !nLoading}}
+	No notifications
+{{else}}
+<table class="table table-hover table-condensed">
+	<thead>
+		{{#if notificationView == 'Sent'}}
+		<th>To</th>
+		{{else}}
+		<th>From</th>
+		{{/if}}
+		<th></th>
+		<th>
+			{{#if notificationView != 'Sent'}}
+				<a href="#" class="mark-as-read" on-click="markAllRead">
+					Mark all as read
+				</a>
+			{{/if}}
+		</th>
+	</thead>	
+	<tbody>
+		{{#notifications.data:i}}
+		{{#if onPage("notifications", i) }}
+		<tr>
+			<td class="icon-col">
+				{{#if notificationView == 'Sent'}}
+					{{>user {key: .username} }}
+				{{else}}
+					{{>user {key: .from} }}
+				{{/if}}
+			</td>
+			<td>
+				<a href="#" on-click="viewNotification" class="table-link">
+					{{#if read}}{{subject}}{{else}}<strong>{{subject}}</strong>{{/if}}
+				</a>
+			</td>
+			<td>
+				<span class="pull-right tooltipped tooltipped-n" aria-label="{{formatDate(.when)}}">
+					<small>{{since(.when)}} ago</small>
+				</span> 
+			</td>
+		</tr>
+		{{/if}}
+		{{/notifications.data}}
+	</tbody>
+</table>
+{{/if}}
+{{/partial}}
+
+{{#partial posts}}
+<div class="toggle-buttons">
+	{{#if user.self}}
+		<buttonGroup selected="{{postView}}" items="{{ {'saved': 'Saved Posts', 'my': 'My Posts'} }}">
+		</buttonGroup>
+	{{else}}
+		<h4 class="tab-title">{{user.name || user.username}}'s Posts</h4>
+	{{/if}}
+		
+	{{#if pLoading}}
+		<span class="fa fa-spin fa-spinner"></span>
+	{{/if}}
+	<div class="btn-group pull-right" role="group" aria-label="posts pager">
+		<button type="button" class="btn btn-default {{#if posts.page==1}}disabled{{/if}}" on-click="prevPage('posts')">
+			<span class="fa fa-chevron-left"></span>
+		</button>
+		<button type="button" class="btn btn-default {{#if lastPage('posts')}}disabled{{/if}}" 
+				on-click="nextPage('posts')">
+			<span class="fa fa-chevron-right"></span>
+		</button>
+	</div>
+</div>
+<table class="table table-hover table-condensed">
+	<thead>
+		<th class="post-table-title">Title</th>
+		<th class="post-table-category">Category</th>
+		{{#if user.self && postView == "my"}}
+			<th class="post-table-status dropdown text-right">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+					Status<span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu dropdown-menu-right select-menu">
+					{{#postStatuses:status}}
+						<li class="{{#if postStatus == status}}active{{/if}}">
+							<a href="#" on-click="selectPostStatus:{{status}}">
+								{{.}}
+							</a>
+						</li>	
+					{{/postStatus}}
+				</ul>
+			</th>
+		{{else}}
+			<th class="post-table-status text-right">Status</th>
+		{{/if}}
+		<th></th>
+	</thead>	
+	{{#if posts.data.length == 0 && !pLoading}}
+		No Posts
+	{{else}}
+	<tbody>
+		{{#posts.data:i}}
+		{{#if onPage('posts', i) }}
+		<tr>
+			<td>
+				{{#if status == "Draft"}}
+					<em><a href="/editpost/{{key}}">
+						{{title}}
+					</a></em>
+				{{elseif status == "Closed"}}
+					<a class="text-muted" href="/post/{{key}}">
+						{{title}}
+					</a>
+				{{else}}
+					<a href="/post/{{key}}">
+						{{title}}
+					</a>
+				{{/if}}
+			</td>
+			<td>
+				{{postCategories[category]}}
+			</td>
+			<td class="text-right">
+				{{postStatuses[status]}}
+			</td>
+			<td>
+				{{#if postIsModerated(this)}}
+					<a href="#" class="pull-right" on-click="viewPostModeration">
+						<span class="icon-warning fa fa-gavel"></span>
+					</a>
+				{{/if}}
+			</td>
+		</tr>
+		{{/if}}
+		{{/posts.data}}
+	</tbody>
+	{{/if}}
+</table>
+{{/partial}}
+
+{{#partial comments}}
+	{{#if user.self}}
+		<h4 class="tab-title">Post Comments</h4>
+	{{else}}
+		<h4 class="tab-title">{{user.name || user.username}}'s Comments</h4>
+	{{/if}}
+		
+	{{#if cLoading}}
+		<span class="fa fa-spin fa-spinner"></span>
+	{{/if}}
+	<div class="btn-group pull-right" role="group" aria-label="comments pager">
+		<button type="button" class="btn btn-default {{#if comments.page==1}}disabled{{/if}}" on-click="prevPage('comments')">
+			<span class="fa fa-chevron-left"></span>
+		</button>
+		<button type="button" class="btn btn-default {{#if lastPage('comments')}}disabled{{/if}}" 
+				on-click="nextPage('comments')">
+			<span class="fa fa-chevron-right"></span>
+		</button>
+	</div>
+	<table class="table table-hover table-condensed comment-table">
+	<thead>
+		<tr>
+			<th class="comment-cell">Comment</th>
+			<th class="comment-timestamp">
+			</th>
+		</tr>
+	</thead>	
+	{{#if comments.data.length == 0 && !cLoading}}
+		No Comments
+	{{else}}
+	<tbody>
+		{{#comments.data:i}}
+		{{#if onPage('comments', i) }}
+		<tr>
+			<td class="comment-cell">
+				{{{processComment(.comment)}}}
+				<a class="comment-link" href="/post/{{.postKey}}/comment/{{.key}}#comments">
+				</a>
+			</td>
+			<td class="comment-timestamp">
+				<span class="pull-right tooltipped tooltipped-n" aria-label="{{formatDate(.updated)}}">
+					<small>{{since(.updated)}} ago</small>
+				</span> 
+			</td>
+		</tr>
+		{{/if}}
+		{{/comments.data}}
+	</tbody>
+	{{/if}}
+</table>
+
+{{/partial}}
+
+{{#partial towns}}
+<div class="toggle-buttons">
+	<buttonGroup selected="{{townView}}" items="{{['All', 'Moderating']}}">
+	</buttonGroup>
+
+	{{#if tLoading}}
+		<span class="fa fa-spin fa-spinner"></span>
+	{{/if}}
+	<div class="btn-group pull-right" role="group" aria-label="town pager">
+		<button type="button" class="btn btn-default {{#if towns.page==1}}disabled{{/if}}" on-click="prevPage('towns')">
+			<span class="fa fa-chevron-left"></span>
+		</button>
+		<button type="button" class="btn btn-default {{#if lastPage('towns')}}disabled{{/if}}" 
+			on-click="nextPage('towns')">
+			<span class="fa fa-chevron-right"></span>
+		</button>
+	</div>
+</div>
+{{#if towns.data.length == 0 && !tLoading}}
+	{{#if townView == "All"}}
+		Not a member of any towns yet
+	{{else}}
+		Not a moderator of any towns yet
+	{{/if}}
+{{else}}
+<table class="table table-hover table-condensed">
+	<thead>
+		<th></th>
+		<th></th>
+		<th></th>
+	</thead>	
+	<tbody>
+		{{#towns.data:i}}
+		{{#if onPage('towns', i) }}
+		<tr>
+			<td>
+				<a href="/town/{{key}}">{{name}}</a>
+			</td>
+			<td>
+				{{description}}
+			</td>
+			<td>
+				{{#if mod && user.self}}
+					<a href="/town/{{key}}/settings">
+						<span class="tooltipped tooltipped-w" aria-label="Town Settings">	
+							<span class="fa fa-gears"></span>
+						</span>
+					</a>
+				{{/if}}
+			</td>
+		</tr>
+		{{/if}}
+		{{/towns.data}}
+	</tbody>
+</table>
+
+{{/if}}
+{{/partial}}
+
+{{#partial settings}}
+	{{#settingsErr}}
+	<div class="center-block alert alert-danger alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert" on-click="set('settingsErr', nil)" aria-label="Close">
+			<span aria-hidden="true">&times;</span></button>
+		<span class="fa fa-warning"></span> {{settingsErr}}
+	</div>
+	{{/settingsErr}}
+
+	<!--Social Networks-->
+	<ul class="list-group settings">
+		<li class="list-group-item"><h4>Social Networks</h4></li>
+		<li class="list-group-item {{^.canToggle.facebook}}disabled{{/}}">
+			<span class="fa fa-2x fa-facebook-square text-facebook"></span>
+			<span class="setting-text">Login with Facebook</span>
+			<span class="setting-toggle">
+				<toggle id="facebookID" disabled="{{ !.canToggle.facebook }}" 
+					checked="{{.facebookID}}" on-toggle="toggleFacebook"></toggle>
+			</span>
+		</li>
+		<li class="list-group-item {{^.canToggle.google}}disabled{{/}}">
+			<span class="fa fa-2x fa-google-plus-square text-google"></span> 
+			<span class="setting-text">Login with Google</span>
+			<span class="setting-toggle">
+				<toggle id="googleID" disabled="{{ !.canToggle.google }}"
+					checked="{{.googleID}}" on-toggle="toggleGoogle"></toggle>
+			</span>
+		</li>
+		<li class="list-group-item {{^.canToggle.twitter}}disabled{{/}}">
+			<span class="fa fa-2x fa-twitter-square text-twitter"></span>
+			<span class="setting-text">Login with Twitter</span>
+			<span class="setting-toggle">
+				<toggle id="twitterID" disabled="{{(!.canToggle.twitter)}}"
+					checked="{{.twitterID}}" on-toggle="toggleTwitter"></toggle>
+			</span>
+		</li>
+	</ul>
+	<!--Social Networks-->
+
+
+	<!--Notifications-->
+	<ul class="list-group settings">
+		<li class="list-group-item"><h4>Notifications</h4></li>
+
+		<li class="list-group-item">
+			<span class="setting-text">Notify me when mentioned in Posts</span>
+			<span class="setting-toggle">
+				<toggle id="notificationPost" checked="{{.notifyPost}}" on-toggle="toggleNotifyPost">
+				</toggle>
+			</span>
+		</li>
+
+		<li class="list-group-item">
+			<span class="setting-text">Notify me when mentioned in Comments</span>
+			<span class="setting-toggle">
+				<toggle id="notificationComment" checked="{{.notifyComment}}" on-toggle="toggleNotifyComment">
+				</toggle>
+			</span>
+		</li>
+	</ul>
+	<!--Notifications-->
+
+	<!--Email-->
+	<ul class="list-group settings">
+		<li class="list-group-item"><h4>Email</h4></li>
+		{{#if !.emailValidated}}
+			<li class="list-group-item">
+				<span class="setting-text">Your email is currently unconfirmed. </span>
+				<span class="setting-toggle">
+					{{#if !confirmEmailSent}}
+						<button type="button" class="btn btn-primary" on-click="confirmEmail">Send confirmation</button>
+					{{else}}
+						<div intro="scale">
+							Email sent!
+						</div>
+					{{/if}}
+				</span>
+			</li>
+		{{else}}
+		<li class="list-group-item">
+			<span class="setting-text">Email me when sent a Private Message</span>
+			<span class="setting-toggle">
+				<toggle id="emailPrivateMsg" checked="{{.emailPrivateMsg}}" on-toggle="toggleEmailPrivateMsg">
+				</toggle>
+			</span>
+		</li>
+
+		<li class="list-group-item">
+			<span class="setting-text">Email me when mentioned in a Post</span>
+			<span class="setting-toggle">
+				<toggle id="emailPostMention" checked="{{.emailPostMention}}" on-toggle="toggleEmailPostMention">
+				</toggle>
+			</span>
+		</li>
+
+		<li class="list-group-item">
+			<span class="setting-text">Email me when mentioned in a Comment</span>
+			<span class="setting-toggle">
+				<toggle id="emailCommentMention" checked="{{.emailCommentMention}}" on-toggle="toggleEmailCommentMention">
+				</toggle>
+			</span>
+		</li>
+
+		<li class="list-group-item">
+			<span class="setting-text">Email me when someone replies to my comment</span>
+			<span class="setting-toggle">
+				<toggle id="emailCommentReply" checked="{{.emailCommentReply}}" on-toggle="toggleEmailCommentReply">
+				</toggle>
+			</span>
+		</li>
+
+		<li class="list-group-item">
+			<span class="setting-text">Email me when someone comments on my post</span>
+			<span class="setting-toggle">
+				<toggle id="emailPostComment" checked="{{.emailPostComment}}" on-toggle="toggleEmailPostComment">
+				</toggle>
+			</span>
+		</li>
+		{{/if}}
+	</ul>
+
+	<!--Email-->
+
+	{{/partial}}
+
+{{#partial modals}}
+
+<modal id="notificationModal" large="true" customHeader="true" customFooter="true">
+	{{#partial header}}
+		<div class="modal-header"> 
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+				<span class="sr-only">Close</span></button> 
+				<h4 class="modal-title">
+					<span class="profile-btn tooltipped tooltipped-w" aria-label="{{ messageUser.username || 'townsourced' }}">
+						<userIcon user="{{messageUser}}" link="true"></userIcon>
+					</span>  {{messageSubject}}
+				</h4> 
+		</div> 
+	{{/partial}}
+
+	{{{message}}}
+	<div class="modal-footer">	
+			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>			
+			{{#if messageFrom.username && messageFrom.username !== user.username}}
+			<button class="btn btn-primary" on-click="reply"><span class="fa fa-reply"></span>  Reply</button>			
+			{{/if}}
+		</div>
+</modal>
+
+<modal id="nameModal" title="Change Your Name" customFooter="true">
+	<form class="form-horizontal">
+		<div class="form-group {{#if nameErr}}has-error has-feedback{{/if}}">
+			<label class="col-sm-2 control-label" for="name">Name</label>	
+			<div class="col-sm-10 {{#nameErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{nameErr}}">
+				<input type="text" class="form-control" id="nameChange" value="{{nameChange}}" placeholder="Set your name">
+				{{#if nameErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+
+		<div class="modal-footer">	
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button class="btn btn-primary" on-click="nameSave">Save</button>			
+		</div>
+	</form>
+</modal>
+<modal id="emailModal" title="Change Your Email" customFooter="true">
+	<form class="form-horizontal">
+		<div class="form-group {{#if emailErr}}has-error has-feedback{{/if}}">
+			<label class="control-label col-sm-2" for="email">Email</label>	
+			<div class="col-sm-10 {{#emailErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{emailErr}}">
+				<input type="text" class="form-control" id="emailChange" value="{{emailChange}}" placeholder="Set your email">
+				{{#if emailErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+		{{#if user.hasPassword}}
+		<div class="form-group">
+			<label class="control-label col-sm-2" for="password">Password</label>	
+			<div class="col-sm-10">
+				<input type="password" class="form-control" id="emailChangePassword" value="{{emailChangePassword}}" placeholder="Enter your password">
+			</div>
+		</div>
+		{{/if}}
+
+		<div class="modal-footer">	
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button class="btn btn-primary" on-click="emailSave">Save</button>			
+		</div>
+	</form>
+</modal>
+
+<modal id="passwordModal" title="Change Your Password" customFooter="true">
+	<form class="form-horizontal">
+		<div class="form-group {{#if passwordErr}}has-error has-feedback{{/if}}">
+			<label class="control-label col-sm-3" for="passwordCurrent">Current</label>	
+			<div class="col-sm-9 {{#passwordErr}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{passwordErr}}">
+				<input type="password" class="form-control" id="passwordCurrent" value="{{passwordCurrent}}" placeholder="Enter your current password">
+				{{#if passwordErr}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-3" for="passwordNew">New</label>	
+			<div class="col-sm-9">
+				<input type="password" class="form-control" id="passwordNew" value="{{passwordNew}}" placeholder="Enter your new password">
+			</div>
+		</div>
+		<div class="form-group {{#if password2Err}}has-error has-feedback{{/if}}">
+			<label class="control-label col-sm-3" for="passwordNew2">Confirm New</label>	
+			<div class="col-sm-9 {{#password2Err}}tooltipped tooltipped-danger tooltipped-n{{/}}" aria-label="{{password2Err}}">
+				<input type="password" class="form-control" id="passwordNew2" value="{{passwordNew2}}" placeholder="Enter your new password again">
+				{{#if password2Err}}
+					<span class="form-control-feedback fa fa-times">
+					</span>
+				{{/if}}
+			</div>
+		</div>
+
+		<div class="modal-footer">	
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button class="btn btn-primary" on-click="passwordSave">Save</button>			
+		</div>
+	</form>
+</modal>
+
+<modal id="imageModal" title="Set your Profile Image" customFooter="true" static="true">
+		<imageUpload id="profileImageUpload" key="{{newProfileImage.key}}" x0="{{newProfileImage.x0}}" 
+			y0="{{newProfileImage.y0}}" x1="{{newProfileImage.x1}}" y1="{{newProfileImage.y1}}"></imageUpload>
+	<div class="modal-footer">	
+		<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+		<button class="btn btn-primary {{^newProfileImage.key}}disabled{{/}}" on-click="imageSet">Save</button>			
+	</div>
+</modal>
+
+<modal id="sendMessageModal" customHeader="true" customFooter="true" large="true" teardown="true">
+	{{#partial header}}
+		<div class="modal-header"> 
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+				<span class="sr-only">Close</span></button> 
+				<h4 class="modal-title">
+					<span class="profile-btn tooltipped tooltipped-w" aria-label="{{dmTo.name}}">
+						<userIcon user="{{dmTo}}" link="true"></userIcon>
+					</span>  Send message to {{dmTo.name}}
+				</h4> 
+		</div> 
+	{{/partial}}
+
+	{{#if dmErr}}
+	<div class="alert alert-danger">
+		<span class="fa fa-warning"></span>  {{dmErr}}
+	</div>
+	{{/if}}
+	<form class="form-horizontal">
+		<div class="form-group">
+			<label class="col-sm-2 control-label" for="dmSubject">Subject</label>	
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="dmSubject" value="{{dmSubject}}" placeholder="Subject">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="sr-only" for="dmMessage">Message</label>	
+			<div class="col-sm-12">
+				<previewEditor id="dmMessage" input="{{dmMessage}}" atTowns="{{atTowns}}" atUsers="{{atUsers}}"></previewEditor>
+			</div>
+		</div>
+
+		<div class="modal-footer">	
+			<button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times"></span>  Cancel</button>			
+			<button type="submit" class="btn btn-primary {{#dmSending}}disabled{{/}}" on-click="sendMessage">
+				<span class="fa fa-{{#if dmSending}}spinner fa-spin{{else}}envelope-o{{/if}}"></span> Send
+			</button>			
+		</div>
+	</form>
+</modal>
+
+<modal id="postModModal" title="This Post has been moderated in the following towns" teardown="true">
+	<ul class="list-group">
+	{{#with currentPost}}
+		{{#moderation:i}}
+			<li class="list-group-item list-group-item-warning">
+				<h4 class="list-group-item-heading">
+					{{#with users[.who]}}
+						<span class="pull-right profile-btn tooltipped tooltipped-n" aria-label="{{.name || .username}}">
+							<userIcon user="{{.}}"></userIcon> 
+						</span>
+					{{else}}
+						<span class="pull-right profile-btn tooltipped tooltipped-n" aria-label="Auto-Moderated">
+							<userIcon user=""></userIcon>
+						</span>
+					{{/with}}  {{ townLoad[.town].name }}
+				</h4>
+				<p class="list-group-item-text">{{.reason}}</p>
+			</li>	
+		{{/}}
+	{{/with}}
+	</ul>
+</modal>
+
+
+{{/partial}}
+
+{{#partial user}}
+	{{#with users[key]}}
+		<span class="profile-btn tooltipped tooltipped-w" aria-label="{{.username}}'s profile">
+			<userIcon user="{{.}}" link="true"></userIcon>
+		</span>
+	{{else}}
+		<span class="profile-btn tooltipped tooltipped-w" aria-label="From townsourced">
+			<userIcon user=""></userIcon>
+		</span>
+	{{/with}}
+{{/partial}}
+
+
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/message.js"></script>
+<script src="/js/user.js"></script>
+<script type="application/json" id="payload">
+	[[json .]]
+</script>
+</body>
+</html>
+[[end]]

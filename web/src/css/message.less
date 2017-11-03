@@ -1,0 +1,99 @@
+.emojione, img[title~="emoji"] {
+	height: 2em;
+}
+
+img[alt~="profile"] {
+	max-height: 1.8em;
+}
+
+img[title~="tagged"] {
+	height: 1.5em;
+}
+
+a[title~="price"] {
+	color: @brand-success;
+	font-weight: bolder;
+	text-decoration: none;
+	cursor: default;
+	pointer-events: none;
+}
+
+a[title="button"] {
+	.btn();
+	.button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
+}
+
+
+//Ideally this css would exist in the editor component
+// however the atwho piece doesn't allow me to set the ractive component guid
+// on creation, so it cant' scope this css specifically to it
+.atwho-view {
+    position:absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    margin-top: 18px;
+    background: @dropdown-bg;
+    color: @text-color;
+    max-height: 200px;
+    overflow: auto;
+    z-index: @zindex-modal !important;
+
+  min-width: 160px;
+  padding: 5px 0px;
+  margin: 2px 0 0; // override default ul
+  list-style: none;
+  font-size: @font-size-base;
+  text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
+  background-color: @dropdown-bg;
+  border: 1px solid @dropdown-fallback-border; // IE8 fallback
+  border: 1px solid @dropdown-border;
+  border-radius: @border-radius-base;
+  .box-shadow(0 6px 12px rgba(0,0,0,.175));
+  background-clip: padding-box;
+
+}
+
+
+.atwho-view .cur {
+    background: @component-active-bg;
+    color: @component-active-color;
+}
+.atwho-view .cur small {
+    color: @component-active-color;
+}
+.atwho-view strong {
+    color: @component-active-bg;
+}
+.atwho-view .cur strong {
+    color: @component-active-color;
+    font:bold;
+}
+.atwho-view ul {
+    /* width: 100px; */
+    list-style:none;
+    padding:0;
+    margin:auto;
+}
+.atwho-view ul li {
+    display: block;
+    padding: 5px 20px 5px 10px;
+    cursor: default;
+
+    clear: both;
+    font-weight: normal;
+    line-height: @line-height-base;
+    color: @dropdown-link-color;
+    white-space: nowrap; // prevent links from randomly breaking onto new lines
+
+
+}
+.atwho-view small {
+    font-size: smaller;
+    color: @headings-small-color;
+    font-weight: normal;
+}
+
+.atwho-view img {
+	padding-right: 5px;
+}

@@ -1,0 +1,277 @@
+[[define "DEMO"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google-analytics.com; img-src 'self' https://www.google-analytics.com;style-src 'self' 'unsafe-inline'"> 
+	<title>townsourced - Share, shop and sell locally</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+
+	<style type="text/less">
+		@import "css/page.less";
+
+		.site-wrapper {
+			display: table;
+			width: 100%;
+			height: 100%; /* For at least Firefox */
+			min-height: 100%;
+			-webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+							box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+			background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25) ), url(/images/landing_page.jpg) no-repeat center center fixed; 
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
+		}
+
+		.landing-nav {
+			z-index: 10;
+			position: relative;
+			min-height: @navbar-height; // Ensure a navbar always shows (e.g., without a .navbar-brand in collapsed mode)
+			margin-bottom: @navbar-margin-bottom;
+			margin-top: 20px;
+			border: 1px solid transparent;
+
+			// Prevent floats from breaking the navbar
+			&:extend(.clearfix all);
+		}
+
+		.landing-btn(@color) {
+			font-size: 1.5em;
+
+			@media (max-width: @screen-xs-min) { 
+				font-size: 1.25em;
+			}
+			font-weight: bold;
+			color: darken(@color, 15%);
+			border-radius: @border-radius-base;
+			padding: 15px;
+			transition: background-color 0.2s ease-out, color 0.2s ease-out, border-color 0.1s ease-out;
+			&:hover,
+			&:focus {
+				transition: background-color 0.1s ease-in, color 0.1s ease-in, border-color 0.2s ease-in;
+				background-color: rgba(0,0,0,.25);
+				color: @color;
+				text-decoration: none; 
+			}
+		}
+
+		.landing-nav-right {
+			.pull-right();
+			margin-right: 30px;
+			> li > a {
+				.landing-btn(@gray-lighter);
+			}
+		}
+		
+		.demo-hero {
+			.vertical-align(absolute);
+			color: #fff;
+			margin: 0 auto;
+			left: 0;
+			right: 0;	
+			text-align: center;
+		}
+
+	 .title {
+			font-weight: bold;
+			display: inline-block;
+
+
+			font-size: 2.5em;
+			@media (min-width: @screen-xs-min) { 
+				font-size: 4em;
+			}
+			@media (min-width: @screen-sm-min) { 
+				font-size: 5em;
+			}
+
+			@media (min-width: @screen-md-min) { 
+				font-size: 7em;
+			}
+
+			> .tag-line {
+				font-size: 11px;
+				margin-top: -8px;
+
+				@media (min-width: @screen-xs-min) { 
+					font-size: 18px;
+					margin-top: -10px;
+				}
+				@media (min-width: @screen-sm-min) { 
+					margin-top: -13px;
+					font-size: 22px;
+				}
+				@media (min-width: @screen-md-min) { 
+					margin-top: -13px;
+					font-size: 32px;
+				}
+
+
+				font-weight: normal;	
+			}
+		}
+
+
+		.demo-hero-brand {
+			margin-right: 5px;
+			margin-top: -12px;
+			.pull-left();
+
+			height: 48px;
+			@media (min-width: @screen-xs-min) { 
+				height: 77px;
+			}
+			@media (min-width: @screen-sm-min) { 
+				height: 97px;
+			}
+			@media (min-width: @screen-md-min) { 
+				height: 136px;
+			}
+
+		}
+
+		.demo-hero-description {
+			.center-block();
+			max-width: 930px;
+
+			@media (max-width: @screen-xs-min),(max-height: @screen-xs-min){ 
+				display: none;
+			}
+		}
+
+		.demo-hero-btn {
+			margin: 5px;
+		}
+
+		.social-links {
+			font-size: 3em;
+			margin-top: 40px;
+
+			@media (max-width: @screen-xs-min) { 
+				font-size: 2em;
+				margin-top: 10px;
+			}
+
+			> a {
+				margin-right: 5px;
+				color: white;
+				&:hover,
+				&:focus {
+					color: darken(white, 15%);
+					text-decoration: none; 
+				}
+			}
+		}
+
+
+		//main login style override for demo to hide signup
+		.login-footer, .login-btn, #forgotPassword {
+			display: none;
+		}
+
+		.login-btn-override {
+			text-align: right;
+		}
+
+	</style>
+</head>
+<body>
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-hidden="true"> 
+	<div class="modal-dialog"> 
+		<div class="modal-content"> 
+			<div class="modal-header"> 
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+					<span class="sr-only">Close</span></button> 
+				<h4 class="modal-title">Login to the townsourced demo</h4> 
+			</div> 
+			<div id="loginComponent" class="modal-body">
+			</div> 
+		</div> 
+	</div> 
+</div>
+
+<div id="contactComponent"> 
+</div> 
+
+<div class="site-wrapper">
+	<nav class="landing-nav">
+		<ul class="nav navbar-nav landing-nav-right">
+			<li><a href="/pitch/#summary">About</a></li>
+			<li><a id="contactBtn" class="landing-btn" href="#">Contact</a></li>
+			<li><a id="loginBtn" class="landing-btn" href="#">Log in</a></li>
+		</ul>
+	</nav>
+
+	<div class="demo-hero">
+		<h1 class="title">
+			<img class="demo-hero-brand" src="/images/ts.svg"> 
+			townsourced
+			<p class="tag-line">Share, shop and sell locally.</p>
+		</h1>
+		<h3 class="demo-hero-description">
+			A locally moderated community bulletin board, built to help <em>your</em> communities discover events, 
+			share, shop and sell locally.		
+		</h3>
+		<div>
+			<a href="/pitch" class="btn btn-lg btn-brand-1 demo-hero-btn">More Information</a>
+			<a href="https://docs.google.com/a/townsourced.com/forms/d/19vOu40KzBXJlNNrAg-Dg4wm_xv92lK2hE_4BgvpXlzo/viewform" 
+				target="_blank" class="btn btn-lg btn-brand-1 demo-hero-btn">Notify me of updates</a>
+		</div>
+
+		<div class="social-links">
+			<a href="https://www.twitter.com/townsourced">
+				<span class="fa fa-twitter"></span>
+			</a>
+			<a href="https://facebook.com/townsourced">
+				<span class="fa fa-facebook"></span>
+			</a>
+			<a href="https://blog.townsourced.com">
+				<span class="fa fa-rss"></span>
+			</a>
+		</div>
+	</div>
+
+</div> <!--site-wrapper-->
+
+
+<script id="tLogin" type="text/ractive">
+	<login waiting="{{waiting}}"></login>
+	<div class="login-btn-override">
+		<button on-click="login" class="btn btn-primary{{#waiting}} disabled{{/waiting}}">
+			<span class="fa {{#if waiting}}fa-spin fa-spinner{{else}}fa-sign-in{{/if}}"></span> Log In
+		</button>
+	</div>
+	<hr>
+	<div class="text-center">
+		<small>
+			If you are interested in trying the demo of townsourced, <a id="contactLogin" href="#">let us know</a>.
+		</small>
+	</div>
+
+</script>
+
+<script id="tContact" type="text/ractive">
+	<contact id="contactModal"></contact>
+</script>
+
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/demo.js"></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-76243856-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
+[[end]]

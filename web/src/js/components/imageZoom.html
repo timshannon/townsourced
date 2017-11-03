@@ -1,0 +1,286 @@
+<link rel="ractive" href="./image.html" name="image">
+
+<a href="#" on-click="zoom">
+	<image class="{{class}} img-zoom panel panel-default" key="{{key}}" thumb="{{!fullSized}}">
+	</image>
+</a>
+{{#zoomed}}
+<div class="img-zoomed" intro="fade" outro="fade" on-click="close"  decorator="swipe">
+	<button type="button" class="img-btn img-close" on-click="close"><span class="fa fa-times"></span>
+		<span class="sr-only">Close</span>
+	</button> 
+	{{#if canLeft()}}
+		<button type="button" class="img-btn img-left" on-click="left"><span class="fa fa-chevron-left"></span>
+			<span class="sr-only">Previous</span>
+		</button> 
+	{{/if}}
+	{{#if canRight()}}
+		<button type="button" class="img-btn img-right" on-click="right"><span class="fa fa-chevron-right"></span>
+			<span class="sr-only">Next</span>
+		</button> 
+	{{/if}}
+	{{#if !changing}}
+		<img src="/api/v1/image/{{images[index] || key}}" class="img-reponsive img-rounded img-zoomed-img" 
+			intro="scale" outro="scale">
+	{{/if}}
+</div>
+{{/zoomed}}
+
+<style>
+	@import "components.less";
+
+	.img-zoom {
+		cursor: zoom-in;
+		margin: 0px;
+		padding: 0px;
+	}
+
+	.img-zoomed {
+		z-index: @zindex-modal+10;
+		position:fixed;	
+		top:0;
+		right:0;
+		bottom: 0;
+		left: 0;
+	}
+
+	.img-zoomed-img {
+		max-height: 100%;
+		max-width: 100%;
+		width: auto;
+		padding: 30px;
+		.center-block();
+	}
+
+	.img-btn {
+		color: @gray-lighter;
+		text-shadow: 0 2px 0 @gray;
+		font-size: 2.5em;
+
+		&:hover,
+		&:focus {
+			color: darken(@gray-lighter, 15%);
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+		button& {
+			padding: 0;
+			cursor: pointer;
+			background: transparent;
+			border: 0;
+			-webkit-appearance: none;
+		}	
+	}
+
+	.img-close {
+		position: absolute;
+		right: 20px;
+		top: 20px;
+		line-height: 1;
+	}
+
+	.img-right {
+		position: absolute;
+		right: 20px;
+		top: 50%;
+		line-height: 1;
+	}
+
+	.img-left {
+		position: absolute;
+		left: 20px;
+		top: 50%;
+		line-height: 1;
+	}
+
+</style>
+
+<script>
+import {scale} from "../lib/ractive-transition-scale";
+import fade from "../lib/ractive-transitions-fade";
+
+component.exports = {
+	isolated: true,
+	decorators: {
+		swipe: function(node) {
+			var r = this;
+
+			var swipeHandler = function(event) {
+				var touch;
+        if (typeof event !== 'undefined') {
+						//event.preventDefault();
+            if (typeof event.touches !== 'undefined') {
+                touch = event.touches[0];
+								var swipe = r.get("swipe");
+                switch (event.type) {
+                    case 'touchstart':
+                    case 'touchmove':
+                        swipe[event.type].x = touch.pageX;
+                        swipe[event.type].y = touch.pageY;
+                        break;
+                    case 'touchend':
+                        swipe[event.type] = true;
+                        if (swipe.touchstart.x > -1 && swipe.touchmove.x > -1) {
+														var travel = swipe.touchstart.x - swipe.touchmove.x;
+														if(Math.abs(travel) <= 50) {
+															break;
+														} else if(travel > 0) {
+															r.fire("right");
+														} else {
+															r.fire("left");
+														}
+														swipe = {
+															touchstart: {
+																	x: -1,
+																	y: -1,
+															},
+															touchmove: {
+																	x: -1,
+																	y: -1,
+															},
+															touchend: false,
+														};
+                        }
+                        break;
+                    default:
+                        break;
+                }
+								r.set("swipe", swipe);
+            }
+        }
+
+			};
+
+			node.addEventListener('touchstart', swipeHandler, false);
+			node.addEventListener('touchmove', swipeHandler, false);
+			node.addEventListener('touchend', swipeHandler, false);
+
+			return {
+				teardown: function() {
+					node.removeEventListener('touchstart', swipeHandler, false);
+					node.removeEventListener('touchmove', swipeHandler, false);
+					node.removeEventListener('touchend', swipeHandler, false);
+				},
+			};
+		},
+	},
+	data: function() {
+		return {
+			zoomed: false,
+			loaded: false,
+			fullSize: false,
+			key: null,
+			swipe: {
+        touchstart: {
+            x: -1,
+            y: -1,
+        },
+        touchmove: {
+            x: -1,
+            y: -1,
+        },
+        touchend: false,
+			},
+			index: null,
+			images: [],
+			canLeft: function() {
+				if(!this.get("images") || this.get("images.length") === 0) {
+					return false;
+				}
+
+				if(this.get("index") === 0) {
+					return false;
+				}
+
+				return true;
+			},
+			canRight: function() {
+				if(!this.get("images") || this.get("images.length") === 0) {
+					return false;
+				}
+
+				if(this.get("index") === (this.get("images.length")-1)) {
+					return false;
+				}
+
+				return true;
+			},
+		};
+	},
+	transitions: {
+		scale: scale,
+		fade: fade,
+	},
+	onrender: function() {
+		var r = this;
+	
+		r.on({
+			"zoom": function(event) {
+				event.original.preventDefault();
+				if(r.get("index") === null) {
+					r.set("index", r.get("images").indexOf(r.get("key")));
+				}
+				r.set("zoomed", true);
+			},
+			"close": function() {
+				r.set("zoomed", false);
+				r.set("index", null);
+			},
+			"right": function(event) {
+				if(event) {
+					event.original.preventDefault();
+					event.original.stopPropagation();
+				}
+				
+				var index = r.get("index");
+				if(index !== r.get("images.length")-1) {
+					r.set("changing", true).then(function() {
+						r.set("index", index+1);
+						r.set("changing", false);
+					});
+				}
+			},
+			"left": function(event) {
+				if(event) {
+					event.original.preventDefault();
+					event.original.stopPropagation();
+				}
+				var index = r.get("index");
+				if(index !== 0) {
+					r.set("changing", true).then(function() {
+						r.set("index", index-1);
+						r.set("changing", false);
+					});
+				}
+			},
+		});
+
+		r.observe({
+			"zoomed": function(newValue, oldValue, keypath) {
+				if(newValue) {	
+					$('<div class="modal-backdrop fade in"></div>').appendTo(document.body);
+					$("body").addClass("modal-open");
+				} else {
+					$(".modal-backdrop").remove();
+					$("body").removeClass("modal-open");
+				}
+			}, 
+			"key": function(newValue, oldValue) {
+				if(newValue && newValue !== oldValue) {
+					var img = new Image();
+					img.onload = function() {
+							r.set("loaded", true);
+					}
+
+					img.src = "/api/v1/image/" + newValue +"?thumb";
+					if (img.complete)  {
+						img.onload();	
+					}
+				}
+			},
+		});
+
+	} //onrender
+};
+</script>

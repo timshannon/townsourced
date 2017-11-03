@@ -1,0 +1,38 @@
+<!-- body -->
+<div class="content">
+<table>
+	<tr>
+		<td>
+		<table width="100%"><tr><td align="center">
+			{{if .Welcome}}
+				<p class="salutation">Welcome to Townsourced {{.Name}},</p>
+			{{else}}
+				<p class="salutation">{{.Name}}, please confirm your email address,</p>
+			{{end}}
+		</td></tr></table>
+		<p>By clicking below you are confirming that we are able to send you notifications and other alerts 
+		from townsourced.</p>
+		<br>
+		<div class="content">
+			<!-- button -->
+			<table width="100%"><tr><td align="center">
+			<table class="btn-primary" cellpadding="0" cellspacing="0" border="0">
+			<tr>
+			<td>
+			<a href="{{.URL}}">Click here to confirm your email address.</a>
+			</td>
+			</tr>
+			</table>
+			<p class="small">Note, that this link is only valid for 24 hours. </p>
+			</td></tr>
+			</table>
+			<!-- /button -->
+		</div>
+		<br>
+		Thank You,
+		<p class="signature">townsourced</p>
+		</td>
+	</tr>
+</table>
+</div>
+<!-- /body -->

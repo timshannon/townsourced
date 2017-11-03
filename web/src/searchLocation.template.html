@@ -1,0 +1,188 @@
+[[define "SEARCHLOCATION"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Location Search - townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+
+	<style type="text/less">
+		@import "css/page.less";
+
+		.search-form {
+			margin-top: 15px;
+			.vertical-align();
+		}
+
+		#navCenter {
+			opacity: 0;
+			transition: opacity .5s ease;
+			&.fixed {
+				opacity: 1;
+			}
+		}
+
+		.navbar-search {
+			margin-right: 40px;
+		}
+
+		.navbar-category {
+			.pull-right();
+		}
+
+		.map-container {
+			margin-bottom: 15px;
+		}
+
+		.search-leader {
+			color: #fff;
+			font-weight: bold;
+		}
+
+		.pac-container {
+				// needed to prevent google maps autocomplete dropdown
+				// from hiding behind bootstrap modal
+				z-index: @zindex-modal + 1;
+		}
+
+	</style>
+</head>
+<body>
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+<script id="tMain" type="text/ractive">
+{{>modals}}
+
+<page currentUser="{{currentUser}}" navgap="false" customNavbar="true" loaded="true">
+	<header>
+		<div class="search-form">
+			<alert error="{{error}}"></alert>
+			<form on-submit="searchInput">
+				{{#if !srcOptions.latitude || !srcOptions.longitude}}
+					<div class="hidden-xs text-center">
+						<h3 class="search-leader"><em>Where</em> do you want to search?</h3>
+						<button type="button" class="btn btn-lg btn-default" on-click="locationModal">
+							<span class="fa fa-search"></span> Choose Location
+						</button>
+						<button type="button" class="btn btn-lg btn-brand-1" on-click="myLocation">
+							<span class="fa fa-map-marker"></span> Use My Location
+						</button>
+					</div>
+					<div class="visible-xs text-center">
+						<button type="button" class="btn btn-default" on-click="locationModal">
+							<span class="fa fa-search"></span> Choose Location
+						</button>
+						<button type="button" class="btn btn-brand-1" on-click="myLocation">
+							<span class="fa fa-map-marker"></span> Use My Location
+						</button>
+					</div>
+				{{else}}
+					<div class="input-group">
+						<span class="input-group-btn">
+							<button type="button" class="btn btn-lg btn-brand-1 tooltipped tooltipped-s" aria-label="Change Location"
+								on-click="locationModal">
+								<span class="fa fa-map-marker"></span>
+							</button>
+						</span>
+						<input type="text" id="search" class="form-control input-lg" placeholder="Search Posts" 
+							value="{{srcOptions.search}}">
+						<span class="input-group-btn">
+							<button type="button" class="btn btn-lg btn-primary" on-click="searchInput">
+								<span class="fa fa-search"></span><span class="hidden-xs"> Search</span>
+							</button>
+						</span>
+					</div>
+				{{/if}}
+			</form>
+			<div id="fixedTrigger"></div>
+		</div>
+	</header>
+
+	{{#partial navbar}}
+		<div id="navCenter" class="navbar-center">
+			{{#if showList}}
+				<form class="navbar-center-form" on-submit="searchInput">
+					<div class="navbar-category">
+						<categorySelect class="btn-sm" menu="true" selected="{{srcOptions.category}}" on-select="changeCategory">
+						</categorySelect>
+					</div>
+
+					<div class="navbar-search">
+						<div class="form-group has-feedback">
+							<label class="sr-only" for="searchSmall">Search Posts</label>
+							<input type="text" id="searchSmall" class="form-control input-sm" placeholder="Search Posts" 
+								value="{{srcOptions.search}}">
+							<a href="#" class="form-control-feedback" on-click="searchInput">
+								<span class="fa fa-search"></span>
+							</a>
+						</div>
+					</div>
+				</form>
+			{{/if}}
+		</div>
+
+		{{#if currentUser}}
+			<div class="navbar-form navbar-right">
+				<a href="/newpost" class="btn btn-ghost-primary" on-click="post">
+					<span class="fa fa-pencil-square-o"></span> Post
+				</a>
+			</div>
+		{{/if}}
+	{{/partial}}
+	{{#partial navbarMenu}}
+		{{#if currentUser}}
+			<li><a href="/newpost" on-click="post"><span class="fa fa-pencil-square-o"></span> Post</a></li>
+		{{/if}}
+	{{/partial}}
+
+	{{#if showList}}
+		<searchSidebar options="{{srcOptions}}"  posts="{{posts}}" on-changed="search" hidden="{{sidebarHidden}}">
+		</searchSidebar>
+
+		<postList search="true" sidebar="{{!sidebarHidden}}" searchOptions="{{srcOptions}}" posts="{{posts}}" user="{{currentUser}}">
+		</postList>
+	{{/if}}
+
+</page>
+
+{{#partial modals}}
+<modal id="locationModal" large="true" title="Choose a Location" customFooter="true">
+	<div class="map-container">
+		<map latitude="{{currentLatitude}}" longitude="{{currentLongitude}}" showRange="true" range="{{currentMilesDistant}}">
+		</map>
+	</div>
+
+	<div class="modal-footer">	
+		<button type="button" class="btn btn-default" data-dismiss="modal">
+			<span class="fa fa-remove"></span> Cancel
+		</button>			
+		<button class="btn btn-primary" on-click="setLocation">Save</button>			
+	</div>
+</modal>
+
+<postOptions></postOptions>
+{{/partial}}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=[[.GoogleMapsAPIKey]]&libraries=places"></script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/searchLocation.js"></script>
+<script type="application/json" id="postsPayload">
+	[[json .Posts]]
+</script>
+<script type="application/json" id="userPayload">
+	[[json .User]]
+</script>
+<script type="application/json" id="errorPayload">
+	[[json .Error]]
+</script>
+
+</body>
+</html>
+[[end]]

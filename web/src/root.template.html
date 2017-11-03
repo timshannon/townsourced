@@ -1,0 +1,185 @@
+[[define "ROOT"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+
+	<meta property="og:type"               content="website" />
+	<meta property="og:title"              content="Townsourced" />
+	<meta property="og:site_name"          content="townsourced" />
+	<meta property="og:description" content="A locally moderated community bulletin board, built to help your communities discover events, share, shop and sell locally." />
+	<meta property="og:image" content="https://www.townsourced.com/images/facebookShare.jpg" />
+	<meta property="og:image:url" content="https://www.townsourced.com/images/facebookShare.jpg" />
+	<meta property="og:url" content="https://www.townsourced.com/" />
+
+	<meta itemprop="description" content="A locally moderated community bulletin board, built to help your communities discover events, share, shop and sell locally." />
+	<meta itemprop="image" content="https://www.townsourced.com/images/facebookShare.jpg" />
+	<meta itemprop="name" content="Townsourced" />
+	
+	<link rel="canonical" href="https://www.townsourced.com"/>
+
+
+	<title>townsourced - Share, shop and sell locally</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+
+	<style type="text/less">
+		@import "css/page.less";
+
+		#navCenter {
+			&.fixed {
+				> .navbar-search {
+					margin-right: 40px;
+				}
+
+				> .navbar-category {
+					opacity: 1;
+					margin-right: 0px;
+				}
+			}
+		}
+
+		.navbar-search {
+				transition: all .5s ease;
+		}
+
+		.navbar-category {
+					transition: all .5s ease;
+					opacity: 0;
+					margin-right: -40px;
+					.pull-right();
+		}
+
+		#newtownBtn {
+			.menu-color(@brand-success);
+		}
+
+		.town-suggest {
+			padding-top: 40px;			
+		}
+
+</style>
+</head>
+<body>
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+<script id="tMain" type="text/ractive">
+{{>modals}}
+
+<page currentUser="{{currentUser}}" navgap="false" customNavbar="true" loaded="true" altBrand="{{fixed}}">
+	<header>
+		<div class="hero">
+			<h1 class="title">
+				<img class="hero-brand" src="/images/ts.svg"> 
+				townsourced
+				<p class="tag-line">Share, shop and sell locally.</p>
+			</h1>
+		</div>
+	</header>
+	<div id="fixedTrigger"></div>
+	<alert error="{{error}}"></alert>
+
+	{{#partial navbar}}
+		<ul class="nav navbar-nav navbar-left">
+			<townList links="true" selected="{{searchOptions.towns}}" towns="{{userTowns}}">
+				<li role="separator" class="divider"></li>
+				<li>
+					<a id="searchtownBtn" href="/town/">
+						<span class="fa fa-search"></span>  Search for Towns
+					</a>
+				</li>	
+				<li>
+					<a id="newtownBtn" href="/newtown">
+						<span class="fa fa-plus"></span>  Register a New Town
+					</a>
+				</li>	
+			</townList>
+		</ul>
+		
+		<div class="navbar-center">
+			<form id="navCenter" class="navbar-center-form" on-submit="search">
+				<div class="navbar-category hidden-xs">
+					<categorySelect class="btn-sm" menu="true" townKeys="{{srcOptions.towns}}" towns="{{userTowns}}" town="{{town}}" 
+						selected="{{searchOptions.category}}" on-select="changeCategory">
+					</categorySelect>
+				</div>
+
+				<div class="navbar-search">
+					<div class="form-group has-feedback">
+						<label class="sr-only" for="search">Search Posts</label>
+						<input type="text" id="search" class="form-control input-sm" placeholder="Search Posts" 
+							value="{{searchOptions.search}}">
+						<a href="#" class="form-control-feedback" on-click="search">
+							<span class="fa fa-search"></span>
+						</a>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div class="navbar-form navbar-right">
+			<a href="/newpost" class="btn btn-ghost-primary" on-click="post">
+				<span class="fa fa-pencil-square-o"></span> Post
+			</a>
+		</div>
+	{{/partial}}
+	{{#partial navbarMenu}}
+		<li><a href="/newpost" on-click="post"><span class="fa fa-pencil-square-o"></span> Post</a></li>
+		<li><a href="/town"><span class="fa fa-search"></span> Search for Towns</a></li>
+		<li><a href="/newtown"><span class="fa fa-plus"></span> Register  New Town</a></li>
+	{{/partial}}
+	<postList posts="{{posts}}" user="{{currentUser}}" searchOptions="{{searchOptions}}" towns="{{userTowns}}">
+	</postList>
+
+	[[if .TownHint]]
+	<div class="town-suggest container text-center">
+		<div class="alert alert-info">
+			{{#if towns}}
+				<span class="fa fa-info-circle"></span>  There doesn't seem to be a lot of posts here.  
+				Consider exploring 
+				{{#towns:i}}
+					<a href="#" class="alert-link" on-click="selectTown">{{.name}}</a>{{#if i != (towns.length - 1)}},&nbsp{{/if}}
+				{{/towns}}
+				or <a href="/town/" class="alert-link">searching for nearby towns</a> to join.
+			{{else}}
+				<span class="fa fa-info-circle"></span>  There doesn't seem to be a lot of posts here.  
+				You should try <a href="/town/" class="alert-link">searching for nearby towns</a> to join.
+			{{/if}}
+		</div>
+	</div>
+	[[end]]
+</page>
+
+
+{{#partial modals}}
+	<modal id="infoPanel" customHeader="true" customFooter="true" teardown="true">
+		{{#partial header}}{{/partial}}
+		<townPanel town="{{town}}" currentUser="{{currentUser}}" showInfo="false" showVisit="true" inModal="true"></townPanel>
+	</modal>
+	<postOptions></postOptions>
+{{/partial}}
+
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/root.js"></script>
+<script src="/js/message.js"></script>
+<script type="application/json" id="postsPayload">
+	[[json .Posts]]
+</script>
+<script type="application/json" id="userPayload">
+	[[json .User]]
+</script>
+<script type="application/json" id="townsPayload">
+	[[json .Towns]]
+</script>
+
+
+</body>
+</html>
+[[end]]

@@ -1,0 +1,327 @@
+[[define "EDITPOST"]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"> 
+	<title>townsourced</title>
+
+	<link href="/css/townsourced.min.css" rel="stylesheet">
+	<link rel="icon" href="/images/favicon.ico">
+
+	<style type="text/less">
+		@import "css/page.less";
+
+		.parsed {
+			overflow-y: auto;	
+			min-height: 300px;
+			max-width: 100%;
+			padding-top: 5px;
+		}
+
+		#postContent {
+			min-height: 400px;
+		}
+
+		.tab-btn {
+			position: absolute;
+			top: 0px;
+			right: 15px;
+		}
+
+		.format-group {
+			margin-right:  30px;
+		}
+
+		.post-images {
+			margin-top: 15px;
+		}
+
+		#imageUpload {
+			margin: 5px;
+			width: 100%;
+			min-width: 237px;
+			height: 263px;
+		}
+
+		.post-gallery {
+			margin: 5px;
+		}
+
+		.post-image {
+			width: 250px;
+			height: 250px;
+		}
+
+		.nav.nav-pills.pull-right {
+			padding-right: 0px;
+		}
+		.image-max {
+			.vertical-align();
+		}
+
+		#postTitlelabel {
+			font-size: 24px;
+			font-weight: normal;
+			padding-top: 0px;
+		}
+
+		.save-btns {
+			text-align: right;
+			margin-top: 8px;
+			> .checkbox {
+				margin-right: 15px;
+			}
+		}
+
+
+		.hr-style(@color) {
+			border-top: 4px solid @color;
+		}
+
+		.hr-notice {
+			.hr-style(@category-notice);
+		}
+
+		.hr-buysell {
+			.hr-style(@category-buysell);
+		}
+
+		.hr-event {
+			.hr-style(@category-event);
+		}
+
+		.hr-jobs {
+			.hr-style(@category-jobs);
+		}
+
+		.hr-volunteer {
+			.hr-style(@category-volunteer);
+		}
+
+		.hr-housing {
+			.hr-style(@category-housing);
+		}
+
+		.share-error {
+			h1 {
+				font-size: 24px;
+			}
+		}
+
+		#errorIcon {
+			font-size: 5em; 
+		}
+
+	</style>
+
+</head>
+<body>
+<noscript>
+	<div class="js-warning"></div>
+</noscript>
+<script id="tMain" type="text/ractive">
+<page class="container" loaded="true" currentUser="{{user}}">
+[[if .ShareError]]
+	{{>shareError}}
+[[else]]
+<alert error="{{error}}"></alert>
+{{#if post.moderation}}
+<div class="alert alert-warning">
+	<span class="fa fa-exclamation-triangle"></span>  Your post has been auto-moderated by one or more towns!  Please, 
+		<a href="#moderation">review your post</a> before publishing.
+</div>
+{{/if}}
+
+<form class="form-horizontal" on-submit="cancelEvent">
+	<div class="form-group">
+		<label id="postTitlelabel" class="col-lg-1 col-md-1 col-sm-1 control-label" for="postTitle">Title</label>	
+		<div class="col-lg-9 col-md-8 col-sm-7">
+			<input type="text" maxlength="{{maxTitle}}" class="form-control" tabindex="1" id="postTitle" value="{{post.title}}" 
+				placeholder="Post Title">
+		</div>
+		<ul class="nav nav-pills col-lg-2 col-md-3 col-sm-4 pull-right">
+    
+			<li role="presentation" class="dropdown {{#if catMissing}}danger{{/if}}">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+					{{categories[post.category] || "Category"}} <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu select-menu">
+					{{#categories:name}}
+						<li class="{{#if post.category == name}}active{{/if}}">
+							<a href="#" on-click="setCategory:{{name}}" 
+								class="menu-category-{{name}} {{#if post.category == name}}active{{/if}}" >
+								{{.}}
+							</a>
+						</li>	
+					{{/categories}}
+				</ul>
+			</li>
+			<townList menuClass="dropdown-menu-right" buttonClass="{{#if townMissing}}danger{{/if}}"
+				selected="{{post.townKeys}}" towns="{{towns}}"></townList>
+		</ul>
+
+	</div>
+
+	<hr class="hr-{{post.category}}">
+
+	<div class="form-group">
+		<label class="sr-only" for="postContent">Content</label>	
+		<div class="col-sm-12">
+			<ul class="nav nav-tabs" role="tablist">
+				<li role="presentation" class="active">
+					<a id="editorTab" href="#write" aria-controls="write" role="tab" data-toggle="tab">
+						<span class="fa fa-pencil"></span>  Write
+					</a>
+				</li>
+
+				<li role="presentation">
+					<a href="#preview" on-click="preview" aria-controls="preview" role="tab" data-toggle="tab">
+						<span class="fa fa-eye"></span>  Preview
+					</a>
+				</li>
+
+			</ul>
+
+			<div class="tab-content">
+				<div role="tabpanel" class="tab-pane active" id="write">
+					{{>write}}
+				</div>
+				<div role="tabpanel" class="tab-pane" id="preview" on-click="preview">
+					{{>preview}}
+				</div>
+			</div>
+
+		</div>
+	</div>
+</form>
+<div id="moderation">
+	{{#if post.moderation}}
+		<h3>Moderation</h3>
+		<ul class="list-group">
+			{{#post.moderation:i}}
+				<li class="list-group-item list-group-item-warning">
+					<h4 class="list-group-item-heading">{{ towns[.town].name || .town }}</h4>
+					<p class="list-group-item-text">{{.reason}}</p>
+				</li>	
+			{{/}}
+		</ul>
+	{{else}}
+		<span class="center-block alert alert-info">
+			<span class="fa fa-info-circle"></span>  Saving your post as a draft will run it through the town auto-moderation settings. 					
+		</span>
+	{{/if}}
+</div>
+[[end]]
+</page>
+
+{{#partial write}}
+<editor class="form-control" id="postContent" input="{{post.content}}" atTowns="{{atTowns}}" atUsers="{{atUsers}}"></editor>
+<div class="save-btns">
+	<div class="checkbox pull-left">
+		<label>
+			<input type="checkbox" checked="{{post.allowComments}}"> Allow Comments
+		</label>
+	</div>
+	<div class="checkbox pull-left {{^post.allowComments}}disabled{{/}}">
+		<label>
+			<input type="checkbox" disabled="{{!post.allowComments}}" checked="{{post.notifyOnComment}}"> Notify on Comment
+		</label>
+	</div>
+	<button type="button" class="btn btn-default {{#if saving}}disabled{{/if}}" on-click="saveDraft">
+		<span class="fa {{#if saving}}fa-spin fa-spinner {{else}}fa-floppy-o{{/if}}"></span> 
+		<span class="hidden-xs"> Save Draft</span>
+	</button>
+
+	<button type="button" class="btn btn-primary {{#if saving}}disabled{{/if}}" on-click="publish">
+		<span class="fa {{#if saving}}fa-spin fa-spinner {{else}}fa-external-link{{/if}}"></span>  
+		<span class="hidden-xs"> Publish</span>
+	</button>
+</div>
+
+<div class="post-images">
+	<h3>Images <small>({{post.images.length}}/{{maxImages}})</small></h3> 
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-sm-4">
+					{{#if post.images.length < maxImages}}
+						<imageUpload crop="false" id="imageUpload"></imageUpload>
+					{{else}}
+						<div id="imageUpload" class="panel panel-default">	
+							<div class="panel-body text-center">
+								<div class="fa fa-3x fa-warning icon-warning"></div>
+								<h3>The max number of images for a post is 10.</h3>
+								<p class="text-muted">If you want to upload another image, you'll have to remove one from this post first.</p>
+							</div>
+						</div>
+					{{/if}}
+				</div>
+				<div class="col-sm-8">
+					<gallery class="post-gallery" edit="true" featured="{{post.featuredImage}}" imageClass="post-image" images="{{post.images}}">
+					</gallery>
+				</div>
+		</div>
+	</div>
+</div>
+{{/partial}}
+
+{{#partial preview}}
+<div class="tab-btn">
+	<buttonGroup class="format-group hidden-xs" btnClass="btn-sm" selected="{{post.format}}" 
+		items="{{['standard', 'article', 'gallery', 'poster']}}">
+	</buttonGroup>
+	<button type="button" class="btn btn-default {{#if saving}}disabled{{/if}}" on-click="saveDraft">
+		<span class="fa {{#if saving}}fa-spin fa-spinner {{else}}fa-floppy-o{{/if}}"></span> 
+		<span class="hidden-xs"> Save Draft</span>
+	</button>
+
+	<button type="button" class="btn btn-primary {{#if saving}}disabled{{/if}}" on-click="publish">
+		<span class="fa {{#if saving}}fa-spin fa-spinner {{else}}fa-external-link{{/if}}"></span><span class="hidden-xs">  Publish</span>
+	</button>
+</div>
+<div class="tab-content-panel parsed container">
+	<post post="{{post}}"></post>
+</div>
+
+{{/partial}}
+
+{{#partial shareError}}
+<div class="row">
+	<div class="col-sm-3 text-right">
+		<span class="hidden-xs text-danger watermark fa fa-exclamation-circle"></span>
+	</div>
+	<div class="col-sm-6">
+		<div class="share-error panel panel-default">
+			<div class="panel-body text-center">
+				<h1>The shared URL is either unavailable or we were unable to access it.</h1>
+				<hr>
+				<p>You can try again, or use the townsourced boomkarklet by dragging the 
+					<strong>Share to Townsourced</strong> button below to your bookmark bar.</p>
+				<p>
+					<a href="javascript:void({{bookmarklet}});" class="btn btn-large btn-brand-1 bookmarklet">
+						<span class="fa fa-share"></span> Share to Townsourced</a>
+				</p>
+				<p class="small">Click the bookmark anytime you want to share a page to townsourced.</p>
+			</div> <!-- panel-body -->
+		</div> <!-- panel -->
+	</div> <!-- col -->
+</div> <!-- row -->
+{{/partial}}
+
+</script>
+<script src="/js/lib/jquery.min.js"></script>
+<script src="/js/lib/ractive.min.js"></script>
+<script src="/js/message.js"></script>
+<script src="/js/editpost.js"></script>
+<script type="application/json" id="payload">
+	[[json .Post]]
+</script>
+<script type="application/json" id="userPayload">
+	[[json .User]]
+</script>
+</body>
+</html>
+[[end]]
