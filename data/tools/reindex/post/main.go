@@ -12,8 +12,8 @@ import (
 	"git.townsourced.com/townsourced/config"
 	"git.townsourced.com/townsourced/logrus"
 	"git.townsourced.com/townsourced/pb"
-	"git.townsourced.com/townsourced/townsourced/app"
-	"git.townsourced.com/townsourced/townsourced/data"
+	"github.com/timshannon/townsourced/app"
+	"github.com/timshannon/townsourced/data"
 )
 
 var (

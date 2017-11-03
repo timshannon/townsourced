@@ -3,7 +3,7 @@
 
 package app
 
-import "git.townsourced.com/townsourced/townsourced/data"
+import "github.com/timshannon/townsourced/data"
 
 const ip2locationTownDistance = townSearchMaxDistance // distance to search for towns
 

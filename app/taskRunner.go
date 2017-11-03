@@ -8,7 +8,7 @@ import (
 	"time"
 
 	log "git.townsourced.com/townsourced/logrus"
-	"git.townsourced.com/townsourced/townsourced/data"
+	"github.com/timshannon/townsourced/data"
 )
 
 /*

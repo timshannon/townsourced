@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"git.townsourced.com/townsourced/oauth"
-	"git.townsourced.com/townsourced/townsourced/data"
-	"git.townsourced.com/townsourced/townsourced/data/private"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/data"
+	"github.com/timshannon/townsourced/data/private"
+	"github.com/timshannon/townsourced/fail"
 )
 
 func init() {

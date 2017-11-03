@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"git.townsourced.com/townsourced/townsourced/data/private"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/data/private"
+	"github.com/timshannon/townsourced/fail"
 )
 
 const (

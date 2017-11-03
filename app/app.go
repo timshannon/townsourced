@@ -9,8 +9,8 @@ import (
 	"net/url"
 	"time"
 
-	"git.townsourced.com/townsourced/townsourced/app/email"
-	"git.townsourced.com/townsourced/townsourced/data"
+	"github.com/timshannon/townsourced/app/email"
+	"github.com/timshannon/townsourced/data"
 )
 
 var (

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"git.townsourced.com/townsourced/townsourced/app/email"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/app/email"
+	"github.com/timshannon/townsourced/fail"
 )
 
 // ContactMessage send a contact message email to the townsourced info inbox

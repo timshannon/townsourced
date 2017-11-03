@@ -3,7 +3,7 @@
 
 package app
 
-import "git.townsourced.com/townsourced/townsourced/data"
+import "github.com/timshannon/townsourced/data"
 
 // Help is a help document entry
 type Help struct {

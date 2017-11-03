@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"git.townsourced.com/townsourced/townsourced/data"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/data"
+	"github.com/timshannon/townsourced/fail"
 )
 
 // Comment is a comment on a post.  A comment is associated to one post, and may have a parent comment

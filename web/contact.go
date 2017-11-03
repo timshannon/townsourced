@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"git.townsourced.com/townsourced/townsourced/app"
+	"github.com/timshannon/townsourced/app"
 )
 
 var contactMessageRate = app.RequestType{

@@ -13,9 +13,9 @@ import (
 	"time"
 
 	rt "git.townsourced.com/townsourced/gorethink/types"
-	"git.townsourced.com/townsourced/townsourced/app/email"
-	"git.townsourced.com/townsourced/townsourced/data"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/app/email"
+	"github.com/timshannon/townsourced/data"
+	"github.com/timshannon/townsourced/fail"
 )
 
 // Town is a community in townsourced

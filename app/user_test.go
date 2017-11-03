@@ -8,8 +8,8 @@ import (
 	"time"
 
 	. "git.townsourced.com/townsourced/check"
-	"git.townsourced.com/townsourced/townsourced/app"
-	"git.townsourced.com/townsourced/townsourced/data"
+	"github.com/timshannon/townsourced/app"
+	"github.com/timshannon/townsourced/data"
 )
 
 func usersEqual(c *C, user, other *app.User) {

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"git.townsourced.com/townsourced/goquery"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/fail"
 )
 
 type shareDomainParser interface {

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"git.townsourced.com/townsourced/logrus"
-	"git.townsourced.com/townsourced/townsourced/data"
+	"github.com/timshannon/townsourced/data"
 )
 
 // LogEntry is an entry in the townsourced log

@@ -7,8 +7,8 @@ import (
 	"math"
 	"time"
 
-	"git.townsourced.com/townsourced/townsourced/data"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/data"
+	"github.com/timshannon/townsourced/fail"
 )
 
 // Notification is a notification sent to a user.  This can be a message from townsourced

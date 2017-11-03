@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"git.townsourced.com/townsourced/townsourced/data"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/data"
+	"github.com/timshannon/townsourced/fail"
 )
 
 // ThirdPartyState is used both

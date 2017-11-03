@@ -6,8 +6,8 @@ package web
 import (
 	"net/http"
 
-	"git.townsourced.com/townsourced/townsourced/app"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/app"
+	"github.com/timshannon/townsourced/fail"
 )
 
 func googleGet(w http.ResponseWriter, r *http.Request, c context) {

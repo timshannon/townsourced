@@ -7,8 +7,8 @@ import (
 	"time"
 
 	log "git.townsourced.com/townsourced/logrus"
-	"git.townsourced.com/townsourced/townsourced/data"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/data"
+	"github.com/timshannon/townsourced/fail"
 )
 
 //TODO: Simplify Rate limiting, and provide headers https://developer.github.com/v3/#rate-limiting

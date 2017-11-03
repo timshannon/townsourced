@@ -6,9 +6,9 @@ package web
 import (
 	"net/http"
 
-	"git.townsourced.com/townsourced/townsourced/app"
-	"git.townsourced.com/townsourced/townsourced/data"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/app"
+	"github.com/timshannon/townsourced/data"
+	"github.com/timshannon/townsourced/fail"
 )
 
 type notificationInput struct {

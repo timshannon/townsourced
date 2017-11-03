@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"git.townsourced.com/townsourced/httprouter"
-	"git.townsourced.com/townsourced/townsourced/app"
+	"github.com/timshannon/townsourced/app"
 )
 
 // TODO: CSP report-uri support

@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/fail"
 
 	rt "git.townsourced.com/townsourced/gorethink"
 )

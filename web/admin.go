@@ -8,7 +8,7 @@ import (
 	"time"
 
 	log "git.townsourced.com/townsourced/logrus"
-	"git.townsourced.com/townsourced/townsourced/app"
+	"github.com/timshannon/townsourced/app"
 )
 
 func adminTemplate(w http.ResponseWriter, r *http.Request, c context) {

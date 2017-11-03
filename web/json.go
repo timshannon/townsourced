@@ -10,7 +10,7 @@ import (
 	"net/http"
 
 	log "git.townsourced.com/townsourced/logrus"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/fail"
 )
 
 const (

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"text/template"
 
-	"git.townsourced.com/townsourced/townsourced/data"
+	"github.com/timshannon/townsourced/data"
 )
 
 func init() {

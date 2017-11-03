@@ -6,8 +6,8 @@ package app
 import (
 	"time"
 
-	"git.townsourced.com/townsourced/townsourced/data"
-	"git.townsourced.com/townsourced/townsourced/fail"
+	"github.com/timshannon/townsourced/data"
+	"github.com/timshannon/townsourced/fail"
 )
 
 // Session is an authenticated session into townsourced

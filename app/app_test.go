@@ -14,8 +14,8 @@ import (
 	"git.townsourced.com/townsourced/elastic"
 	"git.townsourced.com/townsourced/gomemcache/memcache"
 	rt "git.townsourced.com/townsourced/gorethink"
-	"git.townsourced.com/townsourced/townsourced/app"
-	"git.townsourced.com/townsourced/townsourced/data"
+	"github.com/timshannon/townsourced/app"
+	"github.com/timshannon/townsourced/data"
 )
 
 type dataClient struct{}

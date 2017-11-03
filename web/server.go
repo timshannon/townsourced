@@ -25,7 +25,7 @@ import (
 	"git.townsourced.com/townsourced/go-zopfli/zopfli"
 	"git.townsourced.com/townsourced/httprouter"
 	"git.townsourced.com/townsourced/logrus"
-	"git.townsourced.com/townsourced/townsourced/app"
+	"github.com/timshannon/townsourced/app"
 )
 
 func init() {

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	. "git.townsourced.com/townsourced/check"
-	"git.townsourced.com/townsourced/townsourced/app"
+	"github.com/timshannon/townsourced/app"
 )
 
 func (s *AppSuite) TestRateLimit(c *C) {

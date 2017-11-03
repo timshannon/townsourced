@@ -14,7 +14,7 @@ import (
 
 	log "git.townsourced.com/townsourced/logrus"
 	sg "git.townsourced.com/townsourced/sendgrid-go"
-	"git.townsourced.com/townsourced/townsourced/data/private"
+	"github.com/timshannon/townsourced/data/private"
 )
 
 // DefaultFrom is the default from address for all outgoing emails
