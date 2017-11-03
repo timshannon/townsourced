@@ -1,17 +1,28 @@
 Townsourced
 ===========
 
-Townsourced is a public bulletin board for all of your local communities
+Townsourced is a bulletin board for local communities.
 
-## Quick Start
+# Background
+
+My goal with Townsourced was first and foremost to build something useful for local, small communities.  I felt local
+communities were very under-represented online, and the networks available catered either to large communities or niche
+communities of shared interest.  My target audience was small, local communities: small towns, college campuses, 
+neighborhoods, churches, schools.  
+
+Existing
+
+More details can be found at tech.townsourced.com
+
+# Quick Start
 
 
-## Building
+# Building
 
-## Deploying
+# Deploying
 
 
-## Overview
+# Overview
 
 The code is split into 3 layers:
 
