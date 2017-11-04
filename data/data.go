@@ -250,21 +250,7 @@ func Init(cfg *Config) error {
 		return fmt.Errorf("Error parsing DB Timeout: %s", err)
 	}
 
-	session, err = rt.Connect(rt.ConnectOpts{
-		Address:             cfg.DB.Address,
-		Addresses:           cfg.DB.Addresses,
-		Database:            cfg.DB.Database,
-		AuthKey:             cfg.DB.AuthKey,
-		Timeout:             cfg.DB.timeout,
-		TLSConfig:           cfg.DB.TLSConfig,
-		MaxIdle:             cfg.DB.MaxIdle,
-		MaxOpen:             cfg.DB.MaxOpen,
-		DiscoverHosts:       cfg.DB.DiscoverHosts,
-		NodeRefreshInterval: cfg.DB.NodeRefreshInterval,
-	})
-	if err != nil {
-		return err
-	}
+	rtConnect(cfg)
 
 	log.WithField("CFG", cfg.DB).Debugf("Connected to DB")
 
@@ -287,4 +273,26 @@ func Init(cfg *Config) error {
 	log.Debugf("DB Prepped")
 
 	return err
+}
+
+func rtConnect(cfg *Config) {
+	var err error
+	session, err = rt.Connect(rt.ConnectOpts{
+		Address:             cfg.DB.Address,
+		Addresses:           cfg.DB.Addresses,
+		Database:            cfg.DB.Database,
+		AuthKey:             cfg.DB.AuthKey,
+		Timeout:             cfg.DB.timeout,
+		TLSConfig:           cfg.DB.TLSConfig,
+		MaxIdle:             cfg.DB.MaxIdle,
+		MaxOpen:             cfg.DB.MaxOpen,
+		DiscoverHosts:       cfg.DB.DiscoverHosts,
+		NodeRefreshInterval: cfg.DB.NodeRefreshInterval,
+	})
+
+	if err != nil {
+		log.WithField("CFG", cfg.DB).Warnf("Error connecting to database: %s", err)
+		time.Sleep(1 * time.Second)
+		rtConnect(cfg)
+	}
 }

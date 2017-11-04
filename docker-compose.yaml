@@ -1,0 +1,22 @@
+version: '2'
+services:
+  db:
+    image: rethinkdb
+    volumes:
+      - "~/db_data:/data"
+  cache:
+    image: memcached:1.5.2-alpine
+  search:
+    image: elasticsearch:2.4.6-alpine
+    volumes:
+      - "~/search_data:/usr/share/elasticsearch/data"
+  web:
+    build: .
+    depends_on:
+      - db
+      - cache
+      - search
+    links:
+      - db
+      - cache
+      - search
