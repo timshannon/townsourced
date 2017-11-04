@@ -291,8 +291,8 @@ func rtConnect(cfg *Config) {
 	})
 
 	if err != nil {
-		log.WithField("CFG", cfg.DB).Warnf("Error connecting to database: %s", err)
-		time.Sleep(1 * time.Second)
+		log.Warnf("Error connecting to database: %s  RETRYING...", err)
+		time.Sleep(5 * time.Second)
 		rtConnect(cfg)
 	}
 }

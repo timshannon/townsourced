@@ -92,6 +92,17 @@ func main() {
 		app.Halt("Error reading data config values: %s", err.Error())
 	}
 
+	// override with any environment variables
+	if os.Getenv("DB_ADDRESS") != "" {
+		dataCfg.DB.Address = os.Getenv("DB_ADDRESS")
+	}
+	if os.Getenv("SEARCH_ADDRESS") != "" {
+		dataCfg.Search.Addresses = []string{os.Getenv("SEARCH_ADDRESS")}
+	}
+	if os.Getenv("CACHE_ADDRESS") != "" {
+		dataCfg.Cache.Addresses = []string{os.Getenv("CACHE_ADDRESS")}
+	}
+
 	dataCfg.DevMode = flagDevMode
 
 	err = cfg.Write()

@@ -12,6 +12,10 @@ services:
       - "~/search_data:/usr/share/elasticsearch/data"
   web:
     build: .
+    environment:
+      DB_ADDRESS: db:29015
+      SEARCH_ADDRESS: search:9300
+      CACHE_ADDRESS: cache:11211
     depends_on:
       - db
       - cache

@@ -35,3 +35,5 @@ RUN go get github.com/timshannon/townsourced && \
     echo '{"web":{"address": "http://localhost:8080"}}' > settings.json
 
 ENTRYPOINT [ "/go/src/github.com/timshannon/townsourced/townsourced" ]
+
+EXPOSE 8080
