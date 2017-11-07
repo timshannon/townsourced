@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"git.townsourced.com/townsourced/elastic"
 	log "git.townsourced.com/townsourced/logrus"
@@ -33,9 +34,7 @@ type SearchIndexConfig struct {
 func initSearch(cfg *SearchConfig) error {
 	var err error
 
-	searchClient, err = elastic.NewClient(elastic.SetURL(cfg.Addresses...),
-		elastic.SetMaxRetries(cfg.MaxRetries),
-	)
+	elasticConnect(cfg)
 
 	log.Debugf("Connected to Search Instance")
 
@@ -93,6 +92,18 @@ func initSearch(cfg *SearchConfig) error {
 	}
 
 	return nil
+}
+
+func elasticConnect(cfg *SearchConfig) {
+	var err error
+	searchClient, err = elastic.NewClient(elastic.SetURL(cfg.Addresses...),
+		elastic.SetMaxRetries(cfg.MaxRetries),
+	)
+	if err != nil {
+		log.Warnf("Error connecting to elastic search: %s  RETRYING...", err)
+		time.Sleep(5 * time.Second)
+		elasticConnect(cfg)
+	}
 }
 
 func buildSearchMappings() map[string]interface{} {

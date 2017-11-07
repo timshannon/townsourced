@@ -229,7 +229,7 @@ func DefaultConfig() *Config {
 		},
 		Search: SearchConfig{
 			Addresses:  []string{"http://127.0.0.1:9200"},
-			MaxRetries: 10,
+			MaxRetries: 0,
 			Index: SearchIndexConfig{
 				Name:     "townsourced",
 				Shards:   5,
