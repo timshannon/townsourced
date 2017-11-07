@@ -32,15 +32,9 @@ type SearchIndexConfig struct {
 }
 
 func initSearch(cfg *SearchConfig) error {
-	var err error
-
 	elasticConnect(cfg)
 
 	log.Debugf("Connected to Search Instance")
-
-	if err != nil {
-		return err
-	}
 
 	//prep indexes
 
