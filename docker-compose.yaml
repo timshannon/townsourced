@@ -12,10 +12,16 @@ services:
       - "./search_data:/usr/share/elasticsearch/data"
   web:
     build: .
+    # uncomment if you want to use a local instance of townsourced rather than have the dockerfile
+    # download and build one from github, such as for development
+    # volumes:
+    #   - "./:/go/src/github.com/timshannon/townsourced/"
     environment:
       DB_ADDRESS: db:28015
       SEARCH_ADDRESS: http://search:9200
       CACHE_ADDRESS: cache:11211
+    ports:
+      - "8080:8080"
     depends_on:
       - db
       - cache

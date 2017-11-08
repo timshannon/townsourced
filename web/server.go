@@ -98,7 +98,11 @@ func StartServer(cfg *Config) error {
 	serverAddr := urlAddress.Host
 	canonicalHost = serverAddr
 
-	if !strings.ContainsRune(serverAddr, ':') {
+	// make sure server is listening on all addresses on that port
+	if strings.ContainsRune(serverAddr, ':') {
+		parts := strings.Split(serverAddr, ":")
+		serverAddr = ":" + parts[len(parts)-1]
+	} else {
 		if urlAddress.Scheme == "http" {
 			serverAddr = ":http"
 		} else if urlAddress.Scheme == "https" {
@@ -134,7 +138,7 @@ func StartServer(cfg *Config) error {
 		ErrorLog:       log.New(logrus.StandardLogger().Writer(), "", log.LstdFlags),
 	}
 
-	fmt.Printf("Townsourced Web Server running\n")
+	fmt.Printf("Townsourced Web Server running at %s\n", serverAddr)
 
 	if cfg.CertFile == "" || cfg.KeyFile == "" {
 		server.Addr = serverAddr

@@ -16,7 +16,7 @@ Essentially, anything that shouldn't be put in a public repository should come f
 */
 package private
 
-/* Facebook API keys */
+/* Facebook API keys - Used for Login with Facebook */
 const (
 	FacebookAppID    = "redacted"
 	FacebookDevAppID = "redacted"
@@ -25,25 +25,25 @@ const (
 	FacebookDevClientSecret  = "redacted"
 )
 
-/* Twitter API Keys */
+/* Twitter API Keys - Used for Login with Twitter */
 const (
 	TwitterAPIKey    = "redacted"
 	TwitterAPISecret = "redacted"
 )
 
-/* Google API Keys */
+/* Google API Keys - Used for login with Google, and google maps*/
 const (
 	GoogleClientID     = "redacted"
 	GoogleClientSecret = "redacted"
-	GoogleMapsAPIKey   = "redacted"
+	GoogleMapsAPIKey   = "redacted" // client-side maps won't work without this
 )
 
-/* SendGrid API keys */
+/* SendGrid API keys - Used for sending emails*/
 const (
 	SendGridAPIKey = "redacted"
 )
 
-/* IP2Location username and password */
+/* IP2Location username and password  - Used for loading IP to location database*/
 const (
 	IP2LocationEmail    = "redacted"
 	IP2LocationPassword = "redacted"

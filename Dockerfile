@@ -32,9 +32,9 @@ RUN go get github.com/timshannon/townsourced && \
     npm install && \
     gobble build static -f && \
     cd .. && \
-    echo '{"web":{"address": "http://localhost:8080"}}' > settings.json && \
+    echo '{"web":{"address": "http://localhost:8080"}}' > settings.json
 
 
-ENTRYPOINT [ "/go/src/github.com/timshannon/townsourced/townsourced" ]
+ENTRYPOINT exec /go/src/github.com/timshannon/townsourced/townsourced -dir /go/src/github.com/timshannon/townsourced
 
 EXPOSE 8080

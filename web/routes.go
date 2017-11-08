@@ -72,7 +72,8 @@ func wwwRoutes() http.Handler {
 	serveStaticDir(rootHandler, "/images/", filepath.Join(static, "images"), false)
 
 	// large files
-	serveStaticDir(rootHandler, "/bin/", "./web/bin", false)
+	// only used on /pitch page, so disabled in the open source release
+	// serveStaticDir(rootHandler, "/bin/", "./web/bin", false)
 
 	//static pages
 	rootHandler.Handler("GET", "/error/", newStaticHandler(filepath.Join(static, "error.html"), true))

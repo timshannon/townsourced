@@ -71,7 +71,7 @@ func main() {
 
 	err = os.Chdir(flagDir)
 	if err != nil {
-		app.Halt("Error changing dir to  %s: %s", flagDir, err)
+		log.Fatalf("Error changing dir to  %s: %s", flagDir, err)
 	}
 
 	webCfg := web.DefaultConfig()
