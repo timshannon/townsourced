@@ -42,9 +42,3 @@ const (
 const (
 	SendGridAPIKey = "redacted"
 )
-
-/* IP2Location username and password  - Used for loading IP to location database*/
-const (
-	IP2LocationEmail    = "redacted"
-	IP2LocationPassword = "redacted"
-)
