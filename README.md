@@ -12,8 +12,8 @@ than existing solutions.
 It started as a small side project, and grew from there.  I showed it to a few angel investors, and demoed it to the
 Minneapolis Tech community at [Minnedemo](https://minnestar.org/minnedemo/), but it never went any further than that.
 
-I've finally gotten around to open sourcing it, and I believe there are a few interesting things in the source code that
-I hope will, at a minimum, be useful as an example.
+I firmly believe that open-source is important, and I want to contribute back in any way I can. There are a few 
+interesting things in Townsourced's code that I hope will, at a minimum, be useful as an example.
 
 More details can be found at [tech.townsourced.com](http://tech.townsourced.com) where I've dived into the deeper details
 of **Townsourced**.
